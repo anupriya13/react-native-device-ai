@@ -16,7 +16,14 @@ class AzureOpenAI {
    * @param {string} config.apiKey - Azure OpenAI API key
    * @param {string} config.endpoint - Azure OpenAI endpoint URL
    */
-  setConfig({ apiKey, endpoint }) {
+  setConfig(config) {
+    if (!config) {
+      this.apiKey = null;
+      this.endpoint = null;
+      return;
+    }
+    
+    const { apiKey, endpoint } = config;
     if (!apiKey || !endpoint) {
       throw new Error('Both apiKey and endpoint are required for Azure OpenAI configuration');
     }
@@ -29,7 +36,7 @@ class AzureOpenAI {
    * @returns {boolean} True if configured, false otherwise
    */
   isConfigured() {
-    return this.apiKey && this.endpoint;
+    return !!(this.apiKey && this.endpoint);
   }
 
   /**
@@ -117,5 +124,9 @@ class AzureOpenAI {
     }
   }
 }
+
+// Export as singleton instance
+const azureOpenAIInstance = new AzureOpenAI();
+module.exports = azureOpenAIInstance;
 
 module.exports = new AzureOpenAI();

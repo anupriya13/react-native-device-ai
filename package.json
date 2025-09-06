@@ -4,7 +4,9 @@
   "description": "Cross-platform React Native module that generates AI-powered insights and recommendations about the user's device.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
     "lint": "eslint .",
     "prepare": "npm run lint"
   },
@@ -29,7 +31,8 @@
   },
   "devDependencies": {
     "eslint": "^8.0.0",
-    "eslint-plugin-react-native": "^4.1.0"
+    "eslint-plugin-react-native": "^4.1.0",
+    "jest": "^29.0.0"
   },
   "repository": {
     "type": "git",
@@ -38,5 +41,17 @@
   "bugs": {
     "url": "https://github.com/anupriya13/react-native-device-ai/issues"
   },
-  "homepage": "https://github.com/anupriya13/react-native-device-ai#readme"
+  "homepage": "https://github.com/anupriya13/react-native-device-ai#readme",
+  "jest": {
+    "setupFilesAfterEnv": ["<rootDir>/jest.setup.js"],
+    "testMatch": ["**/__tests__/**/*.test.js"],
+    "collectCoverageFrom": [
+      "src/**/*.js",
+      "index.js",
+      "!src/**/*.test.js"
+    ],
+    "coverageDirectory": "coverage",
+    "coverageReporters": ["text", "lcov", "html"],
+    "testEnvironment": "node"
+  }
 }

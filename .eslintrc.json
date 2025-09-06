@@ -3,6 +3,7 @@
     "browser": true,
     "es2021": true,
     "node": true,
+    "jest": true,
     "react-native/react-native": true
   },
   "extends": [
@@ -31,6 +32,7 @@
     "node_modules/",
     "example/node_modules/",
     "windows/",
-    "*.log"
+    "*.log",
+    "coverage/"
   ]
 }

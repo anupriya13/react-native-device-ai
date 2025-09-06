@@ -351,4 +351,9 @@ class DeviceAI {
   }
 }
 
+// Export as singleton instance and class
+const deviceAIInstance = new DeviceAI();
+module.exports = deviceAIInstance;
+module.exports.DeviceAI = DeviceAI;
+
 module.exports = new DeviceAI();

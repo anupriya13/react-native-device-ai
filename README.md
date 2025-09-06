@@ -6,6 +6,12 @@
 ![React Native](https://img.shields.io/badge/React%20Native-0.70%2B-green.svg)
 ![Platform](https://img.shields.io/badge/platform-iOS%20%7C%20Android%20%7C%20Windows-lightgrey.svg)
 
+## Demo
+
+![Demo Screenshot](https://github.com/user-attachments/assets/c5751e9c-b444-46aa-9004-f34c5729a969)
+
+*The demo shows the React Native Device AI module in action, displaying device insights, battery advice, and performance tips.*
+
 ## Features
 
 - 🤖 **AI-Powered Insights**: Get intelligent device analysis using Azure OpenAI
@@ -314,6 +320,45 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - 📧 **Email**: [Create an issue](https://github.com/anupriya13/react-native-device-ai/issues)
 - 💬 **Discussions**: [GitHub Discussions](https://github.com/anupriya13/react-native-device-ai/discussions)
 - 📖 **Documentation**: [Wiki](https://github.com/anupriya13/react-native-device-ai/wiki)
+
+## Testing
+
+The module includes comprehensive tests covering all functionality:
+
+```bash
+# Run all tests
+npm test
+
+# Run tests with coverage
+npm run test:coverage
+
+# Run tests in watch mode  
+npm run test:watch
+
+# Run integration tests only
+npm test -- --testNamePattern="Integration"
+```
+
+### Test Coverage
+
+- **Unit Tests**: Core module functionality and API methods
+- **Integration Tests**: End-to-end testing of all features
+- **Mock Tests**: Azure OpenAI service integration
+- **Error Handling**: Comprehensive error scenario testing
+
+### Running Demo
+
+To test the module functionality quickly:
+
+```bash
+# Run standalone demo (Node.js)
+node standalone-demo.js
+
+# Run example React Native app
+cd example
+npm install
+npm run android  # or ios, windows
+```
 
 ## Acknowledgments
 
