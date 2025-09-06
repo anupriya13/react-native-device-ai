@@ -1,0 +1,36 @@
+{
+  "env": {
+    "browser": true,
+    "es2021": true,
+    "node": true,
+    "react-native/react-native": true
+  },
+  "extends": [
+    "eslint:recommended"
+  ],
+  "plugins": [
+    "react-native"
+  ],
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "rules": {
+    "no-unused-vars": ["warn", { 
+      "varsIgnorePattern": "^(React|ScrollView|View|Text|TouchableOpacity|SafeAreaView|ActivityIndicator)$",
+      "args": "none"
+    }],
+    "no-console": "off",
+    "react-native/no-unused-styles": "warn",
+    "react-native/split-platform-components": "warn"
+  },
+  "ignorePatterns": [
+    "node_modules/",
+    "example/node_modules/",
+    "windows/",
+    "*.log"
+  ]
+}

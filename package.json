@@ -1,0 +1,42 @@
+{
+  "name": "react-native-device-ai",
+  "version": "1.0.0",
+  "description": "Cross-platform React Native module that generates AI-powered insights and recommendations about the user's device.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint .",
+    "prepare": "npm run lint"
+  },
+  "keywords": [
+    "react-native",
+    "device",
+    "ai",
+    "insights",
+    "performance",
+    "battery",
+    "azure",
+    "openai",
+    "windows"
+  ],
+  "author": "Anupriya Verma",
+  "license": "MIT",
+  "peerDependencies": {
+    "react-native": ">=0.70.0"
+  },
+  "dependencies": {
+    "axios": "^1.6.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.0.0",
+    "eslint-plugin-react-native": "^4.1.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anupriya13/react-native-device-ai.git"
+  },
+  "bugs": {
+    "url": "https://github.com/anupriya13/react-native-device-ai/issues"
+  },
+  "homepage": "https://github.com/anupriya13/react-native-device-ai#readme"
+}
