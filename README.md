@@ -22,6 +22,25 @@
 - 📊 **Real-time Data**: Collect comprehensive device information and system stats
 - 🛡️ **Error Handling**: Robust validation and graceful error handling
 - 🔄 **Fallback Mode**: Works without AI configuration using built-in insights
+- 🚀 **TurboModule Support**: Modern React Native architecture with enhanced performance
+- 🎯 **TypeScript Ready**: Complete TypeScript definitions included
+
+## Architecture
+
+This module uses React Native's modern **TurboModule** architecture for optimal performance:
+
+- **New Architecture Ready**: Supports React Native's new architecture (Fabric/TurboModules)
+- **Native Performance**: Direct native code execution without bridge overhead
+- **Type Safety**: Full TypeScript support with proper interface definitions
+- **Graceful Fallback**: Automatically falls back to JavaScript implementation when native module is unavailable
+- **Windows C++ Implementation**: Advanced Windows-specific features using native C++ TurboModule
+
+### TurboModule Benefits
+
+- **Faster Execution**: Direct native method calls without serialization overhead
+- **Better Type Safety**: Strong typing at the native bridge level
+- **Reduced Memory Usage**: More efficient memory management
+- **Future-Proof**: Compatible with React Native's future architecture plans
 
 ## Installation
 
@@ -161,6 +180,59 @@ const result = await DeviceAI.getPerformanceTips();
     "Clear cache periodically"
   ],
   timestamp: "2023-12-07T10:30:00.000Z"
+}
+```
+
+### DeviceAI.isNativeModuleAvailable()
+
+Check if the native TurboModule is available for enhanced performance.
+
+**Returns:** `boolean`
+
+```javascript
+const hasNativeModule = DeviceAI.isNativeModuleAvailable();
+console.log('Native module available:', hasNativeModule);
+```
+
+### DeviceAI.getSupportedFeatures()
+
+Get list of supported features based on platform and native module availability.
+
+**Returns:** `Array<string>`
+
+```javascript
+const features = DeviceAI.getSupportedFeatures();
+console.log('Supported features:', features);
+// Example output: ['device-insights', 'battery-advice', 'performance-tips', 'native-device-info', 'windows-system-info']
+```
+
+### DeviceAI.getWindowsSystemInfo() (Windows only)
+
+Get enhanced Windows system information using native WMI queries and performance counters.
+
+**Returns:** `Promise<Object>`
+**Platform:** Windows only
+**Requires:** Native TurboModule
+
+```javascript
+if (Platform.OS === 'windows' && DeviceAI.isNativeModuleAvailable()) {
+  const windowsInfo = await DeviceAI.getWindowsSystemInfo();
+  
+  // Example response:
+  {
+    wmiData: {
+      osVersion: 'Windows 11',
+      buildNumber: '22000'
+    },
+    performanceCounters: {
+      cpuUsage: 25.5,
+      memoryUsage: 65.2
+    },
+    systemMetrics: {
+      totalMemory: 17179869184,
+      availableMemory: 6442450944
+    }
+  }
 }
 ```
 

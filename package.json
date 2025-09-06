@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Cross-platform React Native module that generates AI-powered insights and recommendations about the user's device.",
   "main": "index.js",
+  "types": "index.d.ts",
   "scripts": {
     "test": "jest",
     "test:watch": "jest --watch",
@@ -33,6 +34,14 @@
     "eslint": "^8.0.0",
     "eslint-plugin-react-native": "^4.1.0",
     "jest": "^29.0.0"
+  },
+  "codegenConfig": {
+    "name": "DeviceAISpec",
+    "type": "modules",
+    "jsSrcsDir": "src",
+    "android": {
+      "javaPackageName": "com.deviceai"
+    }
   },
   "repository": {
     "type": "git",

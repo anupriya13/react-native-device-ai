@@ -1,6 +1,15 @@
 const { Platform, Dimensions } = require('react-native');
 const AzureOpenAI = require('./AzureOpenAI.js');
 
+// Try to import the native module with fallback handling
+let NativeDeviceAI = null;
+try {
+  const NativeModule = require('./NativeDeviceAI.js');
+  NativeDeviceAI = NativeModule;
+} catch (error) {
+  console.log('Native DeviceAI module not available, using JavaScript fallback:', error.message);
+}
+
 /**
  * DeviceAI - Main module for AI-powered device insights
  */
@@ -130,6 +139,7 @@ class DeviceAI {
 
   /**
    * Collect comprehensive device information
+   * Uses native TurboModule when available for enhanced data collection
    * @private
    */
   async _collectDeviceInfo() {
@@ -139,6 +149,28 @@ class DeviceAI {
       return this.deviceInfo;
     }
 
+    // Try to use native module first for enhanced device info
+    try {
+      if (NativeDeviceAI && NativeDeviceAI.getDeviceInfo) {
+        const nativeInfo = await NativeDeviceAI.getDeviceInfo();
+        this.deviceInfo = {
+          ...nativeInfo,
+          // Add any additional computed fields
+          screen: {
+            width: nativeInfo.screenResolution.split('x')[0] || 0,
+            height: nativeInfo.screenResolution.split('x')[1] || 0,
+          },
+          memoryUsagePercentage: Math.round((nativeInfo.usedMemory / nativeInfo.totalMemory) * 100),
+          storageUsagePercentage: Math.round((nativeInfo.usedStorage / nativeInfo.totalStorage) * 100),
+        };
+        this.lastUpdate = Date.now();
+        return this.deviceInfo;
+      }
+    } catch (nativeError) {
+      console.log('Native module unavailable, falling back to JS implementation:', nativeError.message);
+    }
+
+    // Fallback to JavaScript-only implementation
     const screenData = Dimensions.get('screen');
     const windowData = Dimensions.get('window');
 
@@ -348,6 +380,63 @@ class DeviceAI {
       strength: 'excellent',
       speed: '150 Mbps',
     };
+  }
+
+  /**
+   * Check if the native TurboModule is available
+   * @returns {boolean} True if native module is available
+   */
+  isNativeModuleAvailable() {
+    return NativeDeviceAI !== null && typeof NativeDeviceAI.getDeviceInfo === 'function';
+  }
+
+  /**
+   * Get list of supported features based on platform and native module availability
+   * @returns {Array<string>} Array of supported feature names
+   */
+  getSupportedFeatures() {
+    const features = [
+      'device-insights',
+      'battery-advice',
+      'performance-tips',
+      'fallback-mode'
+    ];
+
+    if (this.isNativeModuleAvailable()) {
+      features.push('native-device-info');
+      
+      if (Platform.OS === 'windows') {
+        features.push('windows-system-info', 'wmi-queries', 'performance-counters');
+      }
+    }
+
+    if (AzureOpenAI.isConfigured()) {
+      features.push('ai-powered-insights');
+    }
+
+    return features;
+  }
+
+  /**
+   * Get enhanced Windows system information (Windows only)
+   * Requires native module to be available
+   * @returns {Promise<Object>} Windows-specific system information
+   */
+  async getWindowsSystemInfo() {
+    if (Platform.OS !== 'windows') {
+      throw new Error('Windows system info is only available on Windows platform');
+    }
+
+    if (!this.isNativeModuleAvailable()) {
+      throw new Error('Native module required for Windows system info');
+    }
+
+    try {
+      return await NativeDeviceAI.getWindowsSystemInfo();
+    } catch (error) {
+      console.error('Error getting Windows system info:', error);
+      throw error;
+    }
   }
 }
 
