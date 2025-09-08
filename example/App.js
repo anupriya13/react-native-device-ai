@@ -8,6 +8,7 @@ import {
   Alert,
   SafeAreaView,
   ActivityIndicator,
+  Platform,
 } from 'react-native';
 
 import DeviceAI from 'react-native-device-ai';
@@ -19,6 +20,8 @@ const App = () => {
   const [deviceInsights, setDeviceInsights] = useState(null);
   const [batteryAdvice, setBatteryAdvice] = useState(null);
   const [performanceTips, setPerformanceTips] = useState(null);
+  const [windowsSystemInfo, setWindowsSystemInfo] = useState(null);
+  const [supportedFeatures, setSupportedFeatures] = useState([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -32,6 +35,9 @@ const App = () => {
     } catch (error) {
       console.log('Azure OpenAI not configured - using fallback insights');
     }
+
+    // Get supported features
+    setSupportedFeatures(DeviceAI.getSupportedFeatures());
   }, []);
 
   const handleGetDeviceInsights = async () => {
@@ -88,23 +94,68 @@ const App = () => {
     }
   };
 
+  const handleGetWindowsSystemInfo = async () => {
+    setLoading(true);
+    try {
+      const windowsInfo = await DeviceAI.getWindowsSystemInfo();
+      setWindowsSystemInfo(windowsInfo);
+      
+      if (windowsInfo) {
+        Alert.alert('Success', 'Windows system info retrieved successfully!');
+      } else {
+        Alert.alert('Error', 'Failed to get Windows system info');
+      }
+    } catch (error) {
+      Alert.alert('Error', error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const formatDeviceInfo = (deviceInfo) => {
     if (!deviceInfo) return 'No device info available';
     
-    return `Platform: ${deviceInfo.platform}
+    let info = `Platform: ${deviceInfo.platform}
 Version: ${deviceInfo.version}
 Screen: ${deviceInfo.screen.width}x${deviceInfo.screen.height}
 Memory: ${deviceInfo.memory.used} / ${deviceInfo.memory.total} (${deviceInfo.memory.usedPercentage}%)
 Storage: ${deviceInfo.storage.used} / ${deviceInfo.storage.total} (${deviceInfo.storage.usedPercentage}%)
 Battery: ${deviceInfo.battery.level}% (${deviceInfo.battery.state})
 CPU Usage: ${deviceInfo.cpu.usage}%`;
+
+    // Add Windows-specific info if available
+    if (deviceInfo.windowsSpecific) {
+      info += `
+
+Windows Specific:
+OS Version: ${deviceInfo.windowsSpecific.osVersion}
+Build: ${deviceInfo.windowsSpecific.buildNumber}
+RAM: ${deviceInfo.windowsSpecific.installedRam}
+Processor: ${deviceInfo.windowsSpecific.processorName}
+Processes: ${deviceInfo.windowsSpecific.runningProcesses}`;
+    }
+
+    return info;
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <Text style={styles.title}>React Native Device AI</Text>
-        <Text style={styles.subtitle}>AI-Powered Device Insights Demo</Text>
+        <Text style={styles.subtitle}>
+          {Platform.OS === 'windows' ? 'Windows TurboModule Demo' : 'AI-Powered Device Insights Demo'}
+        </Text>
+
+        {/* Platform and Features Info */}
+        <View style={styles.infoContainer}>
+          <Text style={styles.infoTitle}>Platform: {Platform.OS}</Text>
+          <Text style={styles.infoText}>
+            Native Module: {DeviceAI.isNativeModuleAvailable() ? 'Available' : 'Not Available'}
+          </Text>
+          <Text style={styles.infoText}>
+            Supported Features: {supportedFeatures.length > 0 ? supportedFeatures.join(', ') : 'Loading...'}
+          </Text>
+        </View>
 
         {/* Note: Azure OpenAI configuration is commented out for demo purposes */}
         <View style={styles.warningContainer}>
@@ -140,6 +191,17 @@ CPU Usage: ${deviceInfo.cpu.usage}%`;
           >
             <Text style={styles.buttonText}>Get Performance Tips</Text>
           </TouchableOpacity>
+
+          {/* Windows-specific button */}
+          {Platform.OS === 'windows' && DeviceAI.isNativeModuleAvailable() && (
+            <TouchableOpacity
+              style={[styles.button, styles.windowsButton]}
+              onPress={handleGetWindowsSystemInfo}
+              disabled={loading}
+            >
+              <Text style={styles.buttonText}>🪟 Get Windows System Info</Text>
+            </TouchableOpacity>
+          )}
         </View>
 
         {loading && (
@@ -198,6 +260,46 @@ CPU Usage: ${deviceInfo.cpu.usage}%`;
             ))}
           </View>
         )}
+
+        {/* Windows System Info Display */}
+        {windowsSystemInfo && (
+          <View style={styles.resultContainer}>
+            <Text style={styles.resultTitle}>🪟 Windows System Information</Text>
+            <View style={styles.deviceInfoContainer}>
+              <Text style={styles.deviceInfoText}>
+                OS Version: {windowsSystemInfo.osVersion}
+                {'\n'}Build: {windowsSystemInfo.buildNumber}
+                {'\n'}Architecture: {windowsSystemInfo.systemArchitecture}
+                {'\n'}RAM: {windowsSystemInfo.installedRam}
+                {'\n'}Processor: {windowsSystemInfo.processorName}
+                {'\n'}Uptime: {windowsSystemInfo.systemUptime}
+                {'\n'}Running Processes: {windowsSystemInfo.runningProcesses}
+              </Text>
+            </View>
+            
+            {windowsSystemInfo.performanceCounters && (
+              <View>
+                <Text style={styles.insightsTitle}>Performance Counters:</Text>
+                <View style={styles.deviceInfoContainer}>
+                  <Text style={styles.deviceInfoText}>
+                    CPU Usage: {windowsSystemInfo.performanceCounters.cpuUsage}%
+                    {'\n'}Memory Usage: {windowsSystemInfo.performanceCounters.memoryUsage}%
+                    {'\n'}Disk Activity: {windowsSystemInfo.performanceCounters.diskActivity}%
+                    {'\n'}Network Activity: {windowsSystemInfo.performanceCounters.networkActivity} MB/s
+                  </Text>
+                </View>
+              </View>
+            )}
+
+            <Text style={styles.insightsTitle}>Disk Information:</Text>
+            <View style={styles.deviceInfoContainer}>
+              <Text style={styles.deviceInfoText}>
+                Total: {windowsSystemInfo.diskSpace.total}
+                {'\n'}Available: {windowsSystemInfo.diskSpace.available}
+              </Text>
+            </View>
+          </View>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -221,8 +323,27 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 16,
     textAlign: 'center',
-    marginBottom: 30,
+    marginBottom: 20,
     color: '#666',
+  },
+  infoContainer: {
+    backgroundColor: '#e3f2fd',
+    padding: 15,
+    borderRadius: 8,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: '#2196f3',
+  },
+  infoTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1976d2',
+    marginBottom: 5,
+  },
+  infoText: {
+    fontSize: 12,
+    color: '#1976d2',
+    marginBottom: 2,
   },
   warningContainer: {
     backgroundColor: '#fff3cd',
@@ -259,6 +380,9 @@ const styles = StyleSheet.create({
   },
   tertiaryButton: {
     backgroundColor: '#FF9500',
+  },
+  windowsButton: {
+    backgroundColor: '#0078D4', // Windows blue
   },
   buttonText: {
     color: 'white',

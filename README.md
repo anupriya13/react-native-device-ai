@@ -8,9 +8,9 @@
 
 ## Demo
 
-![Demo Screenshot](https://github.com/user-attachments/assets/c5751e9c-b444-46aa-9004-f34c5729a969)
+![Demo Screenshot](https://github.com/user-attachments/assets/466fbee5-355b-42d5-b658-caabafa5bb90)
 
-*The demo shows the React Native Device AI module in action, displaying device insights, battery advice, and performance tips.*
+*The demo shows the React Native Device AI module running on Windows with TurboModule architecture, displaying Windows-specific system information, device insights, and AI-powered recommendations.*
 
 ## Features
 
@@ -80,6 +80,13 @@ console.log(batteryAdvice.advice); // AI-powered battery tips
 // Get performance optimization tips
 const performanceTips = await DeviceAI.getPerformanceTips();
 console.log(performanceTips.tips); // AI-generated performance advice
+
+// Windows-specific enhanced system info (Windows + native module only)
+if (Platform.OS === 'windows' && DeviceAI.isNativeModuleAvailable()) {
+  const windowsInfo = await DeviceAI.getWindowsSystemInfo();
+  console.log(windowsInfo.performanceCounters); // Real-time Windows metrics
+  console.log(windowsInfo.wmiData); // WMI system information
+}
 ```
 
 ## API Reference
@@ -113,17 +120,25 @@ const result = await DeviceAI.getDeviceInsights();
 {
   success: true,
   deviceInfo: {
-    platform: 'ios',
-    version: '16.0',
-    memory: { total: '8 GB', used: '5.2 GB', usedPercentage: 65 },
-    storage: { total: '128 GB', used: '89 GB', usedPercentage: 70 },
-    battery: { level: 78, state: 'unplugged' },
-    cpu: { cores: 8, usage: 25, temperature: '45°C' }
+    platform: 'windows',
+    version: '11.0',
+    memory: { total: '16 GB', used: '10.8 GB', usedPercentage: 67 },
+    storage: { total: '1024 GB', used: '597 GB', usedPercentage: 58 },
+    battery: { level: 85, state: 'charging' },
+    cpu: { cores: 8, usage: 23, temperature: '45°C' },
+    windowsSpecific: {
+      osVersion: 'Windows 11 Pro',
+      buildNumber: '22621.2861',
+      installedRam: '16 GB',
+      processorName: 'Intel Core i7-12700H',
+      runningProcesses: 157
+    }
   },
-  insights: "Your iOS device appears to be running well. Consider optimizing battery usage...",
+  insights: "Your Windows device appears to be running well with good memory management. Consider optimizing startup programs for better boot performance.",
   recommendations: [
-    "High memory usage - consider closing unused apps",
-    "Your device is running optimally"
+    "Disk usage is moderate - consider cleaning temporary files",
+    "Memory usage is optimal for your system",
+    "Run Windows Update to ensure latest security patches"
   ],
   timestamp: "2023-12-07T10:30:00.000Z"
 }
