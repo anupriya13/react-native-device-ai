@@ -2,13 +2,12 @@
  * @format
  */
 
-// Note: This is a TurboModule specification file
-// It defines the interface for the native DeviceAI module
-// Actual implementation is in C++ for Windows and native code for other platforms
+import {TurboModuleRegistry} from 'react-native';
 
-const {TurboModuleRegistry} = require('react-native');
+// TurboModule interface specification
+// This file defines the native module interface for codegen
+const NativeDeviceAI = TurboModuleRegistry.getEnforcing 
+  ? TurboModuleRegistry.getEnforcing('DeviceAI') 
+  : null;
 
-// Export the TurboModule
-module.exports = TurboModuleRegistry.getEnforcing ? 
-  TurboModuleRegistry.getEnforcing('DeviceAI') : 
-  null;
+export default NativeDeviceAI;

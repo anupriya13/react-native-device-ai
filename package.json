@@ -9,7 +9,9 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "lint": "eslint .",
-    "prepare": "npm run lint"
+    "prepare": "npm run lint",
+    "codegen": "react-native codegen --platform windows",
+    "codegen-windows": "react-native codegen --platform windows --outputPath windows/DeviceAIFabric/codegen"
   },
   "keywords": [
     "react-native",
@@ -41,6 +43,10 @@
     "jsSrcsDir": "src",
     "android": {
       "javaPackageName": "com.deviceai"
+    },
+    "windows": {
+      "namespace": "Microsoft::ReactNative",
+      "outputDir": "windows/DeviceAIFabric/codegen"
     }
   },
   "repository": {

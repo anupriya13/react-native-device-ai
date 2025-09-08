@@ -5,19 +5,22 @@
 #include <ReactCommon/TurboModuleUtils.h>
 #include <jsi/jsi.h>
 #include "WindowsDeviceAIFabric.h"
+#include "../codegen/NativeDeviceAISpec.h"
 
 namespace Microsoft::ReactNative {
 
 REACT_MODULE(DeviceAI)
-struct DeviceAI : TurboModule {
+struct DeviceAI : public facebook::react::NativeDeviceAISpec<DeviceAI> {
 public:
-    using ModuleSpec = DeviceAISpec;
-
     DeviceAI(const std::shared_ptr<facebook::react::CallInvoker> &jsInvoker);
 
-    // TurboModule methods implementation
-    facebook::jsi::Object getDeviceInfo(facebook::jsi::Runtime &rt);
-    
+    // TurboModule methods implementation (matching the spec)
+    facebook::jsi::Value getDeviceInfo(facebook::jsi::Runtime &rt) override;
+    facebook::jsi::Value getWindowsSystemInfo(facebook::jsi::Runtime &rt) override;
+    facebook::jsi::Value isNativeModuleAvailable(facebook::jsi::Runtime &rt) override;
+    facebook::jsi::Value getSupportedFeatures(facebook::jsi::Runtime &rt) override;
+
+    // Additional methods for enhanced functionality
     facebook::jsi::Object generateDeviceInsights(
         facebook::jsi::Runtime &rt, 
         facebook::jsi::Object deviceData
@@ -26,8 +29,6 @@ public:
     facebook::jsi::Object getBatteryOptimizations(facebook::jsi::Runtime &rt);
     
     facebook::jsi::Object getPerformanceAnalysis(facebook::jsi::Runtime &rt);
-    
-    facebook::jsi::Object getWindowsSystemInfo(facebook::jsi::Runtime &rt);
     
     void configure(
         facebook::jsi::Runtime &rt,
@@ -94,14 +95,6 @@ private:
         facebook::jsi::Runtime &rt,
         const std::vector<std::map<std::string, std::string>> &vec
     );
-};
-
-// TurboModule specification
-class JSI_EXPORT DeviceAISpecJSI : public TurboModule {
-public:
-    DeviceAISpecJSI(const std::shared_ptr<facebook::react::CallInvoker> &jsInvoker);
-
-    facebook::jsi::Value get(facebook::jsi::Runtime &rt, const facebook::jsi::PropNameID &name) override;
 };
 
 } // namespace Microsoft::ReactNative

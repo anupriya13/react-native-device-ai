@@ -32,6 +32,7 @@
     "node_modules/",
     "example/node_modules/",
     "windows/",
+    "src/NativeDeviceAISpec.ts",
     "*.log",
     "coverage/"
   ]
