@@ -5,7 +5,7 @@
 #include <ReactCommon/TurboModuleUtils.h>
 #include <jsi/jsi.h>
 #include "WindowsDeviceAIFabric.h"
-#include "../codegen/NativeDeviceAISpec.h"
+#include "../codegen/NativeDeviceAISpec.g.h"
 
 namespace Microsoft::ReactNative {
 
