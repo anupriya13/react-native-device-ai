@@ -5,14 +5,20 @@
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage",
-    "lint": "eslint .",
-    "prepare": "npm run lint",
-    "codegen": "react-native codegen",
-    "codegen-android": "react-native codegen --platform android",
-    "codegen-ios": "react-native codegen --platform ios"
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
+    "macos": "react-native run-macos --scheme WebviewExample --project-path example/macos",
+    "start": "react-native start",
+    "windows": "install-windows-test-app --project-directory example/windows && react-native run-windows --root example --arch x64",
+    "ci": "CI=true && yarn lint",
+    "ci:publish": "yarn semantic-release",
+    "lint": "yarn tsc --noEmit && yarn eslint ./src --ext .ts,.tsx,.js,.jsx",
+    "build": "babel --extensions \".ts,.tsx\" --out-dir lib src",
+    "prepare:types": "tsc --noEmit false --emitDeclarationOnly --declaration --rootDir src --outDir lib",
+    "prepare": "yarn prepare:types && yarn build",
+    "appium": "appium",
+    "test:windows": "yarn jest --setupFiles=./jest-setups/jest.setup.js",
+    "add:macos": "yarn add react-native-macos@0.73.17"
   },
   "keywords": [
     "react-native",
@@ -34,59 +40,81 @@
     "axios": "^1.6.0"
   },
   "devDependencies": {
-    "@react-native-community/cli": "latest",
-    "eslint": "^8.57.1",
-    "eslint-plugin-react-native": "^4.1.0",
-    "jest": "^29.7.0",
-    "react-native": "^0.79.6",
-    "react-native-windows": "^0.79.0",
-    "react-native-windows-init": "^1.4.79"
+    "@babel/cli": "^7.20.0",
+    "@babel/core": "^7.20.0",
+    "@babel/runtime": "^7.20.0",
+    "@callstack/react-native-visionos": "0.73.8",
+    "@react-native/babel-preset": "0.73.21",
+    "@react-native/eslint-config": "0.73.2",
+    "@react-native/metro-config": "0.73.5",
+    "@react-native/typescript-config": "0.73.1",
+    "@rnx-kit/metro-config": "1.3.15",
+    "@semantic-release/git": "7.0.16",
+    "@types/invariant": "^2.2.30",
+    "@types/jest": "^29.5.12",
+    "@types/react": "18.2.61",
+    "@types/selenium-webdriver": "4.0.9",
+    "appium": "1.17.0",
+    "eslint": "8.57.0",
+    "jest": "^29.6.3",
+    "prettier": "2.8.8",
+    "react": "18.2.0",
+    "react-native": "0.79.0",
+    "react-native-macos": "0.73.17",
+    "react-native-test-app": "3.7.2",
+    "react-native-windows": "0.79.0",
+    "selenium-appium": "1.0.2",
+    "selenium-webdriver": "4.0.0-alpha.7",
+    "semantic-release": "15.13.24",
+    "typescript": "5.1.3",
+    "winappdriver": "^0.0.7"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/anupriya13/react-native-device-ai.git"
+  },
+  "files": [
+    "android/src",
+    "android/build.gradle",
+    "android/gradle.properties",
+    "apple",
+    "ios",
+    "macos",
+    "windows",
+    "lib",
+    "src",
+    "index.js",
+    "index.d.ts",
+    "react-native-webview.podspec",
+    "react-native.config.js"
+  ],
+  "codegenConfig": {
+    "name": "DeviceAISpec",
+    "type": "all",
+    "jsSrcsDir": "./src",
+    "android": {
+      "javaPackageName": "com.reactnativecommunity.deviceai"
+    },
+    "ios": {
+      "componentProvider": {
+        "RNCWebView": "ReactNativeDeviceAI"
+      },
+      "modulesProvider": {
+        "RNCWebViewModule": "ReactNativeDeviceAI"
+      }
+    },
+    "windows": {
+      "namespace": "ReactNativeDeviceAI",
+      "outputDirectory": "windows/ReactNativeDeviceAI/codegen",
+      "separateDataTypes": true
+    }
+  },
+  "packageManager": "yarn@1.22.19",
   "react-native-windows": {
     "init-windows": {
       "name": "ReactNativeDeviceAI",
       "namespace": "ReactNativeDeviceAI",
       "template": "cpp-lib"
     }
-  },
-  "codegenConfig": {
-    "name": "DeviceAISpec",
-    "type": "modules",
-    "jsSrcsDir": "src",
-    "android": {
-      "javaPackageName": "com.deviceai"
-    },
-    "windows": {
-      "namespace": "ReactNativeDeviceAI",
-      "outputDir": "windows/DeviceAIFabric/codegen"
-    }
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/anupriya13/react-native-device-ai.git"
-  },
-  "bugs": {
-    "url": "https://github.com/anupriya13/react-native-device-ai/issues"
-  },
-  "homepage": "https://github.com/anupriya13/react-native-device-ai#readme",
-  "jest": {
-    "setupFilesAfterEnv": [
-      "<rootDir>/jest.setup.js"
-    ],
-    "testMatch": [
-      "**/__tests__/**/*.test.js"
-    ],
-    "collectCoverageFrom": [
-      "src/**/*.js",
-      "index.js",
-      "!src/**/*.test.js"
-    ],
-    "coverageDirectory": "coverage",
-    "coverageReporters": [
-      "text",
-      "lcov",
-      "html"
-    ],
-    "testEnvironment": "node"
   }
 }
