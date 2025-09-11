@@ -12,10 +12,7 @@
     "prepare": "npm run lint",
     "codegen": "react-native codegen",
     "codegen-android": "react-native codegen --platform android",
-    "codegen-ios": "react-native codegen --platform ios",
-    "codegen-windows": "echo 'Windows codegen is integrated with React Native Windows build process. See windows/DeviceAIFabric/codegen/' && ls -la windows/DeviceAIFabric/codegen/",
-    "init-windows": "npx react-native-windows-init --projectType lib --language cpp",
-    "init-windows-help": "echo 'Use: npm run init-windows' && echo 'This creates a C++ library project for Windows TurboModule development' && echo 'Note: --template cpp-lib option does not exist. Use --projectType lib --language cpp instead'"
+    "codegen-ios": "react-native codegen --platform ios"
   },
   "keywords": [
     "react-native",
@@ -44,6 +41,13 @@
     "react-native": "^0.79.6",
     "react-native-windows": "^0.79.0",
     "react-native-windows-init": "^1.4.79"
+  },
+  "react-native-windows": {
+    "init-windows": {
+      "name": "ReactNativeDeviceAI",
+      "namespace": "ReactNativeDeviceAI",
+      "template": "cpp-lib"
+    }
   },
   "codegenConfig": {
     "name": "DeviceAISpec",
