@@ -28,16 +28,20 @@ const App = () => {
   const [userPrompt, setUserPrompt] = useState('');
 
   useEffect(() => {
-    // Configure Azure OpenAI (optional - app works without it but provides basic insights)
-    // In production, you would get these from secure storage or environment variables
-    try {
-      // DeviceAI.configure({
-      //   apiKey: 'your-azure-openai-api-key',
-      //   endpoint: 'https://your-resource.openai.azure.com'
-      // });
-    } catch (error) {
-      console.log('Azure OpenAI not configured - using fallback insights');
-    }
+    // Configure Azure OpenAI credentials
+    // IMPORTANT: In production, use secure storage methods
+    
+    // Method 1: Environment variables (Node.js/testing)
+    // The module will auto-configure from environment if available
+    
+    // Method 2: Manual configuration (example - use secure storage in production)
+    // DeviceAI.configure({
+    //   apiKey: 'your-azure-openai-api-key',
+    //   endpoint: 'https://your-resource.openai.azure.com'
+    // });
+    
+    // Method 3: Load from secure storage (recommended for production)
+    // configureFromSecureStorage();
 
     // Get supported features
     setSupportedFeatures(DeviceAI.getSupportedFeatures());
@@ -187,13 +191,13 @@ Processes: ${deviceInfo.windowsSpecific.runningProcesses}`;
           </Text>
         </View>
 
-        {/* Note: Azure OpenAI configuration is commented out for demo purposes */}
+        {/* Azure OpenAI Configuration Status */}
         <View style={styles.warningContainer}>
           <Text style={styles.warningText}>
-            ⚠️ Azure OpenAI not configured. Using fallback insights.
+            ⚠️ Azure OpenAI configuration required for AI features
           </Text>
           <Text style={styles.warningSubtext}>
-            Configure Azure OpenAI for AI-powered recommendations.
+            See CREDENTIALS_GUIDE.md for setup instructions. Module works with fallback insights.
           </Text>
         </View>
 

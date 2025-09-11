@@ -18,6 +18,26 @@ class DeviceAI {
     this.deviceInfo = null;
     this.lastUpdate = null;
     this.cacheTimeout = 5 * 60 * 1000; // 5 minutes
+    
+    // Auto-configure from environment variables if available
+    this._autoConfigureFromEnvironment();
+  }
+
+  /**
+   * Auto-configure Azure OpenAI from environment variables
+   * @private
+   */
+  _autoConfigureFromEnvironment() {
+    try {
+      const envConfig = AzureOpenAI.AzureOpenAI.loadFromEnvironment();
+      if (envConfig) {
+        this.configure(envConfig);
+        console.log('Azure OpenAI auto-configured from environment variables');
+      }
+    } catch (error) {
+      // Silently fail - not having environment config is normal
+      console.log('Environment configuration not available - manual configuration required');
+    }
   }
 
   /**

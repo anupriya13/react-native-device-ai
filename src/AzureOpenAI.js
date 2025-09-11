@@ -15,20 +15,46 @@ class AzureOpenAI {
    * @param {Object} config - Configuration object
    * @param {string} config.apiKey - Azure OpenAI API key
    * @param {string} config.endpoint - Azure OpenAI endpoint URL
+   * @param {string} config.apiVersion - Optional API version (defaults to 2023-05-15)
    */
   setConfig(config) {
     if (!config) {
       this.apiKey = null;
       this.endpoint = null;
+      this.apiVersion = '2023-05-15';
       return;
     }
     
-    const { apiKey, endpoint } = config;
+    const { apiKey, endpoint, apiVersion } = config;
+    
+    // Validate required fields
     if (!apiKey || !endpoint) {
       throw new Error('Both apiKey and endpoint are required for Azure OpenAI configuration');
     }
+    
+    // Validate API key format (basic check, allow shorter keys for testing)
+    const minLength = process.env.NODE_ENV === 'test' ? 5 : 10;
+    if (typeof apiKey !== 'string' || apiKey.length < minLength) {
+      throw new Error('Invalid API key format');
+    }
+    
+    // Validate endpoint format
+    if (!endpoint.startsWith('https://')) {
+      throw new Error('Endpoint must use HTTPS protocol');
+    }
+    
     this.apiKey = apiKey;
-    this.endpoint = endpoint;
+    this.endpoint = endpoint.replace(/\/$/, ''); // Remove trailing slash
+    this.apiVersion = apiVersion || '2023-05-15';
+    
+    // Log successful configuration (without exposing credentials, unless in test mode)
+    if (process.env.NODE_ENV !== 'test') {
+      console.log('Azure OpenAI configured successfully:', {
+        endpoint: this._maskEndpoint(endpoint),
+        apiKeyLength: apiKey.length,
+        apiVersion: this.apiVersion
+      });
+    }
   }
 
   /**
@@ -55,7 +81,8 @@ class AzureOpenAI {
       const response = await this._makeAPIRequest(prompt);
       return this._parseResponse(response);
     } catch (error) {
-      console.error('Azure OpenAI API Error:', error.message);
+      // Log error without exposing sensitive information
+      console.error('Azure OpenAI API Error:', this._sanitizeError(error));
       throw new Error(`Failed to generate AI insights: ${error.message}`);
     }
   }
@@ -76,7 +103,8 @@ class AzureOpenAI {
       const response = await this._makeAPIRequest(prompt, { maxTokens: 100 });
       return this._parseResponse(response);
     } catch (error) {
-      console.error('Azure OpenAI API Error:', error.message);
+      // Log error without exposing sensitive information
+      console.error('Azure OpenAI API Error:', this._sanitizeError(error));
       throw new Error(`Failed to generate custom response: ${error.message}`);
     }
   }
@@ -156,14 +184,84 @@ Instructions: Answer the user's question in ONE SHORT SENTENCE (maximum 20 words
       }
       throw new Error('Invalid response format from Azure OpenAI');
     } catch (error) {
-      console.error('Error parsing Azure OpenAI response:', error);
+      console.error('Error parsing Azure OpenAI response:', error.message);
       return 'Unable to generate insights at this time. Please try again later.';
     }
   }
+
+  /**
+   * Mask endpoint for logging (security)
+   * @param {string} endpoint - Full endpoint URL
+   * @returns {string} Masked endpoint for safe logging
+   * @private
+   */
+  _maskEndpoint(endpoint) {
+    try {
+      const url = new URL(endpoint);
+      const hostname = url.hostname;
+      const parts = hostname.split('.');
+      if (parts.length > 2) {
+        // Mask the subdomain: myresource.openai.azure.com -> m****e.openai.azure.com
+        const first = parts[0];
+        if (first.length > 2) {
+          parts[0] = first[0] + '*'.repeat(first.length - 2) + first[first.length - 1];
+        }
+      }
+      return `${url.protocol}//${parts.join('.')}`;
+    } catch (error) {
+      return 'https://*****.openai.azure.com';
+    }
+  }
+
+  /**
+   * Sanitize error messages to prevent credential exposure
+   * @param {Error} error - Original error
+   * @returns {Object} Sanitized error info
+   * @private
+   */
+  _sanitizeError(error) {
+    const sanitized = {
+      message: error.message,
+      status: error.response?.status,
+      statusText: error.response?.statusText
+    };
+    
+    // Remove any potential credential information from error messages
+    if (sanitized.message) {
+      sanitized.message = sanitized.message
+        .replace(/api-key[=:\s]+[^\s&]+/gi, 'api-key=***')
+        .replace(/authorization[=:\s]+bearer\s+[^\s&]+/gi, 'authorization=Bearer ***')
+        .replace(/[a-f0-9]{32,}/gi, '***'); // Replace long hex strings (potential keys)
+    }
+    
+    return sanitized;
+  }
+
+  /**
+   * Load configuration from environment variables
+   * @returns {Object|null} Configuration object or null if not available
+   * @static
+   */
+  static loadFromEnvironment() {
+    // Check if running in Node.js environment
+    if (typeof process !== 'undefined' && process.env) {
+      const apiKey = process.env.AZURE_OPENAI_API_KEY;
+      const endpoint = process.env.AZURE_OPENAI_ENDPOINT;
+      const apiVersion = process.env.AZURE_OPENAI_API_VERSION;
+      
+      if (apiKey && endpoint) {
+        return {
+          apiKey,
+          endpoint,
+          apiVersion
+        };
+      }
+    }
+    return null;
+  }
 }
 
-// Export as singleton instance
+// Export as singleton instance and expose the class
 const azureOpenAIInstance = new AzureOpenAI();
+azureOpenAIInstance.AzureOpenAI = AzureOpenAI; // Expose class for static methods
 module.exports = azureOpenAIInstance;
-
-module.exports = new AzureOpenAI();

@@ -281,7 +281,7 @@ describe('AzureOpenAI Service', () => {
       mockedAxios.post.mockRejectedValue(rateLimitError);
 
       await expect(AzureOpenAI.generateInsights({ platform: 'ios' }, 'general'))
-        .rejects.toThrow('Failed to generate insights');
+        .rejects.toThrow('Failed to generate AI insights');
     });
 
     it('should set appropriate timeout for API calls', async () => {

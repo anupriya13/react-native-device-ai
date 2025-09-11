@@ -5,15 +5,31 @@
  * This script demonstrates the module functionality and shows what the working example looks like
  */
 
-// Mock React Native for demo
-global.mockReactNative = {
+// Create a temporary mock file for react-native
+const fs = require('fs');
+const path = require('path');
+
+// Create mock react-native module for Windows demo
+const mockRNContent = `
+module.exports = {
   Platform: { OS: 'windows', Version: '11.0' },
   Dimensions: { get: () => ({ width: 1920, height: 1080, scale: 1, fontScale: 1 }) }
 };
+`;
 
-// Set up module cache to use our mock
-require.cache[require.resolve('react-native')] = {
-  exports: global.mockReactNative
+// Write temporary react-native mock
+const tempReactNativeFile = path.join(__dirname, 'react-native-demo.js');
+fs.writeFileSync(tempReactNativeFile, mockRNContent);
+
+// Set up module resolution
+const Module = require('module');
+const originalResolveFilename = Module._resolveFilename;
+
+Module._resolveFilename = function (request, parent, isMain) {
+  if (request === 'react-native') {
+    return tempReactNativeFile;
+  }
+  return originalResolveFilename.call(this, request, parent, isMain);
 };
 
 const DeviceAI = require('./index.js');
@@ -21,6 +37,26 @@ const DeviceAI = require('./index.js');
 async function runLiveDemo() {
   console.log('\n🚀 REACT NATIVE DEVICE AI - LIVE WORKING EXAMPLE');
   console.log('=' .repeat(60));
+  
+  // Check credential configuration
+  console.log('\n🔑 CREDENTIAL CONFIGURATION');
+  console.log('-'.repeat(40));
+  const DeviceAI = require('./index.js');
+  const AzureOpenAI = require('./src/AzureOpenAI.js');
+  const envConfig = AzureOpenAI.AzureOpenAI.loadFromEnvironment();
+  
+  if (envConfig) {
+    console.log(`✅ Environment Variables: Configured`);
+    console.log(`📍 Endpoint: ${envConfig.endpoint.replace(/https:\/\/([^.]+)\./, 'https://$1***.')}`);
+    console.log(`🔐 API Key: ***${envConfig.apiKey.slice(-4)}`);
+    console.log(`🤖 AI Features: Available`);
+  } else {
+    console.log(`⚠️  Environment Variables: Not found`);
+    console.log(`📖 Setup Guide: See CREDENTIALS_GUIDE.md`);
+    console.log(`🤖 AI Features: Fallback mode (basic insights)`);
+    console.log(`💡 Quick Setup: cp .env.example .env && edit .env`);
+  }
+  
   console.log('\n📱 DEVICE AI MODULE STATUS');
   console.log('-'.repeat(40));
   
@@ -30,7 +66,7 @@ async function runLiveDemo() {
   
   console.log(`✓ Module Loaded: ${true}`);
   console.log(`✓ Native Module: ${isNativeAvailable ? 'Available' : 'JavaScript Fallback'}`);
-  console.log(`✓ Platform: ${global.mockReactNative.Platform.OS}`);
+  console.log(`✓ Platform: ${require('react-native').Platform.OS}`);
   console.log(`✓ Supported Features: ${supportedFeatures.length} available`);
   
   console.log('\n🔧 CORE FUNCTIONALITY DEMONSTRATION');
@@ -123,9 +159,16 @@ async function runLiveDemo() {
   console.log('\n🔗 GET STARTED:');
   console.log('  1. Clone: git clone https://github.com/anupriya13/react-native-device-ai.git');
   console.log('  2. Install: npm install');
-  console.log('  3. Test: npm test');
-  console.log('  4. Demo: node standalone-demo.js');
-  console.log('  5. Example: cd example && npm run [ios|android|windows]');
+  console.log('  3. Configure: cp .env.example .env && edit .env with your credentials');
+  console.log('  4. Test: npm test');
+  console.log('  5. Demo: node standalone-demo.js');
+  console.log('  6. Example: cd example && npm run [ios|android|windows]');
+  
+  console.log('\n📖 CREDENTIAL SETUP:');
+  console.log('  • Quick: cp .env.example .env');
+  console.log('  • Guide: See CREDENTIALS_GUIDE.md for detailed setup');
+  console.log('  • Azure: Get credentials from Azure Portal > OpenAI Service');
+  console.log('  • Security: Never commit .env files to version control!');
   
   console.log('\n🎯 The module is working perfectly and ready for production use!');
   console.log('=' .repeat(60));
@@ -133,7 +176,12 @@ async function runLiveDemo() {
 
 // Run the live demo
 if (require.main === module) {
-  runLiveDemo().catch(console.error);
+  runLiveDemo().catch(console.error).finally(() => {
+    // Clean up temporary file
+    if (fs.existsSync(tempReactNativeFile)) {
+      fs.unlinkSync(tempReactNativeFile);
+    }
+  });
 }
 
 module.exports = { runLiveDemo };

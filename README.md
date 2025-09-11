@@ -62,10 +62,17 @@ react-native link react-native-device-ai
 ```javascript
 import DeviceAI from 'react-native-device-ai';
 
-// Optional: Configure Azure OpenAI for AI-powered insights
+// ⚠️ IMPORTANT: Configure credentials securely!
+// See CREDENTIALS_GUIDE.md for detailed setup instructions
+
+// Option 1: Environment variables (Node.js/testing)
+// Set AZURE_OPENAI_API_KEY and AZURE_OPENAI_ENDPOINT
+// Module auto-configures from environment variables
+
+// Option 2: Manual configuration (use secure storage in production)
 DeviceAI.configure({
-  apiKey: 'your-azure-openai-api-key',
-  endpoint: 'https://your-resource.openai.azure.com'
+  apiKey: process.env.AZURE_OPENAI_API_KEY,
+  endpoint: process.env.AZURE_OPENAI_ENDPOINT
 });
 
 // Get comprehensive device insights
@@ -81,6 +88,10 @@ console.log(batteryAdvice.advice); // AI-powered battery tips
 const performanceTips = await DeviceAI.getPerformanceTips();
 console.log(performanceTips.tips); // AI-generated performance advice
 
+// Natural language queries (NEW!)
+const response = await DeviceAI.queryDeviceInfo("How much battery do I have?");
+console.log(response.response); // "Your battery is at 78% and not charging."
+
 // Windows-specific enhanced system info (Windows + native module only)
 if (Platform.OS === 'windows' && DeviceAI.isNativeModuleAvailable()) {
   const windowsInfo = await DeviceAI.getWindowsSystemInfo();
@@ -89,23 +100,60 @@ if (Platform.OS === 'windows' && DeviceAI.isNativeModuleAvailable()) {
 }
 ```
 
+## 🔐 Credential Configuration
+
+**NEVER commit credentials to version control!** 
+
+### Quick Setup
+```bash
+# 1. Copy example configuration
+cp .env.example .env
+
+# 2. Add your Azure OpenAI credentials to .env
+# 3. See CREDENTIALS_GUIDE.md for detailed instructions
+```
+
+### Supported Configuration Methods
+- 🔧 **Environment Variables**: Auto-configuration from `.env` file
+- 🔒 **Secure Storage**: React Native Keychain/AsyncStorage
+- ⚙️ **Runtime Configuration**: Dynamic credential loading
+- 📁 **Config Files**: Development-only approach
+
+📖 **Complete guide**: [CREDENTIALS_GUIDE.md](./CREDENTIALS_GUIDE.md)
+
 ## API Reference
 
 ### DeviceAI.configure(config)
 
 Configure Azure OpenAI for AI-powered insights.
 
+**⚠️ Security Warning**: Never hardcode credentials! Use environment variables or secure storage.
+
 **Parameters:**
 - `config` (Object): Configuration object
   - `apiKey` (string): Your Azure OpenAI API key
   - `endpoint` (string): Your Azure OpenAI endpoint URL
+  - `apiVersion` (string): Optional API version (defaults to 2023-05-15)
 
 ```javascript
+// ✅ Secure: Environment variables
 DeviceAI.configure({
-  apiKey: 'your-api-key-here',
-  endpoint: 'https://your-resource.openai.azure.com'
+  apiKey: process.env.AZURE_OPENAI_API_KEY,
+  endpoint: process.env.AZURE_OPENAI_ENDPOINT
 });
+
+// ✅ Secure: From secure storage (React Native)
+const credentials = await loadFromSecureStorage();
+DeviceAI.configure(credentials);
+
+// ❌ Insecure: Hardcoded (never do this!)
+// DeviceAI.configure({
+//   apiKey: 'sk-...',  // DON'T DO THIS!
+//   endpoint: 'https://...'
+// });
 ```
+
+📖 **See [CREDENTIALS_GUIDE.md](./CREDENTIALS_GUIDE.md) for complete setup instructions**
 
 ### DeviceAI.getDeviceInsights()
 

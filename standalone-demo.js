@@ -2,8 +2,13 @@
  * Standalone demo test for react-native-device-ai (works in Node.js)
  */
 
-// Mock react-native for Node.js environment
-global.mockReactNative = {
+// Create a temporary mock file for react-native
+const fs = require('fs');
+const path = require('path');
+
+// Create mock react-native module
+const mockRNContent = `
+module.exports = {
   Platform: {
     OS: 'ios',
     Version: '16.0',
@@ -25,15 +30,44 @@ global.mockReactNative = {
     },
   },
 };
+`;
 
-// Set up module cache to use our mock
-require.cache[require.resolve('react-native')] = {
-  exports: global.mockReactNative
+// Write temporary react-native mock
+const tempReactNativeFile = path.join(__dirname, 'react-native.js');
+fs.writeFileSync(tempReactNativeFile, mockRNContent);
+
+// Set up module resolution
+const Module = require('module');
+const originalResolveFilename = Module._resolveFilename;
+
+Module._resolveFilename = function (request, parent, isMain) {
+  if (request === 'react-native') {
+    return tempReactNativeFile;
+  }
+  return originalResolveFilename.call(this, request, parent, isMain);
 };
 
 async function runStandaloneDemo() {
   console.log('🤖 React Native Device AI - Standalone Demo');
   console.log('===========================================\n');
+
+  // Check for credentials configuration
+  console.log('🔑 Credential Configuration Check:');
+  const AzureOpenAI = require('./src/AzureOpenAI.js');
+  const envConfig = AzureOpenAI.AzureOpenAI.loadFromEnvironment();
+  if (envConfig) {
+    console.log('  ✅ Environment variables detected');
+    console.log('  📍 Endpoint:', envConfig.endpoint.replace(/https:\/\/([^.]+)\./, 'https://$1***.'));
+    console.log('  🔐 API Key: ***' + envConfig.apiKey.slice(-4));
+  } else {
+    console.log('  ⚠️  No environment variables found');
+    console.log('  📖 To configure Azure OpenAI:');
+    console.log('     1. Copy .env.example to .env');
+    console.log('     2. Add your Azure OpenAI credentials');
+    console.log('     3. See CREDENTIALS_GUIDE.md for details');
+    console.log('  🎯 Demo will use fallback insights without AI');
+  }
+  console.log('');
 
   try {
     // Load the module after mocking react-native
@@ -68,11 +102,21 @@ async function runStandaloneDemo() {
 
     // Test 4: Configuration
     console.log('⚙️ Testing configuration...');
-    DeviceAI.configure({
-      apiKey: 'test-key',
-      endpoint: 'https://test.openai.azure.com'
-    });
-    console.log('  ✅ Configuration completed successfully');
+    
+    // Try to load from environment variables first
+    const envConfig = AzureOpenAI.AzureOpenAI.loadFromEnvironment();
+    if (envConfig) {
+      DeviceAI.configure(envConfig);
+      console.log('  ✅ Configuration loaded from environment variables');
+      console.log('  🔑 Endpoint:', envConfig.endpoint.replace(/https:\/\/([^.]+)/, 'https://$1***'));
+    } else {
+      // Fallback to test configuration (for demo purposes)
+      DeviceAI.configure({
+        apiKey: 'test-key-for-demo-purposes',
+        endpoint: 'https://test.openai.azure.com'
+      });
+      console.log('  ✅ Test configuration applied (use .env for real credentials)');
+    }
     console.log('');
 
     // Test 5: Query Device Info
@@ -114,10 +158,22 @@ async function runStandaloneDemo() {
     console.log('  • Performance improvement suggestions');
     console.log('  • Natural language device queries');
     console.log('  • Azure OpenAI integration capability');
+    console.log('  • Secure credential management');
+
+    // Clean up temporary file
+    if (fs.existsSync(tempReactNativeFile)) {
+      fs.unlinkSync(tempReactNativeFile);
+    }
 
   } catch (error) {
     console.error('❌ Error during testing:', error.message);
     console.error('Stack:', error.stack);
+    
+    // Clean up temporary file
+    if (fs.existsSync(tempReactNativeFile)) {
+      fs.unlinkSync(tempReactNativeFile);
+    }
+    
     process.exit(1);
   }
 }
