@@ -35,7 +35,8 @@
   "devDependencies": {
     "eslint": "^8.0.0",
     "eslint-plugin-react-native": "^4.1.0",
-    "jest": "^29.0.0"
+    "jest": "^29.7.0",
+    "react-native": "^0.81.1"
   },
   "codegenConfig": {
     "name": "DeviceAISpec",
@@ -58,15 +59,23 @@
   },
   "homepage": "https://github.com/anupriya13/react-native-device-ai#readme",
   "jest": {
-    "setupFilesAfterEnv": ["<rootDir>/jest.setup.js"],
-    "testMatch": ["**/__tests__/**/*.test.js"],
+    "setupFilesAfterEnv": [
+      "<rootDir>/jest.setup.js"
+    ],
+    "testMatch": [
+      "**/__tests__/**/*.test.js"
+    ],
     "collectCoverageFrom": [
       "src/**/*.js",
       "index.js",
       "!src/**/*.test.js"
     ],
     "coverageDirectory": "coverage",
-    "coverageReporters": ["text", "lcov", "html"],
+    "coverageReporters": [
+      "text",
+      "lcov",
+      "html"
+    ],
     "testEnvironment": "node"
   }
 }

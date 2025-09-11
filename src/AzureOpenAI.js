@@ -61,6 +61,27 @@ class AzureOpenAI {
   }
 
   /**
+   * Generate a custom one-liner response based on user's prompt and device data
+   * @param {string} userPrompt - User's question about their device
+   * @param {Object} relevantData - Device data relevant to the prompt
+   * @returns {Promise<string>} AI-generated one-liner response
+   */
+  async generateCustomResponse(userPrompt, relevantData) {
+    if (!this.isConfigured()) {
+      throw new Error('Azure OpenAI not configured. Call setConfig() first.');
+    }
+
+    try {
+      const prompt = this._buildCustomPrompt(userPrompt, relevantData);
+      const response = await this._makeAPIRequest(prompt, { maxTokens: 100 });
+      return this._parseResponse(response);
+    } catch (error) {
+      console.error('Azure OpenAI API Error:', error.message);
+      throw new Error(`Failed to generate custom response: ${error.message}`);
+    }
+  }
+
+  /**
    * Build prompt based on device data and insight type
    * @private
    */
@@ -78,10 +99,26 @@ class AzureOpenAI {
   }
 
   /**
+   * Build custom prompt for user queries
+   * @param {string} userPrompt - User's question
+   * @param {Object} relevantData - Relevant device data
+   * @returns {string} Formatted prompt for AI
+   * @private
+   */
+  _buildCustomPrompt(userPrompt, relevantData) {
+    return `User Question: "${userPrompt}"
+
+Device Data:
+${JSON.stringify(relevantData, null, 2)}
+
+Instructions: Answer the user's question in ONE SHORT SENTENCE (maximum 20 words) using the provided device data. Be direct, factual, and conversational. Focus only on answering what was asked.`;
+  }
+
+  /**
    * Make API request to Azure OpenAI
    * @private
    */
-  async _makeAPIRequest(prompt) {
+  async _makeAPIRequest(prompt, options = {}) {
     const url = `${this.endpoint}/openai/deployments/gpt-35-turbo/chat/completions?api-version=${this.apiVersion}`;
     
     const headers = {
@@ -93,15 +130,15 @@ class AzureOpenAI {
       messages: [
         {
           role: 'system',
-          content: 'You are a helpful device optimization expert. Provide clear, actionable advice in a friendly tone. Keep responses concise but informative.'
+          content: options.systemMessage || 'You are a helpful device optimization expert. Provide clear, actionable advice in a friendly tone. Keep responses concise but informative.'
         },
         {
           role: 'user',
           content: prompt
         }
       ],
-      max_tokens: 500,
-      temperature: 0.7,
+      max_tokens: options.maxTokens || 500,
+      temperature: options.temperature || 0.7,
     };
 
     const response = await axios.post(url, data, { headers, timeout: 30000 });

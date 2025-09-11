@@ -75,7 +75,26 @@ async function runStandaloneDemo() {
     console.log('  ✅ Configuration completed successfully');
     console.log('');
 
-    // Test 5: Display sample data
+    // Test 5: Query Device Info
+    console.log('🤖 Testing queryDeviceInfo()...');
+    const sampleQueries = [
+      'How much battery do I have?',
+      'What is my memory usage?',
+      'How much storage space is left?',
+      'What is my CPU usage?',
+      'Tell me about my device'
+    ];
+
+    for (const query of sampleQueries) {
+      console.log(`  📝 Query: "${query}"`);
+      const queryResult = await DeviceAI.queryDeviceInfo(query);
+      console.log('    ✅ Success:', queryResult.success);
+      console.log('    💬 Response:', queryResult.response);
+      console.log('    🔍 Relevant Data Keys:', Object.keys(queryResult.relevantData));
+      console.log('');
+    }
+
+    // Test 6: Display sample data
     console.log('📊 Sample Device Information:');
     console.log('  Platform:', insights.deviceInfo.platform);
     console.log('  Screen:', insights.deviceInfo.screen.width + 'x' + insights.deviceInfo.screen.height);
@@ -93,6 +112,7 @@ async function runStandaloneDemo() {
     console.log('  • AI-powered insights with fallback support');
     console.log('  • Battery optimization recommendations');
     console.log('  • Performance improvement suggestions');
+    console.log('  • Natural language device queries');
     console.log('  • Azure OpenAI integration capability');
 
   } catch (error) {

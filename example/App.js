@@ -9,6 +9,7 @@ import {
   SafeAreaView,
   ActivityIndicator,
   Platform,
+  TextInput,
 } from 'react-native';
 
 import DeviceAI from 'react-native-device-ai';
@@ -21,8 +22,10 @@ const App = () => {
   const [batteryAdvice, setBatteryAdvice] = useState(null);
   const [performanceTips, setPerformanceTips] = useState(null);
   const [windowsSystemInfo, setWindowsSystemInfo] = useState(null);
+  const [queryResult, setQueryResult] = useState(null);
   const [supportedFeatures, setSupportedFeatures] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [userPrompt, setUserPrompt] = useState('');
 
   useEffect(() => {
     // Configure Azure OpenAI (optional - app works without it but provides basic insights)
@@ -110,6 +113,33 @@ const App = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleQueryDeviceInfo = async () => {
+    if (!userPrompt.trim()) {
+      Alert.alert('Error', 'Please enter a question about your device');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const result = await DeviceAI.queryDeviceInfo(userPrompt.trim());
+      setQueryResult(result);
+      
+      if (result.success) {
+        Alert.alert('Response', result.response);
+      } else {
+        Alert.alert('Error', result.error || 'Failed to process query');
+      }
+    } catch (error) {
+      Alert.alert('Error', error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSelectSamplePrompt = (prompt) => {
+    setUserPrompt(prompt);
   };
 
   const formatDeviceInfo = (deviceInfo) => {
@@ -204,6 +234,55 @@ Processes: ${deviceInfo.windowsSpecific.runningProcesses}`;
           )}
         </View>
 
+        {/* Custom Query Section */}
+        <View style={styles.queryContainer}>
+          <Text style={styles.queryTitle}>🤖 Ask About Your Device</Text>
+          <Text style={styles.querySubtitle}>
+            Ask natural language questions about your device
+          </Text>
+          
+          {/* Sample prompts */}
+          <View style={styles.samplePromptsContainer}>
+            <Text style={styles.samplePromptsTitle}>Sample questions:</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.samplePromptsScroll}>
+              {[
+                "How much battery do I have?",
+                "Is my memory usage high?",
+                "How much storage space is left?",
+                "What's my CPU usage?",
+                "Is my device hot?",
+                Platform.OS === 'windows' ? "How many processes are running?" : "What's my screen resolution?"
+              ].map((prompt, index) => (
+                <TouchableOpacity
+                  key={index}
+                  style={styles.samplePromptButton}
+                  onPress={() => handleSelectSamplePrompt(prompt)}
+                >
+                  <Text style={styles.samplePromptText}>{prompt}</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+
+          <TextInput
+            style={styles.promptInput}
+            placeholder="e.g., How much battery do I have left?"
+            value={userPrompt}
+            onChangeText={setUserPrompt}
+            multiline
+            returnKeyType="send"
+            onSubmitEditing={handleQueryDeviceInfo}
+          />
+          
+          <TouchableOpacity
+            style={[styles.button, styles.queryButton]}
+            onPress={handleQueryDeviceInfo}
+            disabled={loading || !userPrompt.trim()}
+          >
+            <Text style={styles.buttonText}>Ask Device AI</Text>
+          </TouchableOpacity>
+        </View>
+
         {loading && (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color="#007AFF" />
@@ -258,6 +337,27 @@ Processes: ${deviceInfo.windowsSpecific.runningProcesses}`;
                 • {rec}
               </Text>
             ))}
+          </View>
+        )}
+
+        {/* Query Result Display */}
+        {queryResult && queryResult.success && (
+          <View style={styles.resultContainer}>
+            <Text style={styles.resultTitle}>🤖 AI Response</Text>
+            <View style={styles.queryResultContainer}>
+              <Text style={styles.queryPromptText}>
+                Question: "{queryResult.prompt}"
+              </Text>
+              <Text style={styles.queryResponseText}>
+                {queryResult.response}
+              </Text>
+            </View>
+            <Text style={styles.recommendationsTitle}>Relevant Data:</Text>
+            <View style={styles.deviceInfoContainer}>
+              <Text style={styles.deviceInfoText}>
+                {JSON.stringify(queryResult.relevantData, null, 2)}
+              </Text>
+            </View>
           </View>
         )}
 
@@ -384,10 +484,94 @@ const styles = StyleSheet.create({
   windowsButton: {
     backgroundColor: '#0078D4', // Windows blue
   },
+  queryButton: {
+    backgroundColor: '#6C63FF', // Purple for AI
+  },
   buttonText: {
     color: 'white',
     fontSize: 16,
     fontWeight: '600',
+  },
+  queryContainer: {
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 12,
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  queryTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 5,
+    color: '#333',
+  },
+  querySubtitle: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 15,
+  },
+  samplePromptsContainer: {
+    marginBottom: 15,
+  },
+  samplePromptsTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#666',
+    marginBottom: 8,
+  },
+  samplePromptsScroll: {
+    flexGrow: 0,
+  },
+  samplePromptButton: {
+    backgroundColor: '#f0f0f0',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    marginRight: 8,
+    borderWidth: 1,
+    borderColor: '#ddd',
+  },
+  samplePromptText: {
+    fontSize: 12,
+    color: '#333',
+  },
+  promptInput: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 16,
+    minHeight: 44,
+    maxHeight: 100,
+    marginBottom: 12,
+    backgroundColor: '#f9f9f9',
+  },
+  queryResultContainer: {
+    backgroundColor: '#f8f9fa',
+    padding: 15,
+    borderRadius: 8,
+    marginBottom: 15,
+    borderLeftWidth: 4,
+    borderLeftColor: '#6C63FF',
+  },
+  queryPromptText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#495057',
+    marginBottom: 8,
+  },
+  queryResponseText: {
+    fontSize: 16,
+    color: '#333',
+    fontWeight: '500',
+    lineHeight: 22,
   },
   loadingContainer: {
     alignItems: 'center',

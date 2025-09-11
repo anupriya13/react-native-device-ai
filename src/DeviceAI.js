@@ -138,6 +138,57 @@ class DeviceAI {
   }
 
   /**
+   * Query specific device information using natural language prompts
+   * @param {string} prompt - User's question about device information
+   * @returns {Promise<Object>} AI-generated response with relevant device data
+   */
+  async queryDeviceInfo(prompt) {
+    if (!prompt || typeof prompt !== 'string' || prompt.trim().length === 0) {
+      return {
+        success: false,
+        error: 'Please provide a valid prompt question',
+        timestamp: new Date().toISOString(),
+      };
+    }
+
+    try {
+      // Collect comprehensive device data
+      const deviceData = await this._collectDeviceInfo();
+      
+      // Analyze prompt to determine relevant data context
+      const relevantData = this._extractRelevantDataForPrompt(prompt, deviceData);
+      
+      let aiResponse;
+      
+      try {
+        if (AzureOpenAI.isConfigured()) {
+          aiResponse = await AzureOpenAI.generateCustomResponse(prompt, relevantData);
+        } else {
+          aiResponse = this._generateFallbackResponse(prompt, relevantData);
+        }
+      } catch (aiError) {
+        console.log('AI service unavailable, using fallback response:', aiError.message);
+        aiResponse = this._generateFallbackResponse(prompt, relevantData);
+      }
+
+      return {
+        success: true,
+        prompt: prompt.trim(),
+        response: aiResponse,
+        relevantData: relevantData,
+        timestamp: new Date().toISOString(),
+      };
+    } catch (error) {
+      console.error('Error processing device info query:', error);
+      return {
+        success: false,
+        error: error.message,
+        timestamp: new Date().toISOString(),
+      };
+    }
+  }
+
+  /**
    * Collect comprehensive device information
    * Uses native TurboModule when available for enhanced data collection
    * @private
@@ -253,6 +304,141 @@ class DeviceAI {
       storage: deviceData.storage,
       screen: deviceData.screen,
     };
+  }
+
+  /**
+   * Extract relevant device data based on the user's prompt
+   * @param {string} prompt - User's question
+   * @param {Object} deviceData - Complete device information
+   * @returns {Object} Filtered device data relevant to the prompt
+   * @private
+   */
+  _extractRelevantDataForPrompt(prompt, deviceData) {
+    const promptLower = prompt.toLowerCase();
+    const relevantData = {
+      platform: deviceData.platform,
+      version: deviceData.version,
+    };
+
+    // Battery-related queries
+    if (this._isPromptAbout(promptLower, ['battery', 'power', 'charge', 'energy'])) {
+      relevantData.battery = deviceData.battery;
+      relevantData.batteryLevel = deviceData.battery?.level;
+      relevantData.batteryState = deviceData.battery?.state;
+    }
+
+    // CPU-related queries
+    if (this._isPromptAbout(promptLower, ['cpu', 'processor', 'performance', 'speed', 'temperature', 'hot'])) {
+      relevantData.cpu = deviceData.cpu;
+    }
+
+    // Memory-related queries
+    if (this._isPromptAbout(promptLower, ['memory', 'ram', 'usage', 'available'])) {
+      relevantData.memory = deviceData.memory;
+      relevantData.memoryUsagePercentage = deviceData.memoryUsagePercentage;
+    }
+
+    // Storage-related queries
+    if (this._isPromptAbout(promptLower, ['storage', 'disk', 'space', 'capacity', 'free'])) {
+      relevantData.storage = deviceData.storage;
+      relevantData.storageUsagePercentage = deviceData.storageUsagePercentage;
+    }
+
+    // Screen-related queries
+    if (this._isPromptAbout(promptLower, ['screen', 'display', 'resolution', 'size', 'brightness'])) {
+      relevantData.screen = deviceData.screen;
+    }
+
+    // Network-related queries
+    if (this._isPromptAbout(promptLower, ['network', 'wifi', 'internet', 'connection', 'speed'])) {
+      relevantData.network = deviceData.network;
+    }
+
+    // Windows-specific queries
+    if (this._isPromptAbout(promptLower, ['windows', 'os', 'system', 'uptime', 'processes']) && deviceData.windowsSpecific) {
+      relevantData.windowsSpecific = deviceData.windowsSpecific;
+    }
+
+    // If no specific category detected, include basic info
+    if (Object.keys(relevantData).length === 2) { // only platform and version
+      relevantData.summary = {
+        battery: deviceData.battery?.level || 'Unknown',
+        memory: deviceData.memory?.usedPercentage || 'Unknown',
+        storage: deviceData.storage?.usedPercentage || 'Unknown',
+        cpu: deviceData.cpu?.usage || 'Unknown',
+      };
+    }
+
+    return relevantData;
+  }
+
+  /**
+   * Check if prompt is about specific topics
+   * @param {string} prompt - Lowercase prompt
+   * @param {Array<string>} keywords - Keywords to check for
+   * @returns {boolean} True if prompt contains any of the keywords
+   * @private
+   */
+  _isPromptAbout(prompt, keywords) {
+    return keywords.some(keyword => prompt.includes(keyword));
+  }
+
+  /**
+   * Generate fallback response when AI is not available
+   * @param {string} prompt - User's question
+   * @param {Object} relevantData - Device data relevant to the prompt
+   * @returns {string} Simple response based on device data
+   * @private
+   */
+  _generateFallbackResponse(prompt, relevantData) {
+    const promptLower = prompt.toLowerCase();
+
+    // CPU responses (check this first to avoid memory keyword overlap)
+    if (this._isPromptAbout(promptLower, ['cpu', 'processor', 'cores']) && relevantData.cpu) {
+      return `Your CPU is running at ${relevantData.cpu.usage}% usage with ${relevantData.cpu.cores} cores.`;
+    }
+
+    // Battery responses
+    if (this._isPromptAbout(promptLower, ['battery', 'power', 'charge']) && relevantData.battery) {
+      const level = relevantData.battery.level || relevantData.batteryLevel;
+      const state = relevantData.battery.state || relevantData.batteryState;
+      return `Your battery is at ${level}% and ${state === 'charging' ? 'charging' : 'not charging'}.`;
+    }
+
+    // Memory responses
+    if (this._isPromptAbout(promptLower, ['memory', 'ram']) && relevantData.memory) {
+      const used = relevantData.memoryUsagePercentage || relevantData.memory.usedPercentage;
+      return `Your device is using ${used}% of available memory (${relevantData.memory.used} of ${relevantData.memory.total}).`;
+    }
+
+    // Storage responses
+    if (this._isPromptAbout(promptLower, ['storage', 'disk', 'space']) && relevantData.storage) {
+      const used = relevantData.storageUsagePercentage || relevantData.storage.usedPercentage;
+      return `Your storage is ${used}% full with ${relevantData.storage.available} available space.`;
+    }
+
+    // Screen responses
+    if (this._isPromptAbout(promptLower, ['screen', 'display', 'resolution']) && relevantData.screen) {
+      return `Your screen resolution is ${relevantData.screen.width}x${relevantData.screen.height} with scale factor ${relevantData.screen.scale}.`;
+    }
+
+    // Network responses
+    if (this._isPromptAbout(promptLower, ['network', 'wifi', 'internet']) && relevantData.network) {
+      return `You're connected via ${relevantData.network.type} with ${relevantData.network.strength} signal strength.`;
+    }
+
+    // Windows-specific responses
+    if (this._isPromptAbout(promptLower, ['windows', 'os', 'system', 'processes']) && relevantData.windowsSpecific) {
+      return `Your system is running ${relevantData.windowsSpecific.osVersion} with ${relevantData.windowsSpecific.runningProcesses} running processes.`;
+    }
+
+    // General summary response
+    if (relevantData.summary) {
+      return `Your ${relevantData.platform} device: Battery ${relevantData.summary.battery}%, Memory ${relevantData.summary.memory}%, Storage ${relevantData.summary.storage}%, CPU ${relevantData.summary.cpu}%.`;
+    }
+
+    // Default response
+    return `Your ${relevantData.platform} device (version ${relevantData.version}) is currently running.`;
   }
 
   /**

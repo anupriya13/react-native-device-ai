@@ -50,6 +50,15 @@ declare module 'react-native-device-ai' {
     systemMetrics: Record<string, number>;
   }
 
+  export interface DeviceQueryResult {
+    success: boolean;
+    prompt: string;
+    response: string;
+    relevantData: any;
+    timestamp: string;
+    error?: string;
+  }
+
   export interface AzureOpenAIConfig {
     apiKey: string;
     endpoint: string;
@@ -76,6 +85,11 @@ declare module 'react-native-device-ai' {
      * Get performance optimization tips
      */
     getPerformanceTips(): Promise<PerformanceTipsResult>;
+
+    /**
+     * Query specific device information using natural language prompts
+     */
+    queryDeviceInfo(prompt: string): Promise<DeviceQueryResult>;
 
     /**
      * Check if native TurboModule is available
