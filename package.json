@@ -13,7 +13,9 @@
     "codegen": "react-native codegen",
     "codegen-android": "react-native codegen --platform android",
     "codegen-ios": "react-native codegen --platform ios",
-    "codegen-windows": "echo 'Windows codegen is integrated with React Native Windows build process. See windows/DeviceAIFabric/codegen/' && ls -la windows/DeviceAIFabric/codegen/"
+    "codegen-windows": "echo 'Windows codegen is integrated with React Native Windows build process. See windows/DeviceAIFabric/codegen/' && ls -la windows/DeviceAIFabric/codegen/",
+    "init-windows": "npx react-native-windows-init --projectType lib --language cpp",
+    "init-windows-help": "echo 'Use: npm run init-windows' && echo 'This creates a C++ library project for Windows TurboModule development' && echo 'Note: --template cpp-lib option does not exist. Use --projectType lib --language cpp instead'"
   },
   "keywords": [
     "react-native",

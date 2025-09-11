@@ -27,7 +27,7 @@ You need to initialize the example app as a proper React Native Windows project:
 
 ```bash
 # Initialize Windows support with C++ library template
-yarn react-native init-windows --template cpp-lib
+npx react-native-windows-init --projectType lib --language cpp
 ```
 
 ### Step 3: Configure Windows AutoLinking
@@ -99,7 +99,7 @@ This error occurs when:
 npm install react-native-windows
 
 # Initialize Windows support with C++ library template
-yarn react-native init-windows --template cpp-lib
+npx react-native-windows-init --projectType lib --language cpp
 
 # Run the app
 npx react-native run-windows

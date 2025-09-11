@@ -18,7 +18,7 @@ node working-example-demo.js   # Interactive demo with Windows features
 For developing native Windows modules (not apps), use:
 ```bash
 cd react-native-device-ai
-yarn react-native init-windows --template cpp-lib  # Creates Windows library project
+npx react-native-windows-init --projectType lib --language cpp  # Creates Windows library project
 ```
 
 ### Option 3: Windows App with React Native 0.79
@@ -33,7 +33,7 @@ For React Native 0.79, Windows app setup requires Visual Studio:
    ```bash
    cd example
    npm install
-   npx @react-native-community/cli init-windows --template app
+   npx react-native-windows-init --projectType app --language cpp
    ```
 
 3. **Manual Windows Project Creation:**
