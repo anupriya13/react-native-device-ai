@@ -8,7 +8,7 @@
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "windows": "react-native run-windows",
-    "windows-init": "react-native-windows-init --overwrite",
+    "windows-init": "react-native init-windows --template cpp-lib",
     "autolink": "react-native autolink",
     "autolink-windows": "react-native autolink-windows",
     "test": "jest"
@@ -22,9 +22,9 @@
   "license": "MIT",
   "dependencies": {
     "react": "^18.2.0",
-    "react-native": "^0.72.0",
+    "react-native": "^0.79.0",
     "react-native-device-ai": "file:..",
-    "react-native-windows": "^0.72.0"
+    "react-native-windows": "^0.79.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
@@ -34,8 +34,7 @@
   },
   "setupInstructions": {
     "windows": [
-      "Install react-native-windows-init globally: npm install -g react-native-windows-init",
-      "Initialize Windows support: npm run windows-init",
+      "Initialize Windows support: yarn react-native init-windows --template cpp-lib",
       "Run the app: npm run windows"
     ]
   }

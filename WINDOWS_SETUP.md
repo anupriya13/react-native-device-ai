@@ -12,7 +12,7 @@
 2. **React Native Development:**
    - Node.js (v16 or higher)
    - React Native CLI: `npm install -g @react-native-community/cli`
-   - React Native Windows CLI: `npm install -g react-native-windows-init`
+   - Yarn (recommended): `npm install -g yarn`
 
 ## Setting up the Example App for Windows
 
@@ -26,11 +26,8 @@ npm install
 You need to initialize the example app as a proper React Native Windows project:
 
 ```bash
-# Install react-native-windows-init globally if not already installed
-npm install -g react-native-windows-init
-
-# Initialize Windows support for the example app
-npx react-native-windows-init --overwrite
+# Initialize Windows support with C++ library template
+yarn react-native init-windows --template cpp-lib
 ```
 
 ### Step 3: Configure Windows AutoLinking
@@ -101,8 +98,8 @@ This error occurs when:
 # Install react-native-windows
 npm install react-native-windows
 
-# Initialize Windows support
-npx react-native-windows-init --overwrite
+# Initialize Windows support with C++ library template
+yarn react-native init-windows --template cpp-lib
 
 # Run the app
 npx react-native run-windows

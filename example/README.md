@@ -30,17 +30,12 @@ npm run android
 
 **Important**: Windows requires additional setup steps.
 
-#### Step 1: Install Windows CLI Tools
+#### Step 1: Initialize Windows Support
 ```bash
-npm install -g react-native-windows-init
+yarn react-native init-windows --template cpp-lib
 ```
 
-#### Step 2: Initialize Windows Support
-```bash
-npm run windows-init
-```
-
-#### Step 3: Run Windows App
+#### Step 2: Run Windows App
 ```bash
 npm run windows
 ```
@@ -49,14 +44,14 @@ npm run windows
 
 If you get the error: `error: unknown command 'run-windows'`
 
-1. **Install Windows CLI globally:**
+1. **Install React Native Windows:**
    ```bash
-   npm install -g react-native-windows-init
+   npm install react-native-windows
    ```
 
-2. **Initialize Windows platform:**
+2. **Initialize Windows platform with C++ template:**
    ```bash
-   npx react-native-windows-init --overwrite
+   yarn react-native init-windows --template cpp-lib
    ```
 
 3. **Try running again:**
