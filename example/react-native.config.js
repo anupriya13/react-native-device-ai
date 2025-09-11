@@ -10,4 +10,11 @@ module.exports = {
       },
     },
   },
+  project: {
+    windows: {
+      sourceDir: 'windows',
+      solutionFile: 'ReactNativeDeviceAiExample.sln',
+      projectFile: 'ReactNativeDeviceAiExample/ReactNativeDeviceAiExample.vcxproj',
+    },
+  },
 };

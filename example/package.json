@@ -7,11 +7,12 @@
     "start": "react-native start",
     "android": "react-native run-android",
     "ios": "react-native run-ios",
-    "windows": "react-native run-windows",
-    "windows-init": "react-native init-windows --template cpp-lib",
+    "windows": "echo \"Windows setup required. See README.md for React Native 0.79 Windows instructions.\" && react-native run-windows",
+    "windows-init": "echo \"Using: yarn react-native init-windows --template cpp-lib\" && react-native init-windows --template cpp-lib",
+    "demo": "cd .. && node standalone-demo.js",
+    "demo-interactive": "cd .. && node working-example-demo.js",
     "autolink": "react-native autolink",
-    "autolink-windows": "react-native autolink-windows",
-    "test": "jest"
+    "test": "cd .. && npm test"
   },
   "keywords": [
     "react-native",
@@ -21,7 +22,7 @@
   "author": "Anupriya Verma",
   "license": "MIT",
   "dependencies": {
-    "react": "^18.2.0",
+    "react": "^19.0.0",
     "react-native": "^0.79.0",
     "react-native-device-ai": "file:..",
     "react-native-windows": "^0.79.0"
@@ -30,6 +31,7 @@
     "@babel/core": "^7.20.0",
     "@babel/preset-env": "^7.20.0",
     "@babel/runtime": "^7.20.0",
+    "@react-native-community/cli": "latest",
     "metro-react-native-babel-preset": "^0.76.0"
   },
   "setupInstructions": {
@@ -37,5 +39,19 @@
       "Initialize Windows support: yarn react-native init-windows --template cpp-lib",
       "Run the app: npm run windows"
     ]
+  },
+  "codegenConfig": {
+    "windows": {
+      "namespace": "ReactNativeDeviceAiExampleCodegen",
+      "outputDirectory": "windows/ReactNativeDeviceAiExample/codegen",
+      "separateDataTypes": true
+    }
+  },
+  "react-native-windows": {
+    "init-windows": {
+      "name": "ReactNativeDeviceAiExample",
+      "namespace": "ReactNativeDeviceAiExample",
+      "template": "cpp-lib"
+    }
   }
 }

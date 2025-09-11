@@ -28,36 +28,45 @@ npm run android
 
 ### Windows
 
-**Important**: Windows requires additional setup steps.
+**⚠️ React Native 0.79 Windows Setup Notice**
 
-#### Step 1: Initialize Windows Support
+The `NoWindowsConfig` error occurs because React Native 0.79 has changed Windows project initialization. Here are the solutions:
+
+#### Option 1: Quick Demo (Recommended)
+Test all functionality without Windows app setup:
 ```bash
-yarn react-native init-windows --template cpp-lib
+cd ..
+node standalone-demo.js        # Quick functionality test
+node working-example-demo.js   # Interactive demo with Windows features
 ```
 
-#### Step 2: Run Windows App
-```bash
-npm run windows
-```
+#### Option 2: Windows App Development
 
-### Troubleshooting Windows Setup
+For React Native 0.79 Windows apps, you need Visual Studio 2022:
 
-If you get the error: `error: unknown command 'run-windows'`
+1. **Prerequisites:**
+   - Visual Studio 2022 with Windows development workload
+   - Windows 10 SDK (19041.0+)
 
-1. **Install React Native Windows:**
+2. **Initialize Windows (if not done):**
    ```bash
-   npm install react-native-windows
+   yarn react-native init-windows --template cpp-lib  # For module development
+   # OR for apps (requires VS2022 integration)
+   npx @react-native-community/cli init-windows
    ```
 
-2. **Initialize Windows platform with C++ template:**
+3. **Run Windows App:**
    ```bash
-   yarn react-native init-windows --template cpp-lib
+   npm run windows
    ```
 
-3. **Try running again:**
-   ```bash
-   npx react-native run-windows
-   ```
+#### Option 3: Alternative Setup
+
+If automatic initialization fails, use the working demos which include all Windows TurboModule features:
+- Windows system information via WMI
+- Performance counters and monitoring  
+- Native device insights
+- AI-powered recommendations
 
 ## Alternative Testing Methods
 
