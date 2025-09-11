@@ -11,10 +11,6 @@ module.exports = {
           sourceDir: '../android',
           packageImportPath: 'import io.anupriya13.deviceai.DeviceAIPackage;',
         },
-        ios: {
-          sourceDir: '../ios',
-          podspecPath: '../ios/DeviceAI.podspec',
-        },
         windows: {
           sourceDir: '../windows',
           solutionFile: 'DeviceAI.sln',

@@ -10,8 +10,10 @@
     "test:coverage": "jest --coverage",
     "lint": "eslint .",
     "prepare": "npm run lint",
-    "codegen": "react-native codegen --platform windows",
-    "codegen-windows": "react-native codegen --platform windows --outputPath windows/DeviceAIFabric/codegen"
+    "codegen": "react-native codegen",
+    "codegen-android": "react-native codegen --platform android",
+    "codegen-ios": "react-native codegen --platform ios",
+    "codegen-windows": "echo 'Windows codegen is integrated with React Native Windows build process. See windows/DeviceAIFabric/codegen/' && ls -la windows/DeviceAIFabric/codegen/"
   },
   "keywords": [
     "react-native",
@@ -33,6 +35,7 @@
     "axios": "^1.6.0"
   },
   "devDependencies": {
+    "@react-native-community/cli": "latest",
     "eslint": "^8.57.1",
     "eslint-plugin-react-native": "^4.1.0",
     "jest": "^29.7.0",
