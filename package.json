@@ -52,7 +52,7 @@
       "javaPackageName": "com.deviceai"
     },
     "windows": {
-      "namespace": "Microsoft::ReactNative",
+      "namespace": "ReactNativeDeviceAI",
       "outputDir": "windows/DeviceAIFabric/codegen"
     }
   },
