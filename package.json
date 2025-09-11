@@ -42,7 +42,8 @@
     "eslint-plugin-react-native": "^4.1.0",
     "jest": "^29.7.0",
     "react-native": "^0.79.0",
-    "react-native-windows": "^0.79.0"
+    "react-native-windows": "^0.79.0",
+    "react-native-windows-init": "^1.4.79"
   },
   "codegenConfig": {
     "name": "DeviceAISpec",
