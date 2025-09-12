@@ -9,7 +9,8 @@
     "ios": "react-native run-ios",
     "macos": "react-native run-macos --scheme WebviewExample --project-path example/macos",
     "start": "react-native start",
-    "windows": "install-windows-test-app --project-directory example/windows && react-native run-windows --root example --arch x64",    "ci:publish": "npx semantic-release",
+    "windows": "install-windows-test-app --project-directory example/windows && react-native run-windows --root example --arch x64",
+    "ci:publish": "npx semantic-release",
     "lint": "npx tsc --noEmit && npx eslint ./src --ext .ts,.tsx,.js,.jsx",
     "build": "babel --extensions \".ts,.tsx\" --out-dir lib src",
     "test:windows": "yarn jest --setupFiles=./jest-setups/jest.setup.js",
@@ -98,17 +99,17 @@
       }
     },
     "windows": {
-      "namespace": "ReactNativeDeviceAICodegen",
-      "outputDirectory": "windows/ReactNativeDeviceAI/codegen",
+      "namespace": "ReactNativeDeviceAiCodegen",
+      "outputDirectory": "windows/ReactNativeDeviceAi/codegen",
       "separateDataTypes": true
     }
   },
   "packageManager": "yarn@1.22.19",
   "react-native-windows": {
     "init-windows": {
-       "name": "ReactNativeDeviceAI",
-       "namespace": "ReactNativeDeviceAI",
-       "template": "cpp-lib"
+      "name": "ReactNativeDeviceAi",
+      "namespace": "ReactNativeDeviceAi",
+      "template": "cpp-lib"
     }
   }
 }

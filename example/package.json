@@ -7,12 +7,13 @@
     "start": "react-native start",
     "android": "react-native run-android",
     "ios": "react-native run-ios",
-    "windows": "echo \"Windows setup required. See README.md for React Native 0.79 Windows instructions.\" && react-native run-windows",
+    "windows": "npx @react-native-community/cli run-windows",
     "windows-init": "echo \"Using: yarn react-native init-windows --template cpp-lib\" && react-native init-windows --template cpp-lib",
     "demo": "cd .. && node standalone-demo.js",
     "demo-interactive": "cd .. && node working-example-demo.js",
     "autolink": "react-native autolink",
-    "test": "cd .. && npm test"
+    "test": "cd .. && npm test",
+    "test:windows": "jest --config jest.config.windows.js"
   },
   "keywords": [
     "react-native",
@@ -25,14 +26,15 @@
     "react": "^19.0.0",
     "react-native": "^0.79.0",
     "react-native-device-ai": "file:..",
-    "react-native-windows": "^0.79.0"
+    "react-native-windows": "0.0.0-canary.988"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
     "@babel/preset-env": "^7.20.0",
     "@babel/runtime": "^7.20.0",
     "@react-native-community/cli": "latest",
-    "metro-react-native-babel-preset": "^0.76.0"
+    "metro-react-native-babel-preset": "^0.76.0",
+    "@rnx-kit/jest-preset": "^0.1.17"
   },
   "setupInstructions": {
     "windows": [
