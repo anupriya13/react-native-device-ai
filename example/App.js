@@ -10,12 +10,17 @@ import {
   ActivityIndicator,
   Platform,
   TextInput,
+  Dimensions,
+  StatusBar,
 } from 'react-native';
 
 import DeviceAI from 'react-native-device-ai';
 
+const { width, height } = Dimensions.get('window');
+
 /**
- * Example App demonstrating react-native-device-ai usage
+ * Enhanced Example App demonstrating react-native-device-ai usage
+ * Features: Windows TurboModule integration, AI insights, real-time monitoring
  */
 const App = () => {
   const [deviceInsights, setDeviceInsights] = useState(null);
@@ -26,26 +31,49 @@ const App = () => {
   const [supportedFeatures, setSupportedFeatures] = useState([]);
   const [loading, setLoading] = useState(false);
   const [userPrompt, setUserPrompt] = useState('');
+  const [realTimeData, setRealTimeData] = useState(null);
+  const [aiInsightsHistory, setAiInsightsHistory] = useState([]);
+  const [autoRefresh, setAutoRefresh] = useState(false);
 
   useEffect(() => {
-    // Configure Azure OpenAI credentials
-    // IMPORTANT: In production, use secure storage methods
+    // Initialize the module and get basic info
+    initializeModule();
     
-    // Method 1: Environment variables (Node.js/testing)
-    // The module will auto-configure from environment if available
+    // Start auto-refresh if enabled
+    let interval;
+    if (autoRefresh) {
+      interval = setInterval(() => {
+        refreshRealTimeData();
+      }, 5000); // Refresh every 5 seconds
+    }
     
-    // Method 2: Manual configuration (example - use secure storage in production)
-    // DeviceAI.configure({
-    //   apiKey: 'your-azure-openai-api-key',
-    //   endpoint: 'https://your-resource.openai.azure.com'
-    // });
-    
-    // Method 3: Load from secure storage (recommended for production)
-    // configureFromSecureStorage();
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [autoRefresh]);
 
-    // Get supported features
-    setSupportedFeatures(DeviceAI.getSupportedFeatures());
-  }, []);
+  const initializeModule = async () => {
+    try {
+      // Get supported features
+      setSupportedFeatures(DeviceAI.getSupportedFeatures());
+      
+      // Get initial device insights for real-time data
+      await refreshRealTimeData();
+    } catch (error) {
+      console.error('Initialization error:', error);
+    }
+  };
+
+  const refreshRealTimeData = async () => {
+    try {
+      const insights = await DeviceAI.getDeviceInsights();
+      if (insights.success) {
+        setRealTimeData(insights.deviceInfo);
+      }
+    } catch (error) {
+      console.error('Real-time data refresh error:', error);
+    }
+  };
 
   const handleGetDeviceInsights = async () => {
     setLoading(true);
@@ -130,8 +158,16 @@ const App = () => {
       const result = await DeviceAI.queryDeviceInfo(userPrompt.trim());
       setQueryResult(result);
       
+      // Add to AI insights history
       if (result.success) {
-        Alert.alert('Response', result.response);
+        const newInsight = {
+          timestamp: new Date().toLocaleTimeString(),
+          query: userPrompt.trim(),
+          response: result.response,
+          platform: Platform.OS
+        };
+        setAiInsightsHistory(prev => [newInsight, ...prev.slice(0, 4)]); // Keep last 5
+        Alert.alert('AI Response', result.response);
       } else {
         Alert.alert('Error', result.error || 'Failed to process query');
       }
@@ -144,6 +180,10 @@ const App = () => {
 
   const handleSelectSamplePrompt = (prompt) => {
     setUserPrompt(prompt);
+  };
+
+  const toggleAutoRefresh = () => {
+    setAutoRefresh(!autoRefresh);
   };
 
   const formatDeviceInfo = (deviceInfo) => {
@@ -172,32 +212,110 @@ Processes: ${deviceInfo.windowsSpecific.runningProcesses}`;
     return info;
   };
 
+  const getStatusColor = (percentage) => {
+    if (percentage > 80) return '#ff4757';
+    if (percentage > 60) return '#ffa502';
+    return '#2ed573';
+  };
+
+  const renderMetricCard = (title, value, percentage, icon) => (
+    <View style={styles.metricCard}>
+      <Text style={styles.metricIcon}>{icon}</Text>
+      <Text style={styles.metricTitle}>{title}</Text>
+      <Text style={styles.metricValue}>{value}</Text>
+      <View style={styles.progressBar}>
+        <View 
+          style={[
+            styles.progressFill, 
+            { 
+              width: `${Math.min(percentage, 100)}%`, 
+              backgroundColor: getStatusColor(percentage) 
+            }
+          ]} 
+        />
+      </View>
+      <Text style={styles.metricPercentage}>{percentage.toFixed(1)}%</Text>
+    </View>
+  );
+
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="dark-content" backgroundColor="#f5f5f5" />
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <Text style={styles.title}>React Native Device AI</Text>
+        <Text style={styles.title}>🤖 React Native Device AI</Text>
         <Text style={styles.subtitle}>
-          {Platform.OS === 'windows' ? 'Windows TurboModule Demo' : 'AI-Powered Device Insights Demo'}
+          {Platform.OS === 'windows' 
+            ? '🪟 Windows TurboModule with AI Insights' 
+            : '📱 AI-Powered Device Insights'}
         </Text>
+
+        {/* Real-time Metrics Dashboard */}
+        {realTimeData && (
+          <View style={styles.dashboardContainer}>
+            <View style={styles.dashboardHeader}>
+              <Text style={styles.dashboardTitle}>📊 Real-time Metrics</Text>
+              <TouchableOpacity 
+                style={[styles.refreshButton, autoRefresh && styles.refreshButtonActive]}
+                onPress={toggleAutoRefresh}
+              >
+                <Text style={styles.refreshButtonText}>
+                  {autoRefresh ? '⏸️ Live' : '▶️ Auto'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+            
+            <View style={styles.metricsGrid}>
+              {renderMetricCard(
+                'Memory', 
+                `${(realTimeData.memory.used / (1024*1024*1024)).toFixed(1)}GB`, 
+                realTimeData.memory.usedPercentage,
+                '🧠'
+              )}
+              {renderMetricCard(
+                'Storage', 
+                `${(realTimeData.storage.used / (1024*1024*1024*1024)).toFixed(1)}TB`, 
+                realTimeData.storage.usedPercentage,
+                '💾'
+              )}
+              {renderMetricCard(
+                'Battery', 
+                `${realTimeData.battery.level}%`, 
+                realTimeData.battery.level,
+                '🔋'
+              )}
+              {renderMetricCard(
+                'CPU', 
+                `${realTimeData.cpu.usage}%`, 
+                realTimeData.cpu.usage,
+                '⚡'
+              )}
+            </View>
+          </View>
+        )}
 
         {/* Platform and Features Info */}
         <View style={styles.infoContainer}>
-          <Text style={styles.infoTitle}>Platform: {Platform.OS}</Text>
+          <Text style={styles.infoTitle}>🔧 Platform: {Platform.OS}</Text>
           <Text style={styles.infoText}>
-            Native Module: {DeviceAI.isNativeModuleAvailable() ? 'Available' : 'Not Available'}
+            Native Module: {DeviceAI.isNativeModuleAvailable() ? '✅ Available' : '❌ Not Available'}
           </Text>
           <Text style={styles.infoText}>
-            Supported Features: {supportedFeatures.length > 0 ? supportedFeatures.join(', ') : 'Loading...'}
+            Supported Features: {supportedFeatures.length > 0 ? supportedFeatures.length + ' features' : 'Loading...'}
           </Text>
+          {Platform.OS === 'windows' && (
+            <Text style={styles.infoText}>
+              🪟 Windows TurboModule: {DeviceAI.isNativeModuleAvailable() ? 'Active' : 'Inactive'}
+            </Text>
+          )}
         </View>
 
         {/* Azure OpenAI Configuration Status */}
         <View style={styles.warningContainer}>
           <Text style={styles.warningText}>
-            ⚠️ Azure OpenAI configuration required for AI features
+            🤖 Azure OpenAI Integration
           </Text>
           <Text style={styles.warningSubtext}>
-            See CREDENTIALS_GUIDE.md for setup instructions. Module works with fallback insights.
+            Configure in .env for enhanced AI insights. Module works with intelligent fallbacks.
           </Text>
         </View>
 
@@ -238,24 +356,26 @@ Processes: ${deviceInfo.windowsSpecific.runningProcesses}`;
           )}
         </View>
 
-        {/* Custom Query Section */}
+        {/* Custom Query Section with Enhanced AI Interface */}
         <View style={styles.queryContainer}>
-          <Text style={styles.queryTitle}>🤖 Ask About Your Device</Text>
+          <Text style={styles.queryTitle}>🤖 AI Assistant</Text>
           <Text style={styles.querySubtitle}>
             Ask natural language questions about your device
           </Text>
           
           {/* Sample prompts */}
           <View style={styles.samplePromptsContainer}>
-            <Text style={styles.samplePromptsTitle}>Sample questions:</Text>
+            <Text style={styles.samplePromptsTitle}>💡 Try these questions:</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.samplePromptsScroll}>
               {[
                 "How much battery do I have?",
                 "Is my memory usage high?",
                 "How much storage space is left?",
                 "What's my CPU usage?",
-                "Is my device hot?",
-                Platform.OS === 'windows' ? "How many processes are running?" : "What's my screen resolution?"
+                "Is my device running well?",
+                Platform.OS === 'windows' ? "How many processes are running?" : "What's my screen resolution?",
+                "Should I optimize my device?",
+                "Tell me about my system performance"
               ].map((prompt, index) => (
                 <TouchableOpacity
                   key={index}
@@ -283,9 +403,23 @@ Processes: ${deviceInfo.windowsSpecific.runningProcesses}`;
             onPress={handleQueryDeviceInfo}
             disabled={loading || !userPrompt.trim()}
           >
-            <Text style={styles.buttonText}>Ask Device AI</Text>
+            <Text style={styles.buttonText}>🤖 Ask AI Assistant</Text>
           </TouchableOpacity>
         </View>
+
+        {/* AI Insights History */}
+        {aiInsightsHistory.length > 0 && (
+          <View style={styles.historyContainer}>
+            <Text style={styles.historyTitle}>🧠 Recent AI Insights</Text>
+            {aiInsightsHistory.map((insight, index) => (
+              <View key={index} style={styles.historyItem}>
+                <Text style={styles.historyTime}>{insight.timestamp}</Text>
+                <Text style={styles.historyQuery}>Q: {insight.query}</Text>
+                <Text style={styles.historyResponse}>A: {insight.response}</Text>
+              </View>
+            ))}
+          </View>
+        )}
 
         {loading && (
           <View style={styles.loadingContainer}>
@@ -412,60 +546,196 @@ Processes: ${deviceInfo.windowsSpecific.runningProcesses}`;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#f8f9fa',
   },
   scrollContainer: {
-    padding: 20,
+    padding: 16,
+    paddingBottom: 40,
   },
   title: {
-    fontSize: 28,
+    fontSize: 26,
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 8,
-    color: '#333',
+    color: '#2c3e50',
   },
   subtitle: {
     fontSize: 16,
     textAlign: 'center',
     marginBottom: 20,
-    color: '#666',
+    color: '#7f8c8d',
+    fontWeight: '500',
+  },
+  
+  // Dashboard styles
+  dashboardContainer: {
+    backgroundColor: 'white',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  dashboardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  dashboardTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#2c3e50',
+  },
+  refreshButton: {
+    backgroundColor: '#ecf0f1',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#bdc3c7',
+  },
+  refreshButtonActive: {
+    backgroundColor: '#3498db',
+    borderColor: '#2980b9',
+  },
+  refreshButtonText: {
+    fontSize: 12,
+    color: '#2c3e50',
+    fontWeight: '600',
+  },
+  metricsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  metricCard: {
+    width: (width - 60) / 2,
+    backgroundColor: '#f8f9fa',
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 12,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#e9ecef',
+  },
+  metricIcon: {
+    fontSize: 24,
+    marginBottom: 8,
+  },
+  metricTitle: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#6c757d',
+    marginBottom: 4,
+  },
+  metricValue: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#2c3e50',
+    marginBottom: 8,
+  },
+  progressBar: {
+    width: '100%',
+    height: 6,
+    backgroundColor: '#e9ecef',
+    borderRadius: 3,
+    marginBottom: 4,
+  },
+  progressFill: {
+    height: '100%',
+    borderRadius: 3,
+  },
+  metricPercentage: {
+    fontSize: 11,
+    color: '#6c757d',
+    fontWeight: '500',
+  },
+  
+  // History styles
+  historyContainer: {
+    backgroundColor: 'white',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  historyTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#2c3e50',
+    marginBottom: 12,
+  },
+  historyItem: {
+    backgroundColor: '#f8f9fa',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 8,
+    borderLeftWidth: 3,
+    borderLeftColor: '#3498db',
+  },
+  historyTime: {
+    fontSize: 10,
+    color: '#6c757d',
+    marginBottom: 4,
+    fontWeight: '500',
+  },
+  historyQuery: {
+    fontSize: 12,
+    color: '#2c3e50',
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  historyResponse: {
+    fontSize: 12,
+    color: '#34495e',
+    lineHeight: 16,
   },
   infoContainer: {
-    backgroundColor: '#e3f2fd',
-    padding: 15,
-    borderRadius: 8,
+    backgroundColor: '#e8f4f8',
+    padding: 16,
+    borderRadius: 12,
     marginBottom: 20,
     borderWidth: 1,
-    borderColor: '#2196f3',
+    borderColor: '#3498db',
   },
   infoTitle: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#1976d2',
-    marginBottom: 5,
+    fontWeight: '700',
+    color: '#2980b9',
+    marginBottom: 8,
   },
   infoText: {
-    fontSize: 12,
-    color: '#1976d2',
-    marginBottom: 2,
+    fontSize: 13,
+    color: '#2c3e50',
+    marginBottom: 4,
+    fontWeight: '500',
   },
   warningContainer: {
-    backgroundColor: '#fff3cd',
-    padding: 15,
-    borderRadius: 8,
+    backgroundColor: '#fef9e7',
+    padding: 16,
+    borderRadius: 12,
     marginBottom: 20,
     borderWidth: 1,
-    borderColor: '#ffeaa7',
+    borderColor: '#f39c12',
   },
   warningText: {
     fontSize: 14,
-    fontWeight: '600',
-    color: '#856404',
-    marginBottom: 5,
+    fontWeight: '700',
+    color: '#d68910',
+    marginBottom: 6,
   },
   warningSubtext: {
     fontSize: 12,
-    color: '#856404',
+    color: '#b7950b',
+    fontWeight: '500',
   },
   buttonContainer: {
     marginBottom: 20,

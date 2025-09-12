@@ -9,8 +9,9 @@
     "ios": "react-native run-ios",
     "windows": "npx @react-native-community/cli run-windows",
     "windows-init": "echo \"Using: yarn react-native init-windows --template cpp-lib\" && react-native init-windows --template cpp-lib",
-    "demo": "cd .. && node standalone-demo.js",
+    "demo": "node demo-runner.js",
     "demo-interactive": "cd .. && node working-example-demo.js",
+    "demo-windows": "node demo-runner.js",
     "autolink": "react-native autolink",
     "test": "cd .. && npm test",
     "test:windows": "jest --config jest.config.windows.js"
