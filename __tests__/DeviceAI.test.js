@@ -5,6 +5,9 @@
 const DeviceAI = require('../src/DeviceAI.js');
 const AzureOpenAI = require('../src/AzureOpenAI.js');
 
+// Get the mock from the setup file
+const mockReactNative = require('../jest.setup.js');
+
 // Mock the AzureOpenAI module
 jest.mock('../src/AzureOpenAI.js');
 
@@ -92,7 +95,7 @@ describe('DeviceAI Module', () => {
       expect(result.deviceInfo).toBeDefined();
       
       // Restore the original implementation
-      Dimensions.get.mockImplementation(global.mockReactNative.Dimensions.get);
+      Dimensions.get.mockImplementation(mockReactNative.Dimensions.get);
     });
   });
 
@@ -207,7 +210,7 @@ describe('DeviceAI Module', () => {
       // Mock Platform.OS for this test
       jest.doMock('react-native', () => ({
         Platform: { OS: 'android', Version: '14' },
-        Dimensions: global.mockReactNative.Dimensions
+        Dimensions: mockReactNative.Dimensions
       }));
       
       // Clear module cache and re-require
@@ -222,7 +225,7 @@ describe('DeviceAI Module', () => {
       expect(result.deviceInfo.platform).toBe('android');
       
       // Restore original mock
-      jest.doMock('react-native', () => global.mockReactNative);
+      jest.doMock('react-native', () => mockReactNative);
       delete require.cache[require.resolve('../src/DeviceAI.js')];
     });
 
@@ -230,7 +233,7 @@ describe('DeviceAI Module', () => {
       // Mock Platform.OS for this test
       jest.doMock('react-native', () => ({
         Platform: { OS: 'windows', Version: '11' },
-        Dimensions: global.mockReactNative.Dimensions
+        Dimensions: mockReactNative.Dimensions
       }));
       
       // Clear module cache and re-require
@@ -246,7 +249,7 @@ describe('DeviceAI Module', () => {
       expect(result.deviceInfo.windowsSpecific).toBeDefined();
       
       // Restore original mock
-      jest.doMock('react-native', () => global.mockReactNative);
+      jest.doMock('react-native', () => mockReactNative);
       delete require.cache[require.resolve('../src/DeviceAI.js')];
     });
   });
@@ -393,7 +396,7 @@ describe('DeviceAI Module', () => {
       // Mock Platform.OS for this test
       jest.doMock('react-native', () => ({
         Platform: { OS: 'windows', Version: '11' },
-        Dimensions: global.mockReactNative.Dimensions
+        Dimensions: mockReactNative.Dimensions
       }));
       
       // Clear module cache and re-require
@@ -415,7 +418,7 @@ describe('DeviceAI Module', () => {
       }
       
       // Restore original mock
-      jest.doMock('react-native', () => global.mockReactNative);
+      jest.doMock('react-native', () => mockReactNative);
       delete require.cache[require.resolve('../src/DeviceAI.js')];
     });
 

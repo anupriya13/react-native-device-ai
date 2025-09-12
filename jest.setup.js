@@ -3,7 +3,7 @@
  */
 
 // Mock react-native modules for Node.js testing environment
-global.mockReactNative = {
+const mockReactNative = {
   Platform: {
     OS: 'ios',
     Version: '16.0',
@@ -26,8 +26,11 @@ global.mockReactNative = {
   },
 };
 
+// Export for moduleNameMapper
+module.exports = mockReactNative;
+
 // Mock react-native module
-jest.mock('react-native', () => global.mockReactNative);
+jest.mock('react-native', () => mockReactNative);
 
 // Mock axios for Azure OpenAI tests
 jest.mock('axios');
