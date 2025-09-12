@@ -12,7 +12,7 @@
     "windows": "install-windows-test-app --project-directory example/windows && react-native run-windows --root example --arch x64",
     "ci:publish": "npx semantic-release",
     "lint": "npx tsc --noEmit && npx eslint ./src --ext .ts,.tsx,.js,.jsx",
-    "build": "babel --extensions \".ts,.tsx\" --out-dir lib src",
+    "build": "npx babel --extensions \".ts,.tsx\" --out-dir lib src",
     "test:windows": "yarn jest --setupFiles=./jest-setups/jest.setup.js",
     "test": "npx jest",
     "demo": "node standalone-demo.js",
@@ -41,6 +41,7 @@
   "devDependencies": {
     "@babel/cli": "^7.20.0",
     "@babel/core": "^7.20.0",
+    "@babel/preset-typescript": "^7.27.1",
     "@babel/runtime": "^7.20.0",
     "@callstack/react-native-visionos": "0.73.8",
     "@react-native-community/cli": "^15.0.0",
@@ -71,7 +72,9 @@
   },
   "jest": {
     "testEnvironment": "node",
-    "setupFilesAfterEnv": ["./jest.setup.js"],
+    "setupFilesAfterEnv": [
+      "./jest.setup.js"
+    ],
     "transformIgnorePatterns": [
       "node_modules/(?!(axios)/)"
     ],
