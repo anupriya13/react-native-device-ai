@@ -1,15 +1,5 @@
+#include "pch.h"
 #include "ReactNativeDeviceAi.h"
-#include <Windows.h>
-#include <sysinfoapi.h>
-#include <comdef.h>
-#include <Wbemidl.h>
-#include <pdh.h>
-#include <psapi.h>
-#include <setupapi.h>
-#include <powrprof.h>
-#include <winrt/Windows.System.h>
-#include <winrt/Windows.System.Power.h>
-#include <winrt/Windows.Networking.Connectivity.h>
 
 #pragma comment(lib, "wbemuuid.lib")
 #pragma comment(lib, "pdh.lib")

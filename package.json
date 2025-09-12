@@ -36,7 +36,6 @@
     "react-native": ">=0.70.0"
   },
   "dependencies": {
-    "@react-native-windows/cli": "file:C:/Users/anuverma/Desktop/GitHub/react-native-windows/packages/@react-native-windows/cli",
     "axios": "^1.12.0"
   },
   "devDependencies": {
@@ -53,17 +52,17 @@
     "@semantic-release/git": "7.0.16",
     "@types/invariant": "^2.2.30",
     "@types/jest": "^29.5.12",
-    "@types/react": "19.0.0",
+    "@types/react": "18.2.0",
     "@types/selenium-webdriver": "4.0.9",
     "appium": "1.17.0",
     "eslint": "8.57.0",
     "jest": "^29.6.3",
     "prettier": "2.8.8",
-    "react": "19.0.0",
+    "react": "18.2.0",
     "react-native": "0.79.0",
     "react-native-macos": "0.79.0",
     "react-native-test-app": "3.7.2",
-    "react-native-windows": "file:C:/Users/anuverma/Desktop/GitHub/react-native-windows/vnext",
+    "react-native-windows": "0.79.0",
     "selenium-appium": "1.0.2",
     "selenium-webdriver": "4.0.0-alpha.7",
     "semantic-release": "15.13.24",

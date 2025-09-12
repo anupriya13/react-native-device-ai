@@ -6,7 +6,9 @@
 #if __has_include("codegen/NativeDeviceAISpecDataTypes.g.h")
   #include "codegen/NativeDeviceAISpecDataTypes.g.h"
 #endif
-#include "codegen/NativeDeviceAISpecSpec.g.h"
+#if __has_include("codegen/NativeDeviceAISpecSpec.g.h")
+  #include "codegen/NativeDeviceAISpecSpec.g.h"
+#endif
 
 #include "NativeModules.h"
 
