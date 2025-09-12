@@ -9,8 +9,7 @@
     "ios": "react-native run-ios",
     "macos": "react-native run-macos --scheme WebviewExample --project-path example/macos",
     "start": "react-native start",
-    "init-windows": "echo 'Windows project already configured. See REACT_NATIVE_79_WINDOWS_SETUP.md for details.'",
-    "ci:publish": "npx semantic-release",
+    "windows": "install-windows-test-app --project-directory example/windows && react-native run-windows --root example --arch x64",    "ci:publish": "npx semantic-release",
     "lint": "npx tsc --noEmit && npx eslint ./src --ext .ts,.tsx,.js,.jsx",
     "build": "babel --extensions \".ts,.tsx\" --out-dir lib src",
     "test:windows": "yarn jest --setupFiles=./jest-setups/jest.setup.js",
@@ -33,6 +32,7 @@
     "react-native": ">=0.70.0"
   },
   "dependencies": {
+    "@react-native-windows/cli": "file:C:/Users/anuverma/Desktop/GitHub/react-native-windows/packages/@react-native-windows/cli",
     "axios": "^1.6.0"
   },
   "devDependencies": {
@@ -41,7 +41,6 @@
     "@babel/runtime": "^7.20.0",
     "@callstack/react-native-visionos": "0.73.8",
     "@react-native-community/cli": "^15.0.0",
-    "@react-native-windows/cli": "^0.79.3",
     "@react-native/babel-preset": "0.73.21",
     "@react-native/eslint-config": "0.73.2",
     "@react-native/metro-config": "0.73.5",
@@ -58,9 +57,9 @@
     "prettier": "2.8.8",
     "react": "19.0.0",
     "react-native": "0.79.0",
-    "react-native-macos": "0.73.17",
+    "react-native-macos": "0.79.0",
     "react-native-test-app": "3.7.2",
-    "react-native-windows": "0.79.0",
+    "react-native-windows": "file:C:/Users/anuverma/Desktop/GitHub/react-native-windows/vnext",
     "selenium-appium": "1.0.2",
     "selenium-webdriver": "4.0.0-alpha.7",
     "semantic-release": "15.13.24",
@@ -87,7 +86,7 @@
     "react-native.config.js"
   ],
   "codegenConfig": {
-    "name": "DeviceAISpec",
+    "name": "ReactNativeDeviceAI",
     "type": "all",
     "jsSrcsDir": "./src",
     "android": {
@@ -95,22 +94,21 @@
     },
     "ios": {
       "modulesProvider": {
-        "DeviceAI": "ReactNativeDeviceAI"
+        "ReactNativeDeviceAI": "ReactNativeDeviceAI"
       }
     },
     "windows": {
-      "namespace": "ReactNativeDeviceAI",
-      "outputDirectory": "windows/DeviceAIFabric/codegen",
+      "namespace": "ReactNativeDeviceAICodegen",
+      "outputDirectory": "windows/ReactNativeDeviceAI/codegen",
       "separateDataTypes": true
     }
   },
   "packageManager": "yarn@1.22.19",
   "react-native-windows": {
     "init-windows": {
-      "name": "ReactNativeDeviceAI",
-      "namespace": "ReactNativeDeviceAI",
-      "projectType": "lib",
-      "language": "cpp"
+       "name": "ReactNativeDeviceAI",
+       "namespace": "ReactNativeDeviceAI",
+       "template": "cpp-lib"
     }
   }
 }

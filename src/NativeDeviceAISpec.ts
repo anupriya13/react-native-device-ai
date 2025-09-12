@@ -53,4 +53,4 @@ export interface Spec extends TurboModule {
   readonly getSupportedFeatures: () => ReadonlyArray<string>;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('DeviceAI');
+export default TurboModuleRegistry.getEnforcing<Spec>('ReactNativeDeviceAI');
