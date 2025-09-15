@@ -24,6 +24,7 @@
 - 🔄 **Fallback Mode**: Works without AI configuration using built-in insights
 - 🚀 **TurboModule Support**: Modern React Native architecture with enhanced performance
 - 🎯 **TypeScript Ready**: Complete TypeScript definitions included
+- 🔌 **MCP Integration**: Model Context Protocol support for multi-provider AI and enhanced data collection
 
 ## Architecture
 
@@ -59,6 +60,8 @@ react-native link react-native-device-ai
 
 ## Quick Start
 
+### Legacy API (Backward Compatible)
+
 ```javascript
 import DeviceAI from 'react-native-device-ai';
 
@@ -79,25 +82,30 @@ DeviceAI.configure({
 const insights = await DeviceAI.getDeviceInsights();
 console.log(insights.insights); // AI-generated analysis
 console.log(insights.recommendations); // Actionable tips
+```
 
-// Get battery optimization advice
-const batteryAdvice = await DeviceAI.getBatteryAdvice();
-console.log(batteryAdvice.advice); // AI-powered battery tips
+### Enhanced API with MCP Support
 
-// Get performance optimization tips
-const performanceTips = await DeviceAI.getPerformanceTips();
-console.log(performanceTips.tips); // AI-generated performance advice
+```javascript
+import { Enhanced } from 'react-native-device-ai';
 
-// Natural language queries (NEW!)
-const response = await DeviceAI.queryDeviceInfo("How much battery do I have?");
-console.log(response.response); // "Your battery is at 78% and not charging."
+// Initialize MCP for multi-provider AI support
+await Enhanced.initializeMCP();
 
-// Windows-specific enhanced system info (Windows + native module only)
-if (Platform.OS === 'windows' && DeviceAI.isNativeModuleAvailable()) {
-  const windowsInfo = await DeviceAI.getWindowsSystemInfo();
-  console.log(windowsInfo.performanceCounters); // Real-time Windows metrics
-  console.log(windowsInfo.wmiData); // WMI system information
-}
+// Get device insights with multiple AI providers
+const insights = await Enhanced.getDeviceInsights({
+  preferredProviders: ['azure-openai', 'openai', 'anthropic'], // Failover support
+  dataSources: ['system-monitor', 'battery-monitor'] // Enhanced data collection
+});
+
+console.log('AI Provider Used:', insights.providers);
+console.log('Enhanced Device Data:', insights.deviceInfo.mcpData);
+
+// Natural language queries with provider preferences
+const response = await Enhanced.queryDeviceInfo(
+  "How is my battery performing?",
+  { preferredProviders: ['anthropic'] }
+);
 ```
 
 ## 🔐 Credential Configuration
@@ -120,6 +128,46 @@ cp .env.example .env
 - 📁 **Config Files**: Development-only approach
 
 📖 **Complete guide**: [CREDENTIALS_GUIDE.md](./CREDENTIALS_GUIDE.md)
+
+## 🔌 MCP (Model Context Protocol) Integration
+
+The module now supports **MCP** for standardized connections to multiple AI providers and enhanced device data sources.
+
+### MCP Benefits
+
+- **🔄 Multi-Provider AI**: Connect to Azure OpenAI, OpenAI, Anthropic, and local models
+- **📊 Enhanced Data Collection**: Real-time system monitoring via MCP data sources
+- **⚡ Automatic Failover**: Seamless switching between AI providers
+- **💰 Cost Optimization**: Route requests to the most cost-effective provider
+- **🏢 Enterprise Integration**: Connect to MDM and compliance systems
+
+### Quick MCP Setup
+
+```javascript
+import { Enhanced } from 'react-native-device-ai';
+
+// Initialize MCP with default providers
+await Enhanced.initializeMCP();
+
+// Add custom AI provider
+await Enhanced.addMCPServer({
+  name: 'claude-ai',
+  type: 'ai-provider',
+  endpoint: 'https://api.anthropic.com',
+  auth: {
+    apiKey: process.env.ANTHROPIC_API_KEY,
+    type: 'x-api-key'
+  }
+});
+
+// Get insights with provider preferences
+const insights = await Enhanced.getDeviceInsights({
+  preferredProviders: ['claude-ai', 'azure-openai', 'openai'],
+  dataSources: ['system-monitor', 'enterprise-mdm']
+});
+```
+
+📖 **Complete MCP guide**: [MCP_INTEGRATION_GUIDE.md](./MCP_INTEGRATION_GUIDE.md)
 
 ## API Reference
 
@@ -438,13 +486,18 @@ msbuild DeviceAIFabric.vcxproj
 
 ## Roadmap
 
-- [ ] **Real-time Monitoring**: Continuous device monitoring with AI updates
+- [x] **MCP Integration**: Model Context Protocol support for multi-provider AI ✅
+- [x] **Multi-Provider AI**: Support for Azure OpenAI, OpenAI, Anthropic, local models ✅
+- [x] **Enhanced Data Collection**: Real-time monitoring via MCP data sources ✅
+- [ ] **Real-time Streaming**: Live device monitoring with streaming updates
 - [ ] **Multi-language Support**: AI responses in multiple languages
 - [ ] **Detailed Explanations**: Granular recommendations with explanations
 - [ ] **Offline Caching**: Cache last AI insights for offline access
 - [ ] **Push Notifications**: Proactive alerts for device optimization
 - [ ] **iOS/Android Native Modules**: Enhanced platform-specific data collection
 - [ ] **Machine Learning Models**: On-device ML for privacy-focused insights
+- [ ] **IoT Integration**: Connect to IoT sensors and smart home devices
+- [ ] **Edge Computing**: Distributed AI processing for better performance
 
 ## License
 

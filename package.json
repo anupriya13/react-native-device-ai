@@ -17,7 +17,8 @@
     "test": "npx jest",
     "demo": "node standalone-demo.js",
     "demo:windows": "node windows-demo-standalone.js",
-    "demo:interactive": "node working-example-demo.js"
+    "demo:interactive": "node working-example-demo.js",
+    "demo:mcp": "node mcp-demo.js"
   },
   "keywords": [
     "react-native",
