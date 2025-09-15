@@ -12,6 +12,8 @@
     "windows-manual": "cd windows && msbuild ReactNativeDeviceAiExample.sln /p:Configuration=Debug /p:Platform=x64 /m:1 /verbosity:normal",
     "windows-direct": "npx @react-native-community/cli run-windows",
     "windows-init": "echo \"Using: npm run react-native init-windows --template cpp-lib\" && react-native init-windows --template cpp-lib",
+    "fix-autolink": "node fix-windows-autolink.js",
+    "validate-autolink": "node validate-windows-autolink.js",
     "clean-build": "npm run clean-cache && npm run clean-packages",
     "clean-cache": "npx @react-native-community/cli clean && npm cache clean --force",
     "clean-packages": "rimraf node_modules && rimraf windows/x64 && rimraf windows/ReactNativeDeviceAiExample/x64",

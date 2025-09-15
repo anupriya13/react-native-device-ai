@@ -1,3 +1,5 @@
+const path = require('path');
+
 module.exports = {
   dependencies: {
     'react-native-device-ai': {
@@ -12,9 +14,11 @@ module.exports = {
   },
   project: {
     windows: {
-      sourceDir: 'windows',
+      sourceDir: path.resolve(__dirname, 'windows'),
       solutionFile: 'ReactNativeDeviceAiExample.sln',
       projectFile: 'ReactNativeDeviceAiExample/ReactNativeDeviceAiExample.vcxproj',
+      experimentalNuGetDependency: false,
+      useWinUI3: false,
     },
   },
 };
