@@ -134,9 +134,10 @@
     <SkipReactNativeAutolinkCheck>true</SkipReactNativeAutolinkCheck>
   </PropertyGroup>
   <ImportGroup Label="AutolinkedNativeModules">
-    <Import Project="AutolinkedNativeModules.g.props" Condition="Exists('AutolinkedNativeModules.g.props')" />
-  <Import Project="UltimateAutolinkFix.targets" Condition="Exists('UltimateAutolinkFix.targets')" />
-    <Import Project="AutolinkedNativeModules.g.targets" Condition="Exists('AutolinkedNativeModules.g.targets')" />
+    <!-- Only import if not already imported by React Native Windows PropertySheets -->
+    <Import Project="AutolinkedNativeModules.g.props" Condition="Exists('AutolinkedNativeModules.g.props') AND '$(AutolinkedNativeModulesPropsImported)' != 'true'" />
+    <Import Project="UltimateAutolinkFix.targets" Condition="Exists('UltimateAutolinkFix.targets')" />
+    <Import Project="AutolinkedNativeModules.g.targets" Condition="Exists('AutolinkedNativeModules.g.targets') AND '$(AutolinkedNativeModulesTargetsImported)' != 'true'" />
   </ImportGroup>
   <ItemGroup>
   </ItemGroup>

@@ -15,6 +15,8 @@
     "fix-autolink": "node fix-windows-autolink.js",
     "fix-autolink-advanced": "node fix-windows-autolink-advanced.js",
     "fix-autolink-ultimate": "node fix-windows-autolink-ultimate.js",
+    "fix-msbuild-warnings": "node fix-msbuild-warnings.js",
+    "validate-msbuild-fix": "node fix-msbuild-warnings.js",
     "validate-autolink": "node validate-windows-autolink.js",
     "validate-autolink-advanced": "node validate-windows-autolink-advanced.js",
     "validate-autolink-ultimate": "node validate-windows-autolink-ultimate.js",
