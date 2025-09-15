@@ -128,9 +128,9 @@
   <ImportGroup Label="ReactNativeWindowsTargets">
     <Import Project="$(ReactNativeWindowsDir)\PropertySheets\External\Microsoft.ReactNative.Composition.CppApp.targets" Condition="Exists('$(ReactNativeWindowsDir)\PropertySheets\External\Microsoft.ReactNative.Composition.CppApp.targets')" />
   </ImportGroup>
-  <ImportGroup Label="AutolinkedNativeModules">
-    <Import Project="AutolinkedNativeModules.g.props" Condition="Exists('AutolinkedNativeModules.g.props')" />
-    <Import Project="AutolinkedNativeModules.g.targets" Condition="Exists('AutolinkedNativeModules.g.targets')" />
+    <ImportGroup Label="AutolinkedNativeModules">
+    <Import Project="AutolinkedNativeModules.g.props" Condition="Exists('AutolinkedNativeModules.g.props') And '$(DisableAutolinkedNativeModules)' != 'true'" />
+    <Import Project="AutolinkedNativeModules.g.targets" Condition="Exists('AutolinkedNativeModules.g.targets') And '$(DisableAutolinkedNativeModules)' != 'true'" />
   </ImportGroup>
   <ItemGroup>
   </ItemGroup>

@@ -1,4 +1,4 @@
-// Optimized AutolinkedNativeModules.g.h - ReactNativeDeviceAi declarations
+// Ultimate AutolinkedNativeModules.g.h - ReactNativeDeviceAi declarations
 #pragma once
 
 #include <winrt/Microsoft.ReactNative.h>

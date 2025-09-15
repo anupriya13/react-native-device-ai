@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <!-- Optimized AutolinkedNativeModules.g.targets - no conflicts with RN Windows -->
-  <!-- Empty targets file to satisfy autolink requirements without duplication -->
+  <!-- Ultimate AutolinkedNativeModules.g.targets - Empty to prevent conflicts -->
 </Project>
