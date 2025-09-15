@@ -4,7 +4,6 @@
   "description": "Example app demonstrating react-native-device-ai usage",
   "main": "index.js",
   "scripts": {
-    "install": "npm install --no-optional",
     "start": "react-native start",
     "android": "react-native run-android",
     "ios": "react-native run-ios",
