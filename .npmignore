@@ -1,0 +1,73 @@
+# Development files
+__tests__/
+*.test.js
+*.test.ts
+*.spec.js
+*.spec.ts
+jest.setup.js
+.babelrc
+.eslintrc.*
+.prettierrc*
+
+# Demo and example files  
+*-demo.js
+*demo*.js
+working-example-demo.js
+standalone-demo.js
+mcp-demo.js
+os-specific-mcp-demo.js
+windows-demo*.js
+validate-windows-build.js
+
+# Documentation files (keep essential ones)
+*_FIXES.md
+*_GUIDE.md
+*_SETUP.md
+BUILD_HANG_FIX.md
+CREDENTIALS_GUIDE.md
+EXAMPLE_APP_FIXES.md
+MCP_INTEGRATION_GUIDE.md
+OS_SPECIFIC_MCP_GUIDE.md
+REACT_NATIVE_79_WINDOWS_SETUP.md
+TESTING.md
+WINDOWS_*.md
+
+# Example app
+example/
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# Environment files
+.env*
+
+# Build artifacts (keep lib/)
+# lib/ is needed for the package
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+logs/
+*.log
+
+# Temporary files
+tmp/
+temp/
+.tmp/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Git files
+.git/
+.gitignore

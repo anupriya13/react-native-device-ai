@@ -45,18 +45,33 @@ This module uses React Native's modern **TurboModule** architecture for optimal 
 
 ## Installation
 
+Install the package from npm:
+
 ```bash
 npm install react-native-device-ai
+# or
+yarn add react-native-device-ai
 ```
 
 ### Additional Setup
 
 For React Native 0.60+ with autolinking, no additional setup is required.
 
-For older versions:
+For older versions or manual linking:
 ```bash
 react-native link react-native-device-ai
 ```
+
+### Platform Support
+
+| Platform | Support | Native Module | TurboModule |
+|----------|---------|---------------|-------------|
+| iOS      | ✅      | ✅           | ✅          |
+| Android  | ✅      | ✅           | ✅          |
+| Windows  | ✅      | ✅           | ✅          |
+| Web      | ⚠️*     | ❌           | ❌          |
+
+*Web support through JavaScript fallback mode only
 
 ## Quick Start
 
