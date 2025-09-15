@@ -4,11 +4,12 @@
   "description": "Example app demonstrating react-native-device-ai usage",
   "main": "index.js",
   "scripts": {
+    "install": "npm install --no-optional",
     "start": "react-native start",
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "windows": "npx @react-native-community/cli run-windows",
-    "windows-init": "echo \"Using: yarn react-native init-windows --template cpp-lib\" && react-native init-windows --template cpp-lib",
+    "windows-init": "echo \"Using: npm run react-native init-windows --template cpp-lib\" && react-native init-windows --template cpp-lib",
     "demo": "node demo-runner.js",
     "demo-interactive": "cd .. && node working-example-demo.js",
     "demo-windows": "node demo-runner.js",

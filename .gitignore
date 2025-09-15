@@ -54,6 +54,19 @@ local.properties
 *.pdb
 obj/
 bin/
+.vs/
+*.vsidx
+*.vspscc
+*.vsscc
+*.v2
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+*.suo
+*.sdf
+*.opensdf
+*.db
+*.opendb
 
 # Logs
 logs

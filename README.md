@@ -548,6 +548,33 @@ npm install
 npm run android  # or ios, windows
 ```
 
+## Troubleshooting
+
+### EBUSY Error on Windows
+If you encounter EBUSY errors related to `.vsidx` files during `yarn install`:
+
+```bash
+# Solution 1: Use npm instead of yarn
+cd example
+npm install
+
+# Solution 2: Clean Visual Studio cache
+rm -rf windows/.vs
+yarn install
+```
+
+### AutolinkedNativeModules.g.cpp Missing
+If autolink fails with missing AutolinkedNativeModules.g.cpp:
+
+```bash
+# Use npm for more reliable installation
+cd example
+npm install
+npm run windows
+```
+
+**See [EXAMPLE_APP_FIXES.md](EXAMPLE_APP_FIXES.md) for complete troubleshooting guide.**
+
 ## Acknowledgments
 
 - Azure OpenAI for powering intelligent insights
