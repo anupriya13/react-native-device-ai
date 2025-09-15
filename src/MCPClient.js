@@ -3,6 +3,11 @@
  * Provides standardized connections to multiple AI providers and device data sources
  */
 
+import { Platform } from 'react-native';
+import WindowsMCPServer from './WindowsMCPServer';
+import AndroidMCPServer from './AndroidMCPServer';
+import iOSMCPServer from './iOSMCPServer';
+
 /**
  * MCP Client for managing connections to MCP servers and AI providers
  */
@@ -281,11 +286,11 @@ class MCPClient {
   }
 
   /**
-   * Initialize device data sources
+   * Initialize device data sources including OS-specific servers
    * @private
    */
   async _initializeDeviceDataSources() {
-    // System data source
+    // System data source (generic)
     await this.connectServer({
       name: 'system-monitor',
       type: 'data-source',
@@ -293,7 +298,7 @@ class MCPClient {
       auth: { type: 'none' }
     });
 
-    // Battery data source
+    // Battery data source (generic)
     await this.connectServer({
       name: 'battery-monitor',
       type: 'data-source',
@@ -301,13 +306,59 @@ class MCPClient {
       auth: { type: 'none' }
     });
 
-    // Network data source
+    // Network data source (generic)
     await this.connectServer({
       name: 'network-monitor',
       type: 'data-source',
       endpoint: 'local://network',
       auth: { type: 'none' }
     });
+
+    // Initialize OS-specific MCP servers
+    await this._initializeOSSpecificServers();
+  }
+
+  /**
+   * Initialize OS-specific MCP servers based on current platform
+   * @private
+   */
+  async _initializeOSSpecificServers() {
+    try {
+      switch (Platform.OS) {
+        case 'windows':
+          const windowsServer = new WindowsMCPServer();
+          if (windowsServer.isAvailable()) {
+            await windowsServer.connect();
+            this.deviceDataSources.set(windowsServer.name, windowsServer);
+            console.log('Windows-specific MCP server initialized');
+          }
+          break;
+
+        case 'android':
+          const androidServer = new AndroidMCPServer();
+          if (androidServer.isAvailable()) {
+            await androidServer.connect();
+            this.deviceDataSources.set(androidServer.name, androidServer);
+            console.log('Android-specific MCP server initialized');
+          }
+          break;
+
+        case 'ios':
+          const iosServer = new iOSMCPServer();
+          if (iosServer.isAvailable()) {
+            await iosServer.connect();
+            this.deviceDataSources.set(iosServer.name, iosServer);
+            console.log('iOS-specific MCP server initialized');
+          }
+          break;
+
+        default:
+          console.log(`No OS-specific MCP server available for platform: ${Platform.OS}`);
+      }
+    } catch (error) {
+      console.error('Failed to initialize OS-specific MCP servers:', error);
+      // Don't throw error - fallback to generic servers
+    }
   }
 }
 

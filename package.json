@@ -18,7 +18,8 @@
     "demo": "node standalone-demo.js",
     "demo:windows": "node windows-demo-standalone.js",
     "demo:interactive": "node working-example-demo.js",
-    "demo:mcp": "node mcp-demo.js"
+    "demo:mcp": "node mcp-demo.js",
+    "demo:os-specific": "node os-specific-mcp-demo.js"
   },
   "keywords": [
     "react-native",

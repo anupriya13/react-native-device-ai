@@ -82,15 +82,20 @@ class EnhancedDeviceAI {
    * @param {Object} options - Options for insight generation
    * @param {Array} options.preferredProviders - Preferred AI providers in order
    * @param {Array} options.dataSources - Specific data sources to use
+   * @param {boolean} options.includeOSSpecific - Include OS-specific device data
    * @returns {Promise<Object>} Device insights with AI recommendations
    */
   async getDeviceInsights(options = {}) {
     try {
-      const { preferredProviders = [], dataSources = [] } = options;
+      const { 
+        preferredProviders = [], 
+        dataSources = [],
+        includeOSSpecific = true 
+      } = options;
       
       // Collect device data using MCP if available, otherwise use legacy method
       const deviceData = this.mcpEnabled 
-        ? await this._collectEnhancedDeviceInfo(dataSources)
+        ? await this._collectEnhancedDeviceInfo(dataSources, includeOSSpecific)
         : await this._collectDeviceInfo();
       
       let aiInsights;
@@ -123,6 +128,7 @@ class EnhancedDeviceAI {
         recommendations: this._generateBasicRecommendations(deviceData),
         mcpEnabled: this.mcpEnabled,
         providers: this.mcpEnabled ? this.mcpClient.getProviderStatus() : null,
+        osSpecific: includeOSSpecific,
         timestamp: new Date().toISOString(),
       };
     } catch (error) {
@@ -145,7 +151,7 @@ class EnhancedDeviceAI {
       const { preferredProviders = [] } = options;
       
       const deviceData = this.mcpEnabled 
-        ? await this._collectEnhancedDeviceInfo(['battery-monitor', 'system-monitor'])
+        ? await this._collectEnhancedDeviceInfo(['battery-monitor', 'system-monitor'], true)
         : await this._collectDeviceInfo();
       
       const batteryData = this._extractBatteryInfo(deviceData);
@@ -197,7 +203,7 @@ class EnhancedDeviceAI {
       const { preferredProviders = [] } = options;
       
       const deviceData = this.mcpEnabled 
-        ? await this._collectEnhancedDeviceInfo(['system-monitor', 'network-monitor'])
+        ? await this._collectEnhancedDeviceInfo(['system-monitor', 'network-monitor'], true)
         : await this._collectDeviceInfo();
       
       const performanceData = this._extractPerformanceInfo(deviceData);
@@ -256,7 +262,7 @@ class EnhancedDeviceAI {
       // Collect relevant device data
       const deviceData = includeContext 
         ? (this.mcpEnabled 
-            ? await this._collectEnhancedDeviceInfo()
+            ? await this._collectEnhancedDeviceInfo([], true)
             : await this._collectDeviceInfo())
         : {};
       
@@ -373,17 +379,77 @@ class EnhancedDeviceAI {
   }
 
   // Enhanced data collection using MCP
-  async _collectEnhancedDeviceInfo(dataSources = []) {
+  async _collectEnhancedDeviceInfo(dataSources = [], includeOSSpecific = true) {
     const mcpData = await this.mcpClient.collectDeviceData(dataSources);
     const legacyData = await this._collectDeviceInfo();
     
-    // Merge MCP data with legacy data
+    let osSpecificData = {};
+    
+    // Collect OS-specific data if enabled and available
+    if (includeOSSpecific && this.mcpEnabled) {
+      osSpecificData = await this._collectOSSpecificData();
+    }
+    
+    // Merge MCP data with legacy data and OS-specific data
     return {
       ...legacyData,
       mcpData: mcpData.data,
       mcpSources: mcpData.sources,
-      mcpErrors: mcpData.errors
+      mcpErrors: mcpData.errors,
+      osSpecificData: osSpecificData
     };
+  }
+
+  /**
+   * Collect OS-specific device data using appropriate MCP server
+   * @private
+   */
+  async _collectOSSpecificData() {
+    try {
+      const osServerName = this._getOSSpecificServerName();
+      if (!osServerName) {
+        return { available: false, reason: 'No OS-specific server available' };
+      }
+
+      const osServer = this.mcpClient.deviceDataSources.get(osServerName);
+      if (!osServer || !osServer.isConnected()) {
+        return { available: false, reason: `${osServerName} not connected` };
+      }
+
+      const osData = await osServer.collectData();
+      
+      return {
+        available: true,
+        platform: Platform.OS,
+        serverName: osServerName,
+        data: osData.data,
+        timestamp: osData.timestamp
+      };
+    } catch (error) {
+      console.error('Failed to collect OS-specific data:', error);
+      return {
+        available: false,
+        error: error.message,
+        platform: Platform.OS
+      };
+    }
+  }
+
+  /**
+   * Get the appropriate OS-specific server name for current platform
+   * @private
+   */
+  _getOSSpecificServerName() {
+    switch (Platform.OS) {
+      case 'windows':
+        return 'windows-device-server';
+      case 'android':
+        return 'android-device-server';
+      case 'ios':
+        return 'ios-device-server';
+      default:
+        return null;
+    }
   }
 
   // Legacy methods (keeping for backward compatibility)
