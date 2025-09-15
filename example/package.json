@@ -1,0 +1,102 @@
+{
+  "name": "react-native-device-ai-example",
+  "version": "1.0.0",
+  "description": "Example app demonstrating react-native-device-ai usage",
+  "main": "index.js",
+  "scripts": {
+    "start": "react-native start",
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
+    "windows": "node windows-build-monitor.js",
+    "windows-safe": "npm run clean-build && npm run validate-windows && node windows-build-monitor.js",
+    "windows-manual": "cd windows && msbuild ReactNativeDeviceAiExample.sln /p:Configuration=Debug /p:Platform=x64 /m:1 /verbosity:normal",
+    "windows-direct": "node run-windows-direct.js",
+    "windows-init": "echo \"Using: npm run react-native init-windows --template cpp-lib\" && react-native init-windows --template cpp-lib",
+    "fix-autolink": "node fix-windows-autolink.js",
+    "fix-autolink-advanced": "node fix-windows-autolink-advanced.js",
+    "fix-autolink-ultimate": "node fix-windows-autolink-ultimate.js",
+    "fix-msbuild-warnings": "node fix-msbuild-warnings.js",
+    "validate-msbuild-fix": "node fix-msbuild-warnings.js",
+    "validate-autolink": "node validate-windows-autolink.js",
+    "validate-autolink-advanced": "node validate-windows-autolink-advanced.js",
+    "validate-autolink-ultimate": "node validate-windows-autolink-ultimate.js",
+    "clean-build": "npm run clean-cache && npm run clean-packages",
+    "clean-cache": "npx @react-native-community/cli clean && npm cache clean --force",
+    "clean-packages": "rimraf node_modules && rimraf windows/x64 && rimraf windows/ReactNativeDeviceAiExample/x64",
+    "clean-all": "npm run clean-packages && npm install",
+    "validate-windows": "node validate-windows-example-build.js",
+    "demo": "node demo-runner.js",
+    "demo-interactive": "cd .. && node working-example-demo.js",
+    "demo-windows": "node demo-runner.js",
+    "autolink": "react-native autolink",
+    "test": "cd .. && npm test",
+    "test:windows": "jest --config jest.config.windows.js",
+    "windows-package": "node deploy-windows-package.js",
+    "windows-msbuild": "cd windows && msbuild ReactNativeDeviceAiExample.sln /p:Configuration=Debug /p:Platform=x64",
+    "windows-bypass": "npm run fix-windows-config && npm run windows-direct",
+    "fix-windows-config": "node fix-windows-app-config.js",
+    "build-windows-only": "node build-windows-only.js",
+    "windows-force": "npx react-native run-windows --no-autolink --sln \"windows\\\\ReactNativeDeviceAiExample.sln\" --proj \"windows\\\\ReactNativeDeviceAiExample\\\\ReactNativeDeviceAiExample.vcxproj\"",
+    "windows-troubleshoot": "node ultimate-windows-fix.js",
+    "fix-windows-cli": "node ultimate-windows-fix.js",
+    "fix-visual-studio-build": "node fix-visual-studio-build.js",
+    "visual-studio": "node fix-visual-studio-build.js && echo Ready for Visual Studio build!",
+    "windows-fixed": "node run-windows-fixed.js",
+    "windows-simple": "node run-windows-simple.js",
+    "windows-cli": "npx react-native run-windows --no-autolink --logging",
+    "fix-cli-paths": "node fix-react-native-cli-path.js",
+    "fix-feature-flags": "node fix-feature-flags-compatibility.js",
+    "windows-compatible": "npm run fix-feature-flags && npx react-native run-windows --config-name react-native.config.compatibility.js --no-autolink",
+    "validate-feature-flags": "node fix-feature-flags-compatibility.js"
+  },
+  "keywords": [
+    "react-native",
+    "device-ai",
+    "example"
+  ],
+  "author": "Anupriya Verma",
+  "license": "MIT",
+  "dependencies": {
+    "react": "^19.0.0",
+    "react-native": "^0.79.0",
+    "react-native-device-ai": "file:..",
+    "react-native-windows": "0.79.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.20.0",
+    "@babel/preset-env": "^7.20.0",
+    "@babel/runtime": "^7.20.0",
+    "@react-native-community/cli": "latest",
+    "@rnx-kit/jest-preset": "^0.1.17",
+    "@types/react": "^19.0.0",
+    "rimraf": "^5.0.0",
+    "tslib": "^2.6.0",
+    "metro-react-native-babel-preset": "^0.76.0"
+  },
+  "resolutions": {
+    "glob": "^10.0.0",
+    "rimraf": "^5.0.0",
+    "@xmldom/xmldom": "^0.8.0",
+    "inflight": "^1.0.6"
+  },
+  "setupInstructions": {
+    "windows": [
+      "Initialize Windows support: yarn react-native init-windows --template cpp-lib",
+      "Run the app: npm run windows"
+    ]
+  },
+  "codegenConfig": {
+    "windows": {
+      "namespace": "ReactNativeDeviceAiExampleCodegen",
+      "outputDirectory": "windows/ReactNativeDeviceAiExample/codegen",
+      "separateDataTypes": true
+    }
+  },
+  "react-native-windows": {
+    "init-windows": {
+      "name": "ReactNativeDeviceAiExample",
+      "namespace": "ReactNativeDeviceAiExample",
+      "template": "cpp-lib"
+    }
+  }
+}

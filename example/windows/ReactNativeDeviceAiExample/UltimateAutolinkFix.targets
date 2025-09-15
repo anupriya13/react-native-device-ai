@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  
+  <!-- Ultimate fix: Override React Native Windows autolink target to prevent CLI calls -->
+  <Target Name="ReactNativeWindowsAutolink" BeforeTargets="ReactNativeWindowsAutolinkOriginal">
+    <Message Text="Ultimate Autolink Fix: Skipping React Native CLI autolink check" Importance="normal" />
+    <Message Text="Using manual autolink configuration instead of CLI detection" Importance="normal" />
+  </Target>
+  
+  <!-- Disable the original autolink target that causes NoWindowsConfig errors -->
+  <Target Name="ReactNativeWindowsAutolinkOriginal" />
+  
+</Project>
