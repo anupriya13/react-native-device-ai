@@ -1,5 +1,12 @@
 {
   "name": "ReactNativeDeviceAiExample",
   "displayName": "React Native Device AI Example",
-  "version": "1.0.0"
+  "version": "1.0.0",
+  "windows": {
+    "project": {
+      "sourceDir": "windows",
+      "solutionFile": "ReactNativeDeviceAiExample.sln",
+      "projectFile": "ReactNativeDeviceAiExample/ReactNativeDeviceAiExample.vcxproj"
+    }
+  }
 }

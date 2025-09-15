@@ -10,7 +10,7 @@
     "windows": "node windows-build-monitor.js",
     "windows-safe": "npm run clean-build && npm run validate-windows && node windows-build-monitor.js",
     "windows-manual": "cd windows && msbuild ReactNativeDeviceAiExample.sln /p:Configuration=Debug /p:Platform=x64 /m:1 /verbosity:normal",
-    "windows-direct": "npx @react-native-community/cli run-windows",
+    "windows-direct": "node run-windows-direct.js",
     "windows-init": "echo \"Using: npm run react-native init-windows --template cpp-lib\" && react-native init-windows --template cpp-lib",
     "fix-autolink": "node fix-windows-autolink.js",
     "fix-autolink-advanced": "node fix-windows-autolink-advanced.js",
@@ -28,7 +28,15 @@
     "demo-windows": "node demo-runner.js",
     "autolink": "react-native autolink",
     "test": "cd .. && npm test",
-    "test:windows": "jest --config jest.config.windows.js"
+    "test:windows": "jest --config jest.config.windows.js",
+    "windows-package": "node deploy-windows-package.js",
+    "windows-msbuild": "cd windows && msbuild ReactNativeDeviceAiExample.sln /p:Configuration=Debug /p:Platform=x64",
+    "windows-bypass": "npm run fix-windows-config && npm run windows-direct",
+    "fix-windows-config": "node fix-windows-app-config.js",
+    "build-windows-only": "node build-windows-only.js",
+    "windows-force": "npx react-native run-windows --no-autolink --sln \"windows\\\\ReactNativeDeviceAiExample.sln\" --proj \"windows\\\\ReactNativeDeviceAiExample\\\\ReactNativeDeviceAiExample.vcxproj\"",
+    "windows-troubleshoot": "node ultimate-windows-fix.js",
+    "fix-windows-cli": "node ultimate-windows-fix.js"
   },
   "keywords": [
     "react-native",
