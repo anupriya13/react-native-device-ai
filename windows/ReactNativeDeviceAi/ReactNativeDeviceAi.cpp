@@ -130,27 +130,52 @@ ReactNativeDeviceAiCodegen::DeviceAISpecSpec_getDeviceInfo_returnType_battery Re
   try {
     using namespace winrt::Windows::System::Power;
     
-    auto batteryReport = BatteryManager::GetBatteryReport();
-    if (batteryReport) {
-      auto chargeRate = batteryReport.ChargeRateInMilliwatts();
-      auto remainingCapacity = batteryReport.RemainingCapacityInMilliwattHours();
-      auto fullCapacity = batteryReport.FullChargeCapacityInMilliwattHours();
-      
-      if (remainingCapacity && fullCapacity) {
-        batteryInfo.level = (static_cast<double>(remainingCapacity.Value()) / fullCapacity.Value()) * 100.0;
+    // Use Windows Battery API through power manager
+    auto energySaverStatus = PowerManager::EnergySaverStatus();
+    auto batteryStatus = PowerManager::BatteryStatus();
+    auto powerSupplyStatus = PowerManager::PowerSupplyStatus();
+    
+    // Get battery level from power manager
+    if (batteryStatus != BatteryStatus::NotPresent) {
+      // Try to get battery level through power APIs
+      SYSTEM_POWER_STATUS powerStatus;
+      if (GetSystemPowerStatus(&powerStatus)) {
+        if (powerStatus.BatteryLifePercent != 255) {
+          batteryInfo.level = static_cast<double>(powerStatus.BatteryLifePercent);
+        } else {
+          batteryInfo.level = 85.0; // Default when unknown
+        }
+        
+        batteryInfo.isCharging = (powerStatus.ACLineStatus == 1) && 
+                                (powerStatus.BatteryFlag & 8) == 0; // Not unknown and AC connected
       } else {
-        batteryInfo.level = 85.0; // Default
+        batteryInfo.level = 85.0;
+        batteryInfo.isCharging = false;
       }
-      
-      batteryInfo.isCharging = chargeRate.has_value() && chargeRate.value() > 0;
     } else {
       // Desktop/AC powered system - assume no battery or full charge
       batteryInfo.level = 100.0;
       batteryInfo.isCharging = false;
     }
   } catch (...) {
-    batteryInfo.level = 85.0;
-    batteryInfo.isCharging = false;
+    // Fallback using Win32 API
+    try {
+      SYSTEM_POWER_STATUS powerStatus;
+      if (GetSystemPowerStatus(&powerStatus)) {
+        if (powerStatus.BatteryLifePercent != 255) {
+          batteryInfo.level = static_cast<double>(powerStatus.BatteryLifePercent);
+        } else {
+          batteryInfo.level = 85.0;
+        }
+        batteryInfo.isCharging = powerStatus.ACLineStatus == 1;
+      } else {
+        batteryInfo.level = 85.0;
+        batteryInfo.isCharging = false;
+      }
+    } catch (...) {
+      batteryInfo.level = 85.0;
+      batteryInfo.isCharging = false;
+    }
   }
   
   return batteryInfo;
