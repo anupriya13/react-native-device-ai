@@ -44,7 +44,10 @@
     "windows-fixed": "node run-windows-fixed.js",
     "windows-simple": "node run-windows-simple.js",
     "windows-cli": "npx react-native run-windows --no-autolink --logging",
-    "fix-cli-paths": "node fix-react-native-cli-path.js"
+    "fix-cli-paths": "node fix-react-native-cli-path.js",
+    "fix-feature-flags": "node fix-feature-flags-compatibility.js",
+    "windows-compatible": "npm run fix-feature-flags && npx react-native run-windows --config-name react-native.config.compatibility.js --no-autolink",
+    "validate-feature-flags": "node fix-feature-flags-compatibility.js"
   },
   "keywords": [
     "react-native",

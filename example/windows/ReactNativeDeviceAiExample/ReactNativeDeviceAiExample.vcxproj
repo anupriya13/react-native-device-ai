@@ -104,6 +104,7 @@
     <ClInclude Include="AutolinkedNativeModules.g.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="targetver.h" />
+      <ClInclude Include="FeatureFlagsCompatibility.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ReactNativeDeviceAiExample.cpp" />
@@ -148,4 +149,8 @@
     <Error Condition="!Exists('$(ReactNativeWindowsDir)\PropertySheets\External\Microsoft.ReactNative.Composition.CppApp.props')" Text="$([System.String]::Format('$(ErrorText)', '$(ReactNativeWindowsDir)\PropertySheets\External\Microsoft.ReactNative.Composition.CppApp.props'))" />
     <Error Condition="!Exists('$(ReactNativeWindowsDir)\PropertySheets\External\Microsoft.ReactNative.Composition.CppApp.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(ReactNativeWindowsDir)\PropertySheets\External\Microsoft.ReactNative.Composition.CppApp.targets'))" />
   </Target>
+
+  <!-- Feature Flags Compatibility Import -->
+  <Import Project="FeatureFlagsCompatibility.props" Condition="Exists('FeatureFlagsCompatibility.props')" />
+  
 </Project>
