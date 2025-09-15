@@ -48,7 +48,9 @@
     "fix-cli-paths": "node fix-react-native-cli-path.js",
     "fix-feature-flags": "node fix-feature-flags-compatibility.js",
     "windows-compatible": "npm run fix-feature-flags && npx react-native run-windows --config-name react-native.config.compatibility.js --no-autolink",
-    "validate-feature-flags": "node fix-feature-flags-compatibility.js"
+    "validate-feature-flags": "node fix-feature-flags-compatibility.js",
+    "setup-vscode": "echo \"VS Code setup complete! Use Ctrl+Shift+P -> 'Tasks: Run Task' to see available build tasks.\"",
+    "vscode": "echo \"Open with: code react-native-device-ai-example.code-workspace\""
   },
   "keywords": [
     "react-native",

@@ -1,0 +1,49 @@
+{
+    "files.exclude": {
+        "**/node_modules": true,
+        "**/windows/x64": true,
+        "**/windows/**/x64": true,
+        "**/windows/**/Debug": true,
+        "**/windows/**/Release": true,
+        "**/windows/**/bin": true,
+        "**/windows/**/obj": true,
+        "**/.git": false
+    },
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/windows/x64": true,
+        "**/windows/**/x64": true,
+        "**/windows/**/Debug": true,
+        "**/windows/**/Release": true
+    },
+    "typescript.preferences.includePackageJsonAutoImports": "on",
+    "emmet.includeLanguages": {
+        "javascript": "javascriptreact"
+    },
+    "files.associations": {
+        "*.vcxproj": "xml",
+        "*.props": "xml", 
+        "*.targets": "xml",
+        "*.vcxproj.filters": "xml",
+        "*.sln": "text",
+        "*.config": "xml"
+    },
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": "explicit"
+    },
+    "terminal.integrated.defaultProfile.windows": "Command Prompt",
+    "terminal.integrated.profiles.windows": {
+        "Command Prompt": {
+            "path": "cmd.exe",
+            "args": []
+        },
+        "PowerShell": {
+            "path": "powershell.exe",
+            "args": []
+        }
+    },
+    "react-native-tools.projectRoot": "${workspaceFolder}",
+    "react-native-tools.showInternalLogs": true,
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+    "msbuild-project-file-tools.logging.verbosity": "Normal"
+}

@@ -1,0 +1,115 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build Windows (No Autolink)",
+            "type": "shell",
+            "command": "cd windows && msbuild ReactNativeDeviceAiExample.sln /p:Configuration=Debug /p:Platform=x64 /m:1 /verbosity:normal",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": [
+                "$msCompile"
+            ],
+            "detail": "Build React Native Windows app without autolink"
+        },
+        {
+            "label": "Start Metro",
+            "type": "shell",
+            "command": "npm start",
+            "isBackground": true,
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "new"
+            },
+            "problemMatcher": {
+                "pattern": {
+                    "regexp": "^(.*)$",
+                    "file": 1,
+                    "location": 2,
+                    "message": 3
+                },
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": "Welcome to Metro",
+                    "endsPattern": "Metro waiting on"
+                }
+            },
+            "detail": "Start Metro bundler for React Native"
+        },
+        {
+            "label": "Validate Windows Build",
+            "type": "shell",
+            "command": "npm run validate-autolink-fixes",
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "detail": "Validate Windows build configuration"
+        },
+        {
+            "label": "Build and Run Windows",
+            "type": "shell",
+            "command": "npm run windows",
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "detail": "Build and run Windows app with monitoring"
+        },
+        {
+            "label": "Quick Build (MSBuild)",
+            "type": "shell",
+            "command": "npm run windows-manual",
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "detail": "Fast MSBuild without CLI overhead"
+        },
+        {
+            "label": "Force Windows CLI",
+            "type": "shell",
+            "command": "npm run windows-force",
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "detail": "Use React Native CLI with explicit paths (no autolink)"
+        },
+        {
+            "label": "Clean and Rebuild",
+            "type": "shell",
+            "command": "npm run clean-build && npm run windows-manual",
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "detail": "Clean cache and packages, then rebuild"
+        }
+    ]
+}
