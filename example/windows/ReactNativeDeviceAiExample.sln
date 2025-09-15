@@ -8,6 +8,7 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ReactNativeDeviceAiExample", "ReactNativeDeviceAiExample\ReactNativeDeviceAiExample.vcxproj", "{2AB167A1-C158-4721-B131-093D7987CEA9}"
 	ProjectSection(ProjectDependencies) = postProject
 		{F7D32BD0-2749-483E-9A0D-1635EF7E3136} = {F7D32BD0-2749-483E-9A0D-1635EF7E3136}
+		{8D427E1F-1E62-4E19-BB90-8CFDB762014D} = {8D427E1F-1E62-4E19-BB90-8CFDB762014D}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Folly", "..\..\node_modules\react-native-windows\Folly\Folly.vcxproj", "{A990658C-CE31-4BCC-976F-0FC6B1AF693D}"
@@ -34,6 +35,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Mso", "..\..\node_modules\react-native-windows\Mso\Mso.vcxitems", "{84E05BFA-CBAF-4F0D-BFB6-4CE85742A57E}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Include", "..\..\node_modules\react-native-windows\include\Include.vcxitems", "{EF074BA1-2D54-4D49-A28E-5E040B47CD2E}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ReactNativeDeviceAi", "..\..\windows\ReactNativeDeviceAi\ReactNativeDeviceAi.vcxproj", "{8D427E1F-1E62-4E19-BB90-8CFDB762014D}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -154,6 +157,18 @@ Global
 		{14B93DC8-FD93-4A6D-81CB-8BC96644501C}.Release|x86.ActiveCfg = Release|Win32
 		{14B93DC8-FD93-4A6D-81CB-8BC96644501C}.Release|x86.Build.0 = Release|Win32
 		{14B93DC8-FD93-4A6D-81CB-8BC96644501C}.Release|x86.Deploy.0 = Release|Win32
+		{8D427E1F-1E62-4E19-BB90-8CFDB762014D}.Debug|x64.ActiveCfg = Debug|x64
+		{8D427E1F-1E62-4E19-BB90-8CFDB762014D}.Debug|x64.Build.0 = Debug|x64
+		{8D427E1F-1E62-4E19-BB90-8CFDB762014D}.Debug|x86.ActiveCfg = Debug|Win32
+		{8D427E1F-1E62-4E19-BB90-8CFDB762014D}.Debug|x86.Build.0 = Debug|Win32
+		{8D427E1F-1E62-4E19-BB90-8CFDB762014D}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{8D427E1F-1E62-4E19-BB90-8CFDB762014D}.Debug|ARM64.Build.0 = Debug|ARM64
+		{8D427E1F-1E62-4E19-BB90-8CFDB762014D}.Release|x64.ActiveCfg = Release|x64
+		{8D427E1F-1E62-4E19-BB90-8CFDB762014D}.Release|x64.Build.0 = Release|x64
+		{8D427E1F-1E62-4E19-BB90-8CFDB762014D}.Release|x86.ActiveCfg = Release|Win32
+		{8D427E1F-1E62-4E19-BB90-8CFDB762014D}.Release|x86.Build.0 = Release|Win32
+		{8D427E1F-1E62-4E19-BB90-8CFDB762014D}.Release|ARM64.ActiveCfg = Release|ARM64
+		{8D427E1F-1E62-4E19-BB90-8CFDB762014D}.Release|ARM64.Build.0 = Release|ARM64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

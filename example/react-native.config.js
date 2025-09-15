@@ -4,8 +4,8 @@ module.exports = {
       platforms: {
         windows: {
           sourceDir: '../windows',
-          solutionFile: 'DeviceAIFabric.sln',
-          projectFile: 'DeviceAIFabric.vcxproj',
+          solutionFile: 'ReactNativeDeviceAi.sln',
+          projectFile: 'ReactNativeDeviceAi/ReactNativeDeviceAi.vcxproj',
         },
       },
     },

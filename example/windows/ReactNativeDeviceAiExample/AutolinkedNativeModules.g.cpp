@@ -3,12 +3,16 @@
 #include "pch.h"
 #include "AutolinkedNativeModules.g.h"
 
+// ReactNativeDeviceAi Headers
+#include "winrt/ReactNativeDeviceAi.h"
+
 namespace winrt::Microsoft::ReactNative
 {
 
 void RegisterAutolinkedNativeModulePackages(winrt::Windows::Foundation::Collections::IVector<winrt::Microsoft::ReactNative::IReactPackageProvider> const& packageProviders)
 { 
-    UNREFERENCED_PARAMETER(packageProviders);
+    // ReactNativeDeviceAi TurboModule
+    packageProviders.Append(winrt::ReactNativeDeviceAi::ReactPackageProvider());
 }
 
 }

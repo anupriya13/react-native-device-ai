@@ -9,6 +9,7 @@
     "ios": "react-native run-ios",
     "windows": "npx @react-native-community/cli run-windows",
     "windows-init": "echo \"Using: npm run react-native init-windows --template cpp-lib\" && react-native init-windows --template cpp-lib",
+    "validate-windows": "node validate-windows-example-build.js",
     "demo": "node demo-runner.js",
     "demo-interactive": "cd .. && node working-example-demo.js",
     "demo-windows": "node demo-runner.js",
