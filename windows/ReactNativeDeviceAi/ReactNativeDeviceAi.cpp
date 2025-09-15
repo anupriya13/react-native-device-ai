@@ -131,9 +131,7 @@ ReactNativeDeviceAiCodegen::DeviceAISpecSpec_getDeviceInfo_returnType_battery Re
     using namespace winrt::Windows::System::Power;
     
     // Use Windows Battery API through power manager
-    auto energySaverStatus = PowerManager::EnergySaverStatus();
     auto batteryStatus = PowerManager::BatteryStatus();
-    auto powerSupplyStatus = PowerManager::PowerSupplyStatus();
     
     // Get battery level from power manager
     if (batteryStatus != BatteryStatus::NotPresent) {
@@ -467,12 +465,19 @@ ReactNativeDeviceAiCodegen::DeviceAISpecSpec_getWindowsSystemInfo_returnType_wmi
 std::string ReactNativeDeviceAi::GetOSVersion() noexcept {
   try {
     OSVERSIONINFOEX osInfo;
-    ZeroMemory(&osInfo, sizeof(OSVERSIONINFOEX));
-    osInfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
-    
-    if (GetVersionEx((OSVERSIONINFO*)&osInfo)) {
-      return std::to_string(osInfo.dwMajorVersion) + "." + std::to_string(osInfo.dwMinorVersion) + 
-             "." + std::to_string(osInfo.dwBuildNumber);
+    // Use RtlGetVersion instead of deprecated GetVersionEx
+    typedef NTSTATUS(WINAPI* RtlGetVersionPtr)(PRTL_OSVERSIONINFOW);
+    HMODULE hMod = GetModuleHandle(TEXT("ntdll.dll"));
+    if (hMod) {
+      RtlGetVersionPtr fxPtr = (RtlGetVersionPtr)GetProcAddress(hMod, "RtlGetVersion");
+      if (fxPtr) {
+        RTL_OSVERSIONINFOW rovi = { 0 };
+        rovi.dwOSVersionInfoSize = sizeof(rovi);
+        if (fxPtr(&rovi) == 0) {
+          return std::to_string(rovi.dwMajorVersion) + "." + std::to_string(rovi.dwMinorVersion) + 
+                 "." + std::to_string(rovi.dwBuildNumber);
+        }
+      }
     }
   } catch (...) {
     // Fallback

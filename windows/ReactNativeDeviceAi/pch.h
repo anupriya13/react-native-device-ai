@@ -29,6 +29,7 @@
 #include <psapi.h>
 #include <setupapi.h>
 #include <powrprof.h>
+#include <winternl.h>
 #include <winrt/Windows.System.h>
 #include <winrt/Windows.System.Power.h>
 #include <winrt/Windows.Networking.Connectivity.h>
