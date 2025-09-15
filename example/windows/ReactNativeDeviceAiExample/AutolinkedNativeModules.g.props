@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ProjectReference Include="..\..\windows\ReactNativeDeviceAi\ReactNativeDeviceAi.vcxproj">
+    <ProjectReference Include="..\..\..\windows\ReactNativeDeviceAi\ReactNativeDeviceAi.vcxproj">
       <Project>{8D427E1F-1E62-4E19-BB90-8CFDB762014D}</Project>
       <Name>ReactNativeDeviceAi</Name>
     </ProjectReference>
