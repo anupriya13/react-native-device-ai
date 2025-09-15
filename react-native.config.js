@@ -12,7 +12,7 @@ const project = (() => {
       },
       windows: {
         sourceDir: path.join('example', 'windows'), // Windows project directory
-        solutionFile: path.join('example', 'windows', 'DeviceAIExample.sln'), // Windows solution file
+        solutionFile: path.join('example', 'windows', 'ReactNativeDeviceAiExample.sln'), // Correct solution file name
       },
     });
   } catch (e) {
@@ -32,10 +32,10 @@ module.exports = {
     platforms: {
       windows: {
         sourceDir: 'windows', // Windows implementation directory
-        solutionFile: 'ReactNativeDeviceAI.sln', // Windows solution file
+        solutionFile: 'ReactNativeDeviceAi.sln', // Correct Windows solution file name
         projects: [
           {
-            projectFile: 'ReactNativeDeviceAI/ReactNativeDeviceAI.vcxproj', // Windows project file
+            projectFile: 'ReactNativeDeviceAi/ReactNativeDeviceAi.vcxproj', // Windows project file
             directDependency: true, // Mark as a direct dependency
           },
         ],

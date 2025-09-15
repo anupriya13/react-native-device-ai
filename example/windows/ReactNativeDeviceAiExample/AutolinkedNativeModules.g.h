@@ -1,4 +1,4 @@
-// Ultimate AutolinkedNativeModules.g.h - ReactNativeDeviceAi declarations
+// Auto-generated autolinked native modules header
 #pragma once
 
 #include <winrt/Microsoft.ReactNative.h>

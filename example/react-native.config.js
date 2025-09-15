@@ -14,10 +14,10 @@ module.exports = {
     },
   },
   
-  // Project configuration - corrected paths to prevent duplication
+  // Project configuration - follows Microsoft's React Native Windows documentation
   project: {
     windows: {
-      sourceDir: './windows',  // Use relative path to prevent duplication
+      sourceDir: 'windows',
       solutionFile: 'ReactNativeDeviceAiExample.sln',
       projectFile: 'ReactNativeDeviceAiExample/ReactNativeDeviceAiExample.vcxproj',
       experimentalNuGetDependency: false,

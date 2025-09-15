@@ -1,10 +1,3 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Visual Studio Compatible AutolinkedNativeModules.g.targets -->
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
-    <!-- Prevent duplicate imports -->
-    <AutolinkedNativeModulesTargetsImported>true</AutolinkedNativeModulesTargetsImported>
-  </PropertyGroup>
-  <!-- Empty targets file to prevent PropertySheet conflicts in Visual Studio -->
-  <!-- This prevents duplicate import warnings during Visual Studio builds -->
 </Project>
