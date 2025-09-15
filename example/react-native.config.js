@@ -14,31 +14,28 @@ module.exports = {
     },
   },
   
-  // Project configuration - enhanced for CLI detection
+  // Project configuration - corrected paths to prevent duplication
   project: {
     windows: {
-      sourceDir: path.resolve(__dirname, 'windows'),
+      sourceDir: './windows',  // Use relative path to prevent duplication
       solutionFile: 'ReactNativeDeviceAiExample.sln',
       projectFile: 'ReactNativeDeviceAiExample/ReactNativeDeviceAiExample.vcxproj',
       experimentalNuGetDependency: false,
       useWinUI3: false,
-      // Additional properties to help CLI detection
+      // Additional properties for better CLI detection
       projectName: 'ReactNativeDeviceAiExample',
-      projectGuid: '{416476D5-974A-4EE3-8B85-4E2CFAA0C094}',
+      projectGuid: '{2AB167A1-C158-4721-B131-093D7987CEA9}',
       projectLang: 'cpp',
     },
   },
   
-  // Explicit platform support
+  // Platform configuration
   platforms: {
     windows: {
       npmPackageName: 'react-native-windows',
     },
   },
   
-  // Assets and additional config
+  // Assets configuration
   assets: ['./assets/'],
-  
-  // Commands configuration (optional)
-  // commands: require('./node_modules/react-native-windows/lib/commands').commands,
 };
