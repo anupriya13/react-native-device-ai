@@ -38,7 +38,7 @@ try {
   const propsPath = path.join(__dirname, 'windows', 'ReactNativeDeviceAiExample', 'AutolinkedNativeModules.g.props');
   const propsContent = fs.readFileSync(propsPath, 'utf8');
   
-  if (propsContent.includes('..\\..\\windows\\ReactNativeDeviceAi\\ReactNativeDeviceAi.vcxproj')) {
+  if (propsContent.includes('..\\..\\..\\windows\\ReactNativeDeviceAi\\ReactNativeDeviceAi.vcxproj')) {
     checks.push({ name: 'AutolinkedNativeModules.g.props path', status: '✅ PASS' });
   } else {
     checks.push({ name: 'AutolinkedNativeModules.g.props path', status: '❌ FAIL' });
