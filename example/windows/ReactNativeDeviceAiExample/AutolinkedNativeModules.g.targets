@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <!-- Ultimate AutolinkedNativeModules.g.targets - Empty to prevent conflicts -->
+<!-- Visual Studio Compatible AutolinkedNativeModules.g.targets -->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- Empty targets file to prevent PropertySheet conflicts in Visual Studio -->
+  <!-- This prevents duplicate import warnings during Visual Studio builds -->
 </Project>

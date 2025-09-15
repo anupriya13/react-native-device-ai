@@ -36,7 +36,9 @@
     "build-windows-only": "node build-windows-only.js",
     "windows-force": "npx react-native run-windows --no-autolink --sln \"windows\\\\ReactNativeDeviceAiExample.sln\" --proj \"windows\\\\ReactNativeDeviceAiExample\\\\ReactNativeDeviceAiExample.vcxproj\"",
     "windows-troubleshoot": "node ultimate-windows-fix.js",
-    "fix-windows-cli": "node ultimate-windows-fix.js"
+    "fix-windows-cli": "node ultimate-windows-fix.js",
+    "fix-visual-studio-build": "node fix-visual-studio-build.js",
+    "visual-studio": "node fix-visual-studio-build.js && echo Ready for Visual Studio build!"
   },
   "keywords": [
     "react-native",
