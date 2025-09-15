@@ -89,6 +89,7 @@ function startBuild() {
 }
 
 function launchApp() {
+  const fs = require('fs');
   console.log('🚀 Attempting to launch app...');
   
   // Look for the built package

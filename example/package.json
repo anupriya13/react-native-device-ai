@@ -38,7 +38,11 @@
     "windows-troubleshoot": "node ultimate-windows-fix.js",
     "fix-windows-cli": "node ultimate-windows-fix.js",
     "fix-visual-studio-build": "node fix-visual-studio-build.js",
-    "visual-studio": "node fix-visual-studio-build.js && echo Ready for Visual Studio build!"
+    "visual-studio": "node fix-visual-studio-build.js && echo Ready for Visual Studio build!",
+    "windows-fixed": "node run-windows-fixed.js",
+    "windows-simple": "node run-windows-simple.js",
+    "windows-cli": "npx react-native run-windows --no-autolink --logging",
+    "fix-cli-paths": "node fix-react-native-cli-path.js"
   },
   "keywords": [
     "react-native",
