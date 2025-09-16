@@ -1,0 +1,42 @@
+{
+  "name": "windows-example",
+  "version": "1.0.0",
+  "description": "Simple Windows example app for react-native-device-ai integration testing",
+  "main": "index.js",
+  "scripts": {
+    "start": "react-native start",
+    "windows": "react-native run-windows",
+    "windows-init": "react-native init-windows --template cpp-app",
+    "test": "node test-integration.js",
+    "validate": "node test-integration.js"
+  },
+  "keywords": [
+    "react-native",
+    "windows",
+    "device-ai",
+    "example",
+    "integration-test"
+  ],
+  "author": "Anupriya Verma",
+  "license": "MIT",
+  "dependencies": {
+    "react": "^19.0.0",
+    "react-native": "^0.79.0",
+    "react-native-device-ai": "1.0.0",
+    "react-native-windows": "0.79.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.20.0",
+    "@babel/preset-env": "^7.20.0",
+    "@babel/runtime": "^7.20.0",
+    "@react-native-community/cli": "latest",
+    "metro-react-native-babel-preset": "^0.76.0"
+  },
+  "react-native-windows": {
+    "init-windows": {
+      "name": "WindowsExample",
+      "namespace": "WindowsExample",
+      "template": "cpp-app"
+    }
+  }
+}

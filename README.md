@@ -393,7 +393,9 @@ console.log(insights.deviceInfo.windowsSpecific);
 }
 ```
 
-## Example App
+## Example Apps
+
+### Full Example App
 
 The `/example` directory contains a complete React Native app demonstrating all features:
 
@@ -401,6 +403,18 @@ The `/example` directory contains a complete React Native app demonstrating all 
 cd example
 npm install
 npm run android  # or ios, windows
+```
+
+### Simple Windows Example
+
+The `/windows-example` directory contains a minimal Windows app for integration testing:
+
+```bash
+cd windows-example
+npm install
+npm test          # Validate setup
+npm run windows-init  # Initialize Windows support
+npm run windows   # Run on Windows
 ```
 
 ### Example App Features
