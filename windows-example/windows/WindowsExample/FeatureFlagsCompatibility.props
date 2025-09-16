@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  
+  <!-- React Native Windows Feature Flags Compatibility Override -->
+  <!-- This props file resolves feature flag compatibility issues with React Native 0.79.0 -->
+  
+  <PropertyGroup Label="React Native Feature Flags Compatibility">
+    <ReactNativeFeatureFlagsCompatibility>true</ReactNativeFeatureFlagsCompatibility>
+    
+    <!-- Define missing feature flags as preprocessor definitions -->
+    <ClCompile>
+      <PreprocessorDefinitions>
+        RN_FEATURE_FLAG_useEditTextStockAndroidFocusBehavior=0;
+        RN_FEATURE_FLAG_useTextInputCursorBlinkingAPI=0;
+        RN_FEATURE_FLAG_enableTextInputOnKeyPressForDirectManipulation=0;
+        REACT_NATIVE_FEATURE_FLAGS_COMPATIBILITY=1;
+        %(PreprocessorDefinitions)
+      </PreprocessorDefinitions>
+      
+      <!-- Include compatibility header path -->
+      <AdditionalIncludeDirectories>
+        $(MSBuildThisFileDirectory);
+        %(AdditionalIncludeDirectories)
+      </AdditionalIncludeDirectories>
+    </ClCompile>
+  </PropertyGroup>
+  
+  <!-- Ensure compatibility patch is included in build -->
+  <ItemGroup Condition="'$(ReactNativeFeatureFlagsCompatibility)' == 'true'">
+    <ClInclude Include="$(MSBuildThisFileDirectory)FeatureFlagsCompatibility.h" 
+                Condition="Exists('$(MSBuildThisFileDirectory)FeatureFlagsCompatibility.h')" />
+  </ItemGroup>
+  
+</Project>

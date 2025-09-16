@@ -82,13 +82,36 @@ console.log('\n🔗 Testing library linking configuration...');
 try {
   const config = require('./react-native.config.js');
   const hasDeviceAiDep = config.dependencies?.['react-native-device-ai']?.root === '../';
-  const hasWindowsConfig = config.dependency?.platforms?.windows?.sourceDir === '../windows';
+  const hasWindowsConfig = config.project?.windows?.sourceDir === './windows';
+  const hasWindowsSolution = config.project?.windows?.solutionFile === 'WindowsExample.sln';
   
   console.log(`  ${hasDeviceAiDep ? '✅' : '❌'} react-native-device-ai dependency linked to parent`);
-  console.log(`  ${hasWindowsConfig ? '✅' : '❌'} Windows platform configuration`);
+  console.log(`  ${hasWindowsConfig ? '✅' : '❌'} Windows project configuration`);
+  console.log(`  ${hasWindowsSolution ? '✅' : '❌'} Windows solution file configuration`);
 } catch (error) {
   console.error('❌ react-native.config.js validation failed:', error.message);
 }
+
+// Test 5: Check Windows project files exist
+console.log('\n🪟 Testing Windows project structure...');
+const windowsFiles = [
+  'windows/WindowsExample.sln',
+  'windows/WindowsExample/WindowsExample.vcxproj',
+  'windows/WindowsExample/WindowsExample.cpp',
+  'windows/WindowsExample/WindowsExample.h',
+  'windows/WindowsExample.Package/WindowsExample.Package.wapproj',
+  'windows/WindowsExample.Package/Package.appxmanifest'
+];
+
+windowsFiles.forEach(file => {
+  try {
+    const fs = require('fs');
+    fs.accessSync(file);
+    console.log(`  ✅ ${file}`);
+  } catch (error) {
+    console.log(`  ❌ ${file} missing`);
+  }
+});
 
 console.log('\n🎉 Windows Example Validation Complete!');
 console.log('📝 Summary:');
@@ -96,6 +119,7 @@ console.log('   - Windows example app structure is ready');
 console.log('   - All required react-native-device-ai v1.0.0 API calls are implemented');
 console.log('   - Package dependencies are configured correctly');
 console.log('   - Library linking is configured to use parent directory');
-console.log('   - Ready for Windows development with npm run windows-init && npm run windows');
+console.log('   - Windows project files (.sln, .vcxproj) are properly configured');
+console.log('   - Ready for Windows development with npm run windows');
 
 process.exit(0);

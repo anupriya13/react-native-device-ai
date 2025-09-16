@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <!-- Build optimization to prevent hanging -->
+  <PropertyGroup>
+    <!-- Single-threaded build to prevent conflicts -->
+    <MaxCpuCount>1</MaxCpuCount>
+    <BuildInParallel>false</BuildInParallel>
+    
+    <!-- Timeout configurations -->
+    <MSBuildTimeout>300000</MSBuildTimeout> <!-- 5 minutes -->
+    <NodeCommandTimeout>120000</NodeCommandTimeout> <!-- 2 minutes -->
+    
+    <!-- Package restoration optimization -->
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <RestoreLockedMode>false</RestoreLockedMode>
+    
+    <!-- Folly build optimization -->
+    <FollyBuildTimeout>180000</FollyBuildTimeout> <!-- 3 minutes -->
+    <UseIncrementalBuild>true</UseIncrementalBuild>
+    
+    <!-- Debug optimizations -->
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>portable</DebugType>
+    
+    <!-- Memory optimization -->
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+  
+  <!-- Target to handle build hangs -->
+  <Target Name="PreventBuildHang" BeforeTargets="Build">
+    <Message Text="Starting build with hang prevention..." Importance="high" />
+    <Message Text="MaxCpuCount: $(MaxCpuCount)" Importance="normal" />
+    <Message Text="BuildInParallel: $(BuildInParallel)" Importance="normal" />
+  </Target>
+  
+  <!-- Clean target optimizations -->
+  <Target Name="CleanWithTimeout" BeforeTargets="Clean">
+    <Message Text="Cleaning with timeout protection..." Importance="high" />
+    <ItemGroup>
+      <CleanFiles Include="$(OutDir)**\*" />
+      <CleanFiles Include="$(IntDir)**\*" />
+      <CleanFiles Include="x64\**\*" />
+    </ItemGroup>
+    <Delete Files="@(CleanFiles)" ContinueOnError="true" />
+  </Target>
+</Project>

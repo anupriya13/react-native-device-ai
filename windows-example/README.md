@@ -28,12 +28,7 @@ This example provides the simplest possible integration test for the react-nativ
    npm install
    ```
 
-3. **Initialize Windows Support:**
-   ```bash
-   npm run windows-init
-   ```
-
-4. **Run the Example:**
+3. **Run the Example:**
    ```bash
    npm run windows
    ```
