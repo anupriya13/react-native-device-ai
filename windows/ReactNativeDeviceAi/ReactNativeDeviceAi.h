@@ -12,6 +12,21 @@
 
 #include "NativeModules.h"
 
+// Additional Windows headers for system information
+#include <sysinfoapi.h>
+#include <comdef.h>
+#include <Wbemidl.h>
+#include <pdh.h>
+#include <psapi.h>
+#include <setupapi.h>
+#include <powrprof.h>
+#include <winternl.h>
+#include <winrt/Windows.System.h>
+#include <winrt/Windows.System.Power.h>
+#include <winrt/Windows.Networking.Connectivity.h>
+#include <string>
+#include <vector>
+
 namespace winrt::ReactNativeDeviceAiSpecs
 {
 

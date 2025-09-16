@@ -7,7 +7,7 @@
     "start": "react-native start",
     "android": "react-native run-android",
     "ios": "react-native run-ios",
-    "windows": "node windows-build-monitor.js",
+    "windows": "npx @react-native-community/cli run-windows",
     "windows-safe": "npm run clean-build && npm run validate-windows && node windows-build-monitor.js",
     "windows-manual": "cd windows && msbuild ReactNativeDeviceAiExample.sln /p:Configuration=Debug /p:Platform=x64 /m:1 /verbosity:normal",
     "windows-direct": "node run-windows-direct.js",
@@ -99,7 +99,7 @@
     "init-windows": {
       "name": "ReactNativeDeviceAiExample",
       "namespace": "ReactNativeDeviceAiExample",
-      "template": "cpp-lib"
+      "template": "cpp-app"
     }
   }
 }

@@ -12,10 +12,7 @@ const rnwPath = fs.realpathSync(
   path.resolve(require.resolve('react-native-windows/package.json'), '..'),
 );
 
-// [devMode
-const rnwRootNodeModules = path.resolve(rnwPath, '..', 'node_modules');
-const rnwPackages = path.resolve(rnwPath, '..', 'packages');
-// devMode]
+//
 
 /**
  * Metro configuration
@@ -25,9 +22,7 @@ const rnwPackages = path.resolve(rnwPath, '..', 'packages');
  */
 const config = {
   watchFolders: [root,
-    // [devMode
-    rnwPath, rnwRootNodeModules, rnwPackages
-    // devMode]
+    //
   ],
 
   // We need to make sure that only one version is loaded for peerDependencies
@@ -54,9 +49,7 @@ const config = {
       return acc;
     },
     {
-      // [devMode
-      'react-native-windows': rnwPath,
-      // devMode]
+      //
     }
     ),
   },
