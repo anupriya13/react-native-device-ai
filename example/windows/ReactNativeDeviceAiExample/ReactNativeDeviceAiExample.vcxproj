@@ -65,6 +65,8 @@
   </ImportGroup>
   <ImportGroup Label="ReactNativeWindowsPropertySheets">
     <Import Project="$(ReactNativeWindowsDir)\PropertySheets\External\Microsoft.ReactNative.Composition.CppApp.props" />
+    <!-- Fix for Windows build issue with codegen command -->
+    <Import Project="$(SolutionDir)\CodegenFix.props" Condition="Exists('$(SolutionDir)\CodegenFix.props')" />
   </ImportGroup>
   <ItemDefinitionGroup>
     <ClCompile>

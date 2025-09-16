@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+  Fix for Windows build issue with codegen command
+  Overrides the problematic CodegenCommand property that has --yes flag
+-->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <!-- Override the CodegenCommand to remove the problematic --yes flag -->
+    <CodegenCommand>npx @react-native-community/cli codegen-windows</CodegenCommand>
+  </PropertyGroup>
+</Project>

@@ -89,3 +89,13 @@ The Windows solution can now be built in Visual Studio 2022 with:
 - ✅ OS version and build information
 
 The Windows TurboModule now provides comprehensive device insights with real system API integration.
+
+## 🔧 **Codegen Build Fix (New)**
+
+### 11. **Windows Codegen Command Error**
+- **Problem**: `npm ERR! 404 Not Found - GET https://registry.npmjs.org/codegen-windows`
+- **Root Cause**: `--yes` flag in `CodegenCommand` property causes npx to install non-existent package
+- **Fix**: Created `CodegenFix.props` to override the problematic command
+- **Location**: `example/windows/CodegenFix.props`
+- **Test**: Run `npm run test-codegen-fix` in example directory
+- **Documentation**: See `example/CODEGEN_FIX.md` for details

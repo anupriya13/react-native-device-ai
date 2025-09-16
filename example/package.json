@@ -32,6 +32,7 @@
     "autolink": "react-native autolink",
     "test": "cd .. && npm test",
     "test:windows": "jest --config jest.config.windows.js",
+    "test-codegen-fix": "node test-codegen-fix.js",
     "windows-package": "node deploy-windows-package.js",
     "windows-msbuild": "cd windows && msbuild ReactNativeDeviceAiExample.sln /p:Configuration=Debug /p:Platform=x64",
     "windows-bypass": "npm run fix-windows-config && npm run windows-direct",
