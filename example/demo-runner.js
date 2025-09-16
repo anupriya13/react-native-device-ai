@@ -26,9 +26,7 @@ module.exports = {
   View: () => null,
   Text: () => null,
   TouchableOpacity: () => null,
-  SafeAreaView: () => null,
   ScrollView: () => null,
-  ActivityIndicator: () => null,
   TextInput: () => null
 };
 `;
