@@ -1,0 +1,65 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch Windows App (No Autolink)",
+            "type": "node",
+            "request": "launch",
+            "program": "${workspaceFolder}/windows-build-monitor.js",
+            "console": "integratedTerminal",
+            "env": {
+                "NODE_ENV": "development"
+            },
+            "skipFiles": [
+                "<node_internals>/**"
+            ]
+        },
+        {
+            "name": "Debug React Native Windows",
+            "type": "reactnative",
+            "request": "launch",
+            "platform": "windows",
+            "enableDebug": true,
+            "sourceMaps": true,
+            "outDir": "${workspaceFolder}/.vscode/.react"
+        },
+        {
+            "name": "Run Metro Only",
+            "type": "node",
+            "request": "launch",
+            "program": "${workspaceFolder}/node_modules/@react-native-community/cli/build/bin.js",
+            "args": ["start"],
+            "console": "integratedTerminal",
+            "env": {
+                "NODE_ENV": "development"
+            }
+        },
+        {
+            "name": "Validate Configuration",
+            "type": "node",
+            "request": "launch",
+            "program": "${workspaceFolder}/validate-autolink-fixes.js",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Direct MSBuild",
+            "type": "node", 
+            "request": "launch",
+            "program": "${workspaceFolder}/run-windows-direct.js",
+            "console": "integratedTerminal",
+            "env": {
+                "NODE_ENV": "development"
+            }
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Metro + Windows Build",
+            "configurations": [
+                "Run Metro Only",
+                "Launch Windows App (No Autolink)"
+            ],
+            "stopAll": true
+        }
+    ]
+}

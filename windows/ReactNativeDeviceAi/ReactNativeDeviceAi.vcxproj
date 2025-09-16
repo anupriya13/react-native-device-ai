@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- This project was created with react-native-windows 0.0.0-canary.988 -->
+<!-- This project was created with react-native-windows 0.79.0 -->
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(SolutionDir)\ExperimentalFeatures.props" Condition="Exists('$(SolutionDir)\ExperimentalFeatures.props')" />
   <PropertyGroup Label="Globals">
     <CppWinRTOptimized>true</CppWinRTOptimized>
     <MinimalCoreWin>true</MinimalCoreWin>
-    <ProjectGuid>{8D427E1F-1E62-4E19-BB90-8CFDB762014D}</ProjectGuid>
+    <ProjectGuid>{574DDAB1-7EB8-45C8-9399-D73748F91D8B}</ProjectGuid>
     <ProjectName>ReactNativeDeviceAi</ProjectName>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>ReactNativeDeviceAi</RootNamespace>
@@ -77,18 +77,14 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalOptions>%(AdditionalOptions) /bigobj</AdditionalOptions>
       <DisableSpecificWarnings>4453;28204</DisableSpecificWarnings>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINRT_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalUsingDirectories>$(WindowsSDK_WindowsMetadata);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>
-        $(MSBuildThisFileDirectory);
-        $(MSBuildThisFileDirectory)codegen;
-        %(AdditionalIncludeDirectories)
-      </AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>shell32.lib;user32.lib;windowsapp.lib;wbemuuid.lib;pdh.lib;psapi.lib;setupapi.lib;powrprof.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>shell32.lib;user32.lib;windowsapp.lib;%(AdditionalDependenices)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
+      <GenerateWindowsMetadata>true</GenerateWindowsMetadata>
       <ModuleDefinitionFile>ReactNativeDeviceAi.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
@@ -111,8 +107,6 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="codegen\NativeDeviceAISpecDataTypes.g.h" />
-    <ClInclude Include="codegen\NativeDeviceAISpecSpec.g.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ReactNativeDeviceAi.cpp" />
@@ -122,6 +116,7 @@
     <ClCompile Include="ReactPackageProvider.cpp">
       <DependentUpon>ReactPackageProvider.idl</DependentUpon>
     </ClCompile>
+    <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="ReactPackageProvider.idl" />
