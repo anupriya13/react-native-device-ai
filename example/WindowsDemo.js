@@ -11,8 +11,6 @@ import {
   Text,
   TouchableOpacity,
   Alert,
-  SafeAreaView,
-  ActivityIndicator,
   Platform,
 } from 'react-native';
 
@@ -133,7 +131,7 @@ const WindowsDemo = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <Text style={styles.title}>🪟 Windows TurboModule Demo</Text>
         <Text style={styles.subtitle}>
@@ -193,7 +191,6 @@ const WindowsDemo = () => {
 
         {loading && (
           <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#0078D4" />
             <Text style={styles.loadingText}>Processing Windows APIs...</Text>
           </View>
         )}
@@ -326,7 +323,7 @@ const WindowsDemo = () => {
           </Text>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 
