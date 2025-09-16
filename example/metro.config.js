@@ -49,7 +49,8 @@ const config = {
       return acc;
     },
     {
-      //
+      // Map react-native-device-ai to the parent directory
+      'react-native-device-ai': root,
     }
     ),
   },
