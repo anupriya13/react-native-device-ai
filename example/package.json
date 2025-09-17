@@ -62,7 +62,7 @@
   "dependencies": {
     "react": "^19.0.0",
     "react-native": "^0.79.0",
-    "react-native-device-ai": "file:../",
+    "react-native-device-ai": "^2.0.0",
     "react-native-windows": "0.79.0"
   },
   "devDependencies": {

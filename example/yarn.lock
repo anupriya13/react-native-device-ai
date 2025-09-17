@@ -4583,8 +4583,10 @@ react-is@^18.0.0:
   resolved "https://registry.npmjs.org/react-is/-/react-is-18.3.1.tgz"
   integrity sha512-/LLMVyas0ljjAtoYiPqYiL8VWXzUUdThrmU5+n20DZv+a+ClRoevUzw5JxU+Ieh5/c87ytoTBV9G1FiKfNJdmg==
 
-"react-native-device-ai@file:..":
-  version "1.0.0"
+react-native-device-ai@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/react-native-device-ai/-/react-native-device-ai-2.0.0.tgz#924a6affc9cab46e3a1feb5352b6ccab0d20600e"
+  integrity sha512-O1anc4fvqdFGeUW1ASZe7vlHUEHqp0kki5BKSid4oDO9NFufgX6BJcNnESvy4ul1puOQGpiAccDRwst+LzGHiA==
   dependencies:
     "@babel/runtime" "^7.20.0"
     axios "^1.12.0"
