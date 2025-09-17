@@ -44,6 +44,14 @@ const config = {
     // This allows us to use the local version of react-native-blob-util
     path.resolve(__dirname, '../../'),
   ],
+  transformer: {
+    getTransformOptions: async () => ({
+      transform: {
+        experimentalImportSupport: false,
+        inlineRequires: true,
+      },
+    }),
+  },
 };
 
 module.exports = mergeConfig(getDefaultConfig(__dirname), config);
