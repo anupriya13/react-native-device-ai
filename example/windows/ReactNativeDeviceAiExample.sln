@@ -7,6 +7,8 @@ Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "ReactNativeDeviceAiExample.
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ReactNativeDeviceAiExample", "ReactNativeDeviceAiExample\ReactNativeDeviceAiExample.vcxproj", "{2AB167A1-C158-4721-B131-093D7987CEA9}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ReactNativeDeviceAi", "..\node_modules\react-native-device-ai\windows\ReactNativeDeviceAI\ReactNativeDeviceAI.vcxproj", "{8D427E1F-1E62-4E19-BB90-8CFDB762014D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -53,6 +55,18 @@ Global
 		{2AB167A1-C158-4721-B131-093D7987CEA9}.Release|ARM64.ActiveCfg = Release|ARM64
 		{2AB167A1-C158-4721-B131-093D7987CEA9}.Release|ARM64.Build.0 = Release|ARM64
 		{2AB167A1-C158-4721-B131-093D7987CEA9}.Release|ARM64.Deploy.0 = Release|ARM64
+		{8D427E1F-1E62-4E19-BB90-8CFDB762014D}.Debug|x64.ActiveCfg = Debug|x64
+		{8D427E1F-1E62-4E19-BB90-8CFDB762014D}.Debug|x64.Build.0 = Debug|x64
+		{8D427E1F-1E62-4E19-BB90-8CFDB762014D}.Debug|x86.ActiveCfg = Debug|Win32
+		{8D427E1F-1E62-4E19-BB90-8CFDB762014D}.Debug|x86.Build.0 = Debug|Win32
+		{8D427E1F-1E62-4E19-BB90-8CFDB762014D}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{8D427E1F-1E62-4E19-BB90-8CFDB762014D}.Debug|ARM64.Build.0 = Debug|ARM64
+		{8D427E1F-1E62-4E19-BB90-8CFDB762014D}.Release|x64.ActiveCfg = Release|x64
+		{8D427E1F-1E62-4E19-BB90-8CFDB762014D}.Release|x64.Build.0 = Release|x64
+		{8D427E1F-1E62-4E19-BB90-8CFDB762014D}.Release|x86.ActiveCfg = Release|Win32
+		{8D427E1F-1E62-4E19-BB90-8CFDB762014D}.Release|x86.Build.0 = Release|Win32
+		{8D427E1F-1E62-4E19-BB90-8CFDB762014D}.Release|ARM64.ActiveCfg = Release|ARM64
+		{8D427E1F-1E62-4E19-BB90-8CFDB762014D}.Release|ARM64.Build.0 = Release|ARM64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
