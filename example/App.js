@@ -6,8 +6,6 @@ import {
   Text,
   TouchableOpacity,
   Alert,
-  SafeAreaView,
-  ActivityIndicator,
   Platform,
   TextInput,
   Dimensions,
@@ -239,7 +237,7 @@ Processes: ${deviceInfo.windowsSpecific.runningProcesses}`;
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#f5f5f5" />
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <Text style={styles.title}>🤖 React Native Device AI</Text>
@@ -423,7 +421,6 @@ Processes: ${deviceInfo.windowsSpecific.runningProcesses}`;
 
         {loading && (
           <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#007AFF" />
             <Text style={styles.loadingText}>Analyzing device...</Text>
           </View>
         )}
@@ -539,7 +536,7 @@ Processes: ${deviceInfo.windowsSpecific.runningProcesses}`;
           </View>
         )}
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 
