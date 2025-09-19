@@ -41,8 +41,8 @@ const config = {
   watchFolders: [
     // This allows us to use the local version of react-native-windows
     rnwPath,
-    // This allows us to use the local version of react-native-blob-util
-    path.resolve(__dirname, '../../'),
+    // This allows us to use the local version of react-native-device-ai
+    path.resolve(__dirname, '../'),
   ],
   transformer: {
     getTransformOptions: async () => ({
