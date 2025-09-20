@@ -1,6 +1,6 @@
 {
   "name": "react-native-device-ai",
-  "version": "2.1.0",
+  "version": "3.0.0",
   "description": "Cross-platform React Native module that generates AI-powered insights and recommendations about the user's device.",
   "main": "index.js",
   "types": "index.d.ts",

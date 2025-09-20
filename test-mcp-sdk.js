@@ -23,7 +23,7 @@ async function testRealMCPSDK() {
     const client = new Client(
       {
         name: 'react-native-device-ai-test',
-        version: '2.1.0'
+        version: '3.0.0'
       },
       {
         capabilities: {
@@ -57,7 +57,7 @@ async function testRealMCPSDK() {
     console.log('✅ Protocol Version: MCP/1.0');
     console.log('✅ Transport: SSE (Server-Sent Events)');
     console.log('✅ Capabilities: roots, sampling');
-    console.log('✅ Client Info: react-native-device-ai-test v2.1.0');
+    console.log('✅ Client Info: react-native-device-ai-test v3.0.0');
     console.log();
 
     // Test 5: Integration Status

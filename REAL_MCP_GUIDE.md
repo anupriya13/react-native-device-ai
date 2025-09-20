@@ -259,7 +259,7 @@ The real MCP implementation uses these packages:
 - `@modelcontextprotocol/sdk` - Official MCP SDK
 - `mcp-sdk-client-ssejs` - React Native compatible SSE transport
 
-Both are automatically installed when you install react-native-device-ai v2.1.0+.
+Both are automatically installed when you install react-native-device-ai v3.0.0+.
 
 ## Conclusion
 
