@@ -153,6 +153,7 @@ The module now supports **RAG data ingestion** and **LangChain/LangGraph** integ
 - 🔍 **Semantic Search**: Find relevant information using similarity matching
 - 📊 **Multiple Content Types**: Support for text, markdown, JSON, and device data
 - 🎯 **Context Augmentation**: Enhance AI responses with retrieved knowledge
+- 📁 **Flexible Data Sources**: Load from files, APIs, databases, or direct input
 
 ### LangChain Features  
 - 🔗 **Advanced Chains**: Pre-built chains for device analysis, battery optimization, and performance tuning
@@ -210,6 +211,79 @@ const results = await Enhanced.searchDocuments('battery optimization', {
   filter: { platform: 'ios' }
 });
 ```
+
+### Adding Data for RAG Ingestion
+
+RAG supports multiple ways to add data and files for knowledge base augmentation:
+
+```javascript
+// Method 1: Direct document objects
+await Enhanced.ingestDocuments([
+  {
+    id: 'troubleshooting-guide',
+    content: 'Device troubleshooting steps and solutions...',
+    metadata: { category: 'support', platform: 'general' },
+    type: 'text'
+  },
+  {
+    id: 'device-specs',
+    content: JSON.stringify({ iPhone: { battery: '3000mAh' }}),
+    metadata: { category: 'specifications' },
+    type: 'json'
+  }
+]);
+
+// Method 2: From file system (Node.js environments)
+const fs = require('fs');
+const documents = [];
+const files = fs.readdirSync('./knowledge-base');
+files.forEach(file => {
+  documents.push({
+    id: file.replace('.txt', ''),
+    content: fs.readFileSync(`./knowledge-base/${file}`, 'utf8'),
+    metadata: { source: 'filesystem', filename: file },
+    type: 'text'
+  });
+});
+await Enhanced.ingestDocuments(documents);
+
+// Method 3: From API endpoints
+const apiData = await fetch('https://api.example.com/device-guides');
+const guides = await apiData.json();
+const apiDocuments = guides.map(guide => ({
+  id: guide.id,
+  content: guide.content,
+  metadata: { source: 'api', category: guide.category },
+  type: 'text'
+}));
+await Enhanced.ingestDocuments(apiDocuments);
+
+// Method 4: Device telemetry data
+await Enhanced.ingestDocuments([{
+  id: 'device-data-123',
+  content: JSON.stringify({
+    platform: 'ios',
+    battery: { level: 45, health: 89 },
+    performance: { cpu: 65, memory: 78 }
+  }),
+  metadata: { 
+    deviceId: '123', 
+    dataType: 'telemetry',
+    collectedAt: new Date().toISOString()
+  },
+  type: 'device-data'
+}]);
+
+// Method 5: Batch processing from multiple sources
+const batchSources = [
+  { type: 'predefined', data: deviceGuides },
+  { type: 'files', directory: './docs', prefix: 'doc' },
+  { type: 'api', endpoint: 'https://api.example.com/guides' }
+];
+// See examples/rag-data-ingestion-guide.js for complete implementation
+```
+
+📖 **Complete data ingestion guide**: [examples/rag-data-ingestion-guide.js](./examples/rag-data-ingestion-guide.js)
 
 📖 **Complete example**: [examples/rag-langchain-demo.js](./examples/rag-langchain-demo.js)
 

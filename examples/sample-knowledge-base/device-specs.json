@@ -1,0 +1,83 @@
+{
+  "deviceSpecs": {
+    "iPhone": {
+      "iPhone 15 Pro Max": {
+        "processor": "A17 Pro",
+        "ram": "8GB",
+        "storage": ["256GB", "512GB", "1TB"],
+        "batteryCapacity": "4441 mAh",
+        "batteryLife": "29 hours video playback",
+        "display": "6.7-inch Super Retina XDR",
+        "cameras": "48MP Main, 12MP Ultra Wide, 12MP Telephoto"
+      },
+      "iPhone 15 Pro": {
+        "processor": "A17 Pro",
+        "ram": "8GB", 
+        "storage": ["128GB", "256GB", "512GB", "1TB"],
+        "batteryCapacity": "3274 mAh",
+        "batteryLife": "23 hours video playback",
+        "display": "6.1-inch Super Retina XDR",
+        "cameras": "48MP Main, 12MP Ultra Wide, 12MP Telephoto"
+      },
+      "iPhone 15": {
+        "processor": "A16 Bionic",
+        "ram": "6GB",
+        "storage": ["128GB", "256GB", "512GB"],
+        "batteryCapacity": "3349 mAh", 
+        "batteryLife": "20 hours video playback",
+        "display": "6.1-inch Super Retina XDR",
+        "cameras": "48MP Main, 12MP Ultra Wide"
+      }
+    },
+    "Android": {
+      "Samsung Galaxy S24 Ultra": {
+        "processor": "Snapdragon 8 Gen 3",
+        "ram": "12GB",
+        "storage": ["256GB", "512GB", "1TB"],
+        "batteryCapacity": "5000 mAh",
+        "batteryLife": "30 hours video playback",
+        "display": "6.8-inch Dynamic AMOLED 2X",
+        "cameras": "200MP Main, 50MP Periscope, 10MP Telephoto, 12MP Ultra Wide"
+      },
+      "Google Pixel 8 Pro": {
+        "processor": "Google Tensor G3",
+        "ram": "12GB",
+        "storage": ["128GB", "256GB", "512GB", "1TB"],
+        "batteryCapacity": "5050 mAh",
+        "batteryLife": "24+ hours",
+        "display": "6.7-inch LTPO OLED",
+        "cameras": "50MP Main, 48MP Ultra Wide, 48MP Telephoto"
+      }
+    }
+  },
+  "optimizationTips": {
+    "iOS": {
+      "battery": [
+        "Enable Low Power Mode below 20%",
+        "Disable Background App Refresh for unused apps",
+        "Use Wi-Fi instead of cellular when possible",
+        "Reduce screen brightness or enable auto-brightness"
+      ],
+      "performance": [
+        "Close unused apps in App Switcher",
+        "Restart device weekly",
+        "Keep 10%+ storage free",
+        "Update to latest iOS version"
+      ]
+    },
+    "Android": {
+      "battery": [
+        "Enable Adaptive Battery",
+        "Use Dark Mode on OLED displays", 
+        "Disable Always-On Display if not needed",
+        "Limit location services"
+      ],
+      "performance": [
+        "Clear cache regularly",
+        "Disable animations in Developer Options",
+        "Limit background processes",
+        "Use Lite versions of apps when available"
+      ]
+    }
+  }
+}
