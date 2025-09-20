@@ -1,6 +1,7 @@
 const { Platform, Dimensions } = require('react-native');
 const AzureOpenAI = require('./AzureOpenAI.js');
 const MCPClient = require('./MCPClient.js');
+const RealMCPClient = require('./RealMCPClient.js');
 
 // Try to import the native module with fallback handling
 let NativeDeviceAI = null;
@@ -21,9 +22,11 @@ class EnhancedDeviceAI {
     this.lastUpdate = null;
     this.cacheTimeout = 5 * 60 * 1000; // 5 minutes
     
-    // Initialize MCP client
+    // Initialize MCP client (default to mock, can be switched to real)
     this.mcpClient = new MCPClient();
+    this.realMcpClient = new RealMCPClient();
     this.mcpEnabled = false;
+    this.useRealMCP = false; // Flag to switch between mock and real MCP
     
     // Legacy Azure OpenAI support for backward compatibility
     this._autoConfigureFromEnvironment();
@@ -32,26 +35,43 @@ class EnhancedDeviceAI {
   /**
    * Initialize MCP client with optional configuration
    * @param {Object} mcpConfig - MCP configuration options
+   * @param {boolean} mcpConfig.useRealMCP - Use real MCP protocol instead of mock
    * @returns {Promise<Object>} Initialization result
    */
   async initializeMCP(mcpConfig = {}) {
     try {
-      const result = await this.mcpClient.initialize(mcpConfig);
+      const { useRealMCP = false, ...config } = mcpConfig;
+      this.useRealMCP = useRealMCP;
+      
+      // Choose which MCP client to use
+      const client = this.useRealMCP ? this.realMcpClient : this.mcpClient;
+      const result = await client.initialize(config);
       this.mcpEnabled = result.success;
       
       if (this.mcpEnabled) {
-        console.log('MCP integration enabled successfully');
-        console.log('Available AI providers:', result.providers);
-        console.log('Available data sources:', result.dataSources);
+        const protocolType = this.useRealMCP ? 'Real MCP Protocol' : 'Mock MCP Implementation';
+        console.log(`${protocolType} integration enabled successfully`);
+        console.log('Available providers:', result.providers || result.clients);
+        console.log('Available data sources:', result.dataSources || result.localServers);
+        
+        if (this.useRealMCP && result.protocol) {
+          console.log('Protocol version:', result.protocol);
+          console.log('Available transports:', result.transports);
+        }
       }
       
-      return result;
+      return {
+        ...result,
+        usingRealMCP: this.useRealMCP,
+        protocolType: this.useRealMCP ? 'MCP/1.0' : 'Mock'
+      };
     } catch (error) {
       console.error('Failed to initialize MCP:', error);
       this.mcpEnabled = false;
       return {
         success: false,
-        error: error.message
+        error: error.message,
+        usingRealMCP: this.useRealMCP
       };
     }
   }
@@ -70,11 +90,13 @@ class EnhancedDeviceAI {
    * @param {Object} serverConfig - Server configuration
    */
   async addMCPServer(serverConfig) {
-    if (!this.mcpClient) {
+    const client = this.useRealMCP ? this.realMcpClient : this.mcpClient;
+    
+    if (!client) {
       throw new Error('MCP client not initialized');
     }
     
-    return await this.mcpClient.connectServer(serverConfig);
+    return await client.connectServer(serverConfig);
   }
 
   /**
@@ -102,8 +124,9 @@ class EnhancedDeviceAI {
       
       try {
         if (this.mcpEnabled) {
-          // Use MCP for AI insights with failover
-          const mcpResult = await this.mcpClient.generateInsights(
+          // Use appropriate MCP client for AI insights with failover
+          const client = this.useRealMCP ? this.realMcpClient : this.mcpClient;
+          const mcpResult = await client.generateInsights(
             deviceData, 
             'general', 
             preferredProviders
@@ -127,7 +150,10 @@ class EnhancedDeviceAI {
         insights: aiInsights,
         recommendations: this._generateBasicRecommendations(deviceData),
         mcpEnabled: this.mcpEnabled,
-        providers: this.mcpEnabled ? this.mcpClient.getProviderStatus() : null,
+        usingRealMCP: this.useRealMCP,
+        providers: this.mcpEnabled ? 
+          (this.useRealMCP ? this.realMcpClient.getConnectionStatus() : this.mcpClient.getProviderStatus()) : 
+          null,
         osSpecific: includeOSSpecific,
         timestamp: new Date().toISOString(),
       };
@@ -372,15 +398,19 @@ class EnhancedDeviceAI {
    * Cleanup and disconnect from MCP servers
    */
   async cleanup() {
-    if (this.mcpEnabled && this.mcpClient) {
-      await this.mcpClient.disconnect();
-      this.mcpEnabled = false;
+    if (this.mcpEnabled) {
+      const client = this.useRealMCP ? this.realMcpClient : this.mcpClient;
+      if (client) {
+        await client.disconnect();
+        this.mcpEnabled = false;
+      }
     }
   }
 
   // Enhanced data collection using MCP
   async _collectEnhancedDeviceInfo(dataSources = [], includeOSSpecific = true) {
-    const mcpData = await this.mcpClient.collectDeviceData(dataSources);
+    const client = this.useRealMCP ? this.realMcpClient : this.mcpClient;
+    const mcpData = await client.collectDeviceData(dataSources);
     const legacyData = await this._collectDeviceInfo();
     
     let osSpecificData = {};
@@ -406,12 +436,20 @@ class EnhancedDeviceAI {
    */
   async _collectOSSpecificData() {
     try {
+      const client = this.useRealMCP ? this.realMcpClient : this.mcpClient;
       const osServerName = this._getOSSpecificServerName();
       if (!osServerName) {
         return { available: false, reason: 'No OS-specific server available' };
       }
 
-      const osServer = this.mcpClient.deviceDataSources.get(osServerName);
+      // Handle both real and mock MCP client interfaces
+      let osServer;
+      if (this.useRealMCP) {
+        osServer = client.servers.get(osServerName);
+      } else {
+        osServer = client.deviceDataSources.get(osServerName);
+      }
+      
       if (!osServer || !osServer.isConnected()) {
         return { available: false, reason: `${osServerName} not connected` };
       }

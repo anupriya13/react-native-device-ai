@@ -22,7 +22,9 @@
     "demo:windows": "node windows-demo-standalone.js",
     "demo:interactive": "node working-example-demo.js",
     "demo:mcp": "node mcp-demo.js",
-    "demo:os-specific": "node os-specific-mcp-demo.js"
+    "demo:os-specific": "node os-specific-mcp-demo.js",
+    "demo:real-mcp": "node real-mcp-demo.js",
+    "test:mcp": "node test-mcp-sdk.js"
   },
   "keywords": [
     "react-native",
@@ -41,8 +43,10 @@
     "react-native": ">=0.70.0"
   },
   "dependencies": {
+    "@babel/runtime": "^7.20.0",
+    "@modelcontextprotocol/sdk": "^1.18.1",
     "axios": "^1.12.0",
-    "@babel/runtime": "^7.20.0"
+    "mcp-sdk-client-ssejs": "^1.0.4"
   },
   "devDependencies": {
     "@babel/cli": "^7.20.0",
