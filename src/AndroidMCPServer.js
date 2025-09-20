@@ -3,7 +3,7 @@
  * Would integrate with Android TurboModule APIs when available
  */
 
-import { NativeModules, Platform } from 'react-native';
+const { NativeModules, Platform } = require('react-native');
 
 /**
  * Android MCP Server that provides OS-specific device data
@@ -265,4 +265,4 @@ class AndroidMCPServer {
   }
 }
 
-export default AndroidMCPServer;
+module.exports = AndroidMCPServer;

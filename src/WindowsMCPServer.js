@@ -3,7 +3,7 @@
  * Leverages Windows TurboModule APIs for comprehensive system insights
  */
 
-import { NativeModules, Platform } from 'react-native';
+const { NativeModules, Platform } = require('react-native');
 
 const { ReactNativeDeviceAi } = NativeModules;
 
@@ -320,6 +320,130 @@ class WindowsMCPServer {
 
     return insights.length > 0 ? insights : ['Windows system information collected successfully'];
   }
+
+  /**
+   * Generate AI insights based on collected Windows data
+   * @param {Object} deviceData - Device data to analyze
+   * @param {string} type - Type of analysis ('general', 'performance', 'security')
+   */
+  async generateInsights(deviceData, type = 'general') {
+    try {
+      if (!this.isConnected()) {
+        throw new Error('Windows MCP Server not connected');
+      }
+
+      // Collect fresh Windows data if needed
+      const windowsData = await this.collectData();
+      
+      // Generate insights based on analysis type
+      let insights = [];
+      
+      switch (type) {
+        case 'performance':
+          insights = this._generatePerformanceInsights(windowsData, deviceData);
+          break;
+        case 'security':
+          insights = this._generateSecurityInsights(windowsData, deviceData);
+          break;
+        case 'general':
+        default:
+          insights = this._generateGeneralInsights(windowsData, deviceData);
+          break;
+      }
+
+      return {
+        type,
+        insights: insights.join('. '),
+        server: this.name,
+        platform: 'windows',
+        timestamp: new Date().toISOString(),
+        dataSource: 'windows-turbo-module'
+      };
+    } catch (error) {
+      console.error('Failed to generate Windows insights:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Generate performance-specific insights
+   * @private
+   */
+  _generatePerformanceInsights(windowsData, deviceData) {
+    const insights = [];
+
+    if (windowsData.performanceData) {
+      const { memory, cpu } = windowsData.performanceData;
+      
+      if (memory) {
+        if (memory.used > 90) {
+          insights.push('Critical memory usage detected - immediate action required');
+        } else if (memory.used > 80) {
+          insights.push('High memory usage - consider closing unnecessary applications');
+        } else {
+          insights.push('Memory usage is within normal ranges');
+        }
+      }
+
+      if (cpu) {
+        if (cpu.usage > 90) {
+          insights.push('Very high CPU usage - check for resource-intensive processes');
+        } else if (cpu.usage > 70) {
+          insights.push('Elevated CPU usage detected');
+        } else {
+          insights.push('CPU usage is normal');
+        }
+      }
+    }
+
+    return insights.length > 0 ? insights : ['Performance monitoring data collected'];
+  }
+
+  /**
+   * Generate security-specific insights
+   * @private
+   */
+  _generateSecurityInsights(windowsData, deviceData) {
+    const insights = [];
+
+    if (windowsData.windowsSystemInfo) {
+      const { buildNumber } = windowsData.windowsSystemInfo;
+      
+      if (parseInt(buildNumber) >= 22000) {
+        insights.push('Running Windows 11 with modern security features enabled');
+      } else {
+        insights.push('Consider upgrading to Windows 11 for enhanced security');
+      }
+    }
+
+    insights.push('Windows Defender provides real-time protection');
+    insights.push('Regular Windows Updates help maintain security');
+
+    return insights;
+  }
+
+  /**
+   * Generate general insights
+   * @private
+   */
+  _generateGeneralInsights(windowsData, deviceData) {
+    const insights = [];
+
+    if (windowsData.windowsSystemInfo) {
+      const { osVersion, processorName } = windowsData.windowsSystemInfo;
+      insights.push(`System running ${osVersion} with ${processorName}`);
+    }
+
+    if (windowsData.performanceData) {
+      insights.push('Real-time performance metrics available via Windows APIs');
+    }
+
+    if (windowsData.wmiData && !windowsData.wmiData.error) {
+      insights.push('Comprehensive system information collected via WMI');
+    }
+
+    return insights.length > 0 ? insights : ['Windows system analysis completed'];
+  }
 }
 
-export default WindowsMCPServer;
+module.exports = WindowsMCPServer;

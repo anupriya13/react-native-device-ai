@@ -3,7 +3,7 @@
  * Would integrate with iOS TurboModule APIs when available
  */
 
-import { NativeModules, Platform } from 'react-native';
+const { NativeModules, Platform } = require('react-native');
 
 /**
  * iOS MCP Server that provides OS-specific device data
@@ -285,4 +285,4 @@ class iOSMCPServer {
   }
 }
 
-export default iOSMCPServer;
+module.exports = iOSMCPServer;

@@ -4,9 +4,9 @@
  */
 
 import { Platform } from 'react-native';
-import WindowsMCPServer from './WindowsMCPServer';
-import AndroidMCPServer from './AndroidMCPServer';
-import iOSMCPServer from './iOSMCPServer';
+const WindowsMCPServer = require('./WindowsMCPServer');
+const AndroidMCPServer = require('./AndroidMCPServer');
+const iOSMCPServer = require('./iOSMCPServer');
 
 /**
  * MCP Client for managing connections to MCP servers and AI providers
