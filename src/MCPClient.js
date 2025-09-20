@@ -10,6 +10,7 @@ const AndroidMCPServer = require('./AndroidMCPServer');
 const iOSMCPServer = require('./iOSMCPServer');
 const RAGDataStore = require('./RAGDataStore');
 const LangChainProvider = require('./LangChainProvider');
+const RealLangChainProvider = require('./RealLangChainProvider');
 
 /**
  * MCP Client for managing connections to MCP servers and AI providers
@@ -28,9 +29,10 @@ class MCPClient {
     
     // Initialize RAG and LangChain components
     this.ragDataStore = new RAGDataStore();
-    this.langChainProvider = new LangChainProvider();
+    this.langChainProvider = null; // Will be initialized based on config
     this.ragEnabled = false;
     this.langChainEnabled = false;
+    this.useRealLangChain = false;
   }
 
   /**
@@ -67,13 +69,21 @@ class MCPClient {
 
       // Initialize LangChain if enabled
       if (config.enableLangChain) {
+        // Determine whether to use real LangChain or simplified version
+        this.useRealLangChain = config.useRealLangChain !== false; // Default to real LangChain
+        
+        // Initialize the appropriate LangChain provider
+        this.langChainProvider = this.useRealLangChain 
+          ? new RealLangChainProvider()
+          : new LangChainProvider();
+        
         const langChainResult = await this.langChainProvider.initialize(
           config.langChainConfig || {}, 
           this.ragEnabled ? this.ragDataStore : null
         );
         this.langChainEnabled = langChainResult.success;
         if (this.langChainEnabled) {
-          console.log('LangChain Provider initialized successfully');
+          console.log(`${this.useRealLangChain ? 'Real ' : 'Simplified '}LangChain Provider initialized successfully`);
           // Register LangChain as an AI provider
           this.aiProviders.set('langchain', this.langChainProvider);
         } else {

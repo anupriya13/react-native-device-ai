@@ -20,14 +20,12 @@ class RAGDataStore {
     
     this.documents = new Map();
     this.documentChunks = new Map();
-    this.vectorStore = new Map(); // In-memory vector storage
     this.isInitialized = false;
-    this.openai = null;
     this.apiKey = null;
   }
 
   /**
-   * Initialize the RAG data store with real embedding configuration
+   * Initialize the RAG data store with embedding configuration
    * @param {Object} embeddingConfig - Configuration for embeddings
    * @param {string} embeddingConfig.apiKey - OpenAI API key for embeddings
    * @param {string} embeddingConfig.model - Embedding model to use
@@ -45,91 +43,19 @@ class RAGDataStore {
       this.apiKey = apiKey;
       this.embeddingModel = embeddingConfig.model || this.config.embeddingModel;
 
-      // Initialize OpenAI client
-      this.openai = new OpenAI({
-        apiKey: this.apiKey,
-      });
-
-      // Test the connection by generating a test embedding
-      try {
-        await this._generateEmbedding('test connection');
-        console.log('✅ RAG Data Store initialized with real vector embeddings');
-      } catch (error) {
-        console.warn('⚠️  OpenAI API connection failed, falling back to keyword similarity');
-        this.openai = null;
-      }
-
       this.isInitialized = true;
+      console.log('RAG Data Store initialized successfully');
       
       return {
         success: true,
         embeddingModel: this.embeddingModel,
-        chunkSize: this.config.chunkSize,
-        vectorEmbeddings: !!this.openai
+        chunkSize: this.config.chunkSize
       };
     } catch (error) {
       console.error('Failed to initialize RAG Data Store:', error);
       this.isInitialized = false;
       return { success: false, error: error.message };
     }
-  }
-
-  /**
-   * Generate vector embedding for text using OpenAI
-   * @param {string} text - Text to embed
-   * @returns {Promise<Array>} Vector embedding
-   * @private
-   */
-  async _generateEmbedding(text) {
-    if (!this.openai) {
-      // Fallback to mock embedding for testing
-      return Array(1536).fill(0).map(() => Math.random() - 0.5);
-    }
-
-    try {
-      const response = await this.openai.embeddings.create({
-        model: this.embeddingModel,
-        input: text,
-      });
-
-      return response.data[0].embedding;
-    } catch (error) {
-      console.warn('Failed to generate embedding, using fallback:', error.message);
-      // Fallback to mock embedding
-      return Array(1536).fill(0).map(() => Math.random() - 0.5);
-    }
-  }
-
-  /**
-   * Calculate cosine similarity between two vectors
-   * @param {Array} vecA - First vector
-   * @param {Array} vecB - Second vector
-   * @returns {number} Cosine similarity score
-   * @private
-   */
-  _calculateCosineSimilarity(vecA, vecB) {
-    if (vecA.length !== vecB.length) {
-      throw new Error('Vectors must have the same length');
-    }
-
-    let dotProduct = 0;
-    let normA = 0;
-    let normB = 0;
-
-    for (let i = 0; i < vecA.length; i++) {
-      dotProduct += vecA[i] * vecB[i];
-      normA += vecA[i] * vecA[i];
-      normB += vecB[i] * vecB[i];
-    }
-
-    normA = Math.sqrt(normA);
-    normB = Math.sqrt(normB);
-
-    if (normA === 0 || normB === 0) {
-      return 0;
-    }
-
-    return dotProduct / (normA * normB);
   }
 
   /**
@@ -154,12 +80,12 @@ class RAGDataStore {
   }
 
   /**
-   * Fallback keyword-based similarity calculation
+   * Simple similarity calculation (can be enhanced with actual embeddings)
    * @param {string} query - Query text
    * @param {string} text - Text to compare
    * @private
    */
-  _calculateKeywordSimilarity(query, text) {
+  _calculateSimilarity(query, text) {
     const queryWords = query.toLowerCase().split(/\s+/);
     const textWords = text.toLowerCase().split(/\s+/);
     
