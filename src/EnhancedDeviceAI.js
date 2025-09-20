@@ -36,6 +36,10 @@ class EnhancedDeviceAI {
    * Initialize MCP client with optional configuration
    * @param {Object} mcpConfig - MCP configuration options
    * @param {boolean} mcpConfig.useRealMCP - Use real MCP protocol instead of mock
+   * @param {boolean} mcpConfig.enableRAG - Enable RAG functionality
+   * @param {boolean} mcpConfig.enableLangChain - Enable LangChain functionality
+   * @param {Object} mcpConfig.ragConfig - RAG configuration
+   * @param {Object} mcpConfig.langChainConfig - LangChain configuration
    * @returns {Promise<Object>} Initialization result
    */
   async initializeMCP(mcpConfig = {}) {
@@ -53,6 +57,14 @@ class EnhancedDeviceAI {
         console.log(`${protocolType} integration enabled successfully`);
         console.log('Available providers:', result.providers || result.clients);
         console.log('Available data sources:', result.dataSources || result.localServers);
+        
+        // Log RAG and LangChain status
+        if (result.ragEnabled) {
+          console.log('RAG (Retrieval-Augmented Generation) enabled');
+        }
+        if (result.langChainEnabled) {
+          console.log('LangChain/LangGraph integration enabled');
+        }
         
         if (this.useRealMCP && result.protocol) {
           console.log('Protocol version:', result.protocol);
@@ -105,6 +117,10 @@ class EnhancedDeviceAI {
    * @param {Array} options.preferredProviders - Preferred AI providers in order
    * @param {Array} options.dataSources - Specific data sources to use
    * @param {boolean} options.includeOSSpecific - Include OS-specific device data
+   * @param {boolean} options.useRAG - Use RAG for context augmentation
+   * @param {boolean} options.useLangChain - Use LangChain for advanced processing
+   * @param {Object} options.ragOptions - RAG-specific options
+   * @param {Object} options.langChainOptions - LangChain-specific options
    * @returns {Promise<Object>} Device insights with AI recommendations
    */
   async getDeviceInsights(options = {}) {
@@ -112,7 +128,11 @@ class EnhancedDeviceAI {
       const { 
         preferredProviders = [], 
         dataSources = [],
-        includeOSSpecific = true 
+        includeOSSpecific = true,
+        useRAG = false,
+        useLangChain = false,
+        ragOptions = {},
+        langChainOptions = {}
       } = options;
       
       // Collect device data using MCP if available, otherwise use legacy method
@@ -121,6 +141,12 @@ class EnhancedDeviceAI {
         : await this._collectDeviceInfo();
       
       let aiInsights;
+      let processingInfo = {
+        provider: null,
+        processingMode: 'standard',
+        ragUsed: false,
+        executionTime: null
+      };
       
       try {
         if (this.mcpEnabled) {
@@ -129,19 +155,34 @@ class EnhancedDeviceAI {
           const mcpResult = await client.generateInsights(
             deviceData, 
             'general', 
-            preferredProviders
+            preferredProviders,
+            {
+              useRAG,
+              useLangChain,
+              ragOptions,
+              langChainOptions
+            }
           );
           aiInsights = mcpResult.insights;
+          processingInfo = {
+            provider: mcpResult.provider,
+            processingMode: mcpResult.processingMode || 'standard',
+            ragUsed: mcpResult.ragUsed || false,
+            executionTime: mcpResult.executionTime
+          };
         } else if (AzureOpenAI.isConfigured()) {
           // Fallback to legacy Azure OpenAI
           aiInsights = await AzureOpenAI.generateInsights(deviceData, 'general');
+          processingInfo.provider = 'azure-openai-legacy';
         } else {
           // Fallback to static insights
           aiInsights = this._generateFallbackInsights(deviceData);
+          processingInfo.provider = 'fallback';
         }
       } catch (aiError) {
         console.log('AI service unavailable, using fallback insights:', aiError.message);
         aiInsights = this._generateFallbackInsights(deviceData);
+        processingInfo.provider = 'fallback';
       }
 
       return {
@@ -155,6 +196,13 @@ class EnhancedDeviceAI {
           (this.useRealMCP ? this.realMcpClient.getConnectionStatus() : this.mcpClient.getProviderStatus()) : 
           null,
         osSpecific: includeOSSpecific,
+        processing: processingInfo,
+        advancedFeatures: {
+          ragAvailable: this.mcpEnabled,
+          langChainAvailable: this.mcpEnabled,
+          ragUsed: processingInfo.ragUsed,
+          advancedProcessing: processingInfo.processingMode === 'advanced'
+        },
         timestamp: new Date().toISOString(),
       };
     } catch (error) {
@@ -392,6 +440,137 @@ class EnhancedDeviceAI {
     }
     
     return features;
+  }
+
+  /**
+   * Ingest documents for RAG (Retrieval-Augmented Generation)
+   * @param {Array|Object} documents - Document(s) to ingest for RAG
+   * @param {string} documents.id - Unique document identifier
+   * @param {string} documents.content - Document content
+   * @param {Object} documents.metadata - Document metadata
+   * @param {string} documents.type - Document type (text, markdown, json, device-data)
+   */
+  async ingestDocuments(documents) {
+    if (!this.mcpEnabled) {
+      return {
+        success: false,
+        error: 'MCP not enabled. Call initializeMCP() with enableRAG: true first.'
+      };
+    }
+
+    const client = this.useRealMCP ? this.realMcpClient : this.mcpClient;
+    return await client.ingestDocuments(documents);
+  }
+
+  /**
+   * Search documents using semantic similarity
+   * @param {string} query - Search query
+   * @param {Object} options - Search options
+   * @param {number} options.k - Number of results to return (default: 5)
+   * @param {Object} options.filter - Metadata filter
+   * @param {number} options.scoreThreshold - Minimum similarity score (default: 0.1)
+   */
+  async searchDocuments(query, options = {}) {
+    if (!this.mcpEnabled) {
+      return {
+        success: false,
+        error: 'MCP not enabled. Call initializeMCP() with enableRAG: true first.'
+      };
+    }
+
+    const client = this.useRealMCP ? this.realMcpClient : this.mcpClient;
+    return await client.searchDocuments(query, options);
+  }
+
+  /**
+   * Execute a LangChain chain for advanced AI operations
+   * @param {string} chainName - Name of the chain to execute
+   * @param {Object} input - Input data for the chain
+   * @param {Object} options - Execution options
+   * @param {boolean} options.useRAG - Use RAG for context augmentation
+   */
+  async executeLangChain(chainName, input, options = {}) {
+    if (!this.mcpEnabled) {
+      return {
+        success: false,
+        error: 'MCP not enabled. Call initializeMCP() with enableLangChain: true first.'
+      };
+    }
+
+    const client = this.useRealMCP ? this.realMcpClient : this.mcpClient;
+    return await client.executeLangChain(chainName, input, options);
+  }
+
+  /**
+   * Create a custom LangChain chain
+   * @param {string} name - Chain name
+   * @param {Object} chainConfig - Chain configuration
+   * @param {string} chainConfig.template - Prompt template
+   * @param {Array} chainConfig.inputVariables - Input variables
+   * @param {Object} chainConfig.chainOptions - Additional chain options
+   */
+  async createCustomChain(name, chainConfig) {
+    if (!this.mcpEnabled) {
+      return {
+        success: false,
+        error: 'MCP not enabled. Call initializeMCP() with enableLangChain: true first.'
+      };
+    }
+
+    const client = this.useRealMCP ? this.realMcpClient : this.mcpClient;
+    return await client.createCustomChain(name, chainConfig);
+  }
+
+  /**
+   * Process a conversational query with device context
+   * @param {string} query - User query
+   * @param {Object} options - Query options
+   * @param {boolean} options.useRAG - Use RAG for context augmentation
+   * @param {Array} options.dataSources - Specific data sources to include
+   */
+  async processConversationalQuery(query, options = {}) {
+    if (!this.mcpEnabled) {
+      return {
+        success: false,
+        error: 'MCP not enabled. Call initializeMCP() with enableLangChain: true first.'
+      };
+    }
+
+    try {
+      // Collect current device data for context
+      const deviceData = await this._collectEnhancedDeviceInfo(options.dataSources || []);
+      
+      const client = this.useRealMCP ? this.realMcpClient : this.mcpClient;
+      return await client.processConversationalQuery(query, deviceData, options);
+    } catch (error) {
+      console.error('Error processing conversational query:', error);
+      return {
+        success: false,
+        error: error.message,
+        timestamp: new Date().toISOString()
+      };
+    }
+  }
+
+  /**
+   * Get advanced AI capabilities status (RAG and LangChain)
+   */
+  async getAdvancedStatus() {
+    if (!this.mcpEnabled) {
+      return {
+        success: false,
+        error: 'MCP not enabled.',
+        ragEnabled: false,
+        langChainEnabled: false
+      };
+    }
+
+    const client = this.useRealMCP ? this.realMcpClient : this.mcpClient;
+    return {
+      success: true,
+      ...client.getAdvancedStatus(),
+      timestamp: new Date().toISOString()
+    };
   }
 
   /**

@@ -144,6 +144,75 @@ cp .env.example .env
 
 📖 **Complete guide**: [CREDENTIALS_GUIDE.md](./CREDENTIALS_GUIDE.md)
 
+## 🚀 New: RAG (Retrieval-Augmented Generation) & LangChain Support
+
+The module now supports **RAG data ingestion** and **LangChain/LangGraph** integration for advanced AI-powered device analysis with knowledge base augmentation.
+
+### RAG Features
+- 📚 **Document Ingestion**: Import device guides, troubleshooting docs, and knowledge bases
+- 🔍 **Semantic Search**: Find relevant information using similarity matching
+- 📊 **Multiple Content Types**: Support for text, markdown, JSON, and device data
+- 🎯 **Context Augmentation**: Enhance AI responses with retrieved knowledge
+
+### LangChain Features  
+- 🔗 **Advanced Chains**: Pre-built chains for device analysis, battery optimization, and performance tuning
+- 💬 **Conversational AI**: Natural language device queries with memory
+- 🛠️ **Custom Chains**: Create specialized analysis workflows
+- 🔄 **RAG Integration**: Combine retrieval with generation for enhanced responses
+
+### Quick RAG & LangChain Setup
+
+```javascript
+import { Enhanced } from 'react-native-device-ai';
+
+// Initialize with RAG and LangChain
+await Enhanced.initializeMCP({
+  enableRAG: true,
+  enableLangChain: true,
+  ragConfig: {
+    apiKey: process.env.OPENAI_API_KEY,
+    chunkSize: 1000,
+    maxDocuments: 500
+  },
+  langChainConfig: {
+    apiKey: process.env.OPENAI_API_KEY,
+    model: 'gpt-3.5-turbo',
+    temperature: 0.7
+  }
+});
+
+// Ingest device knowledge
+await Enhanced.ingestDocuments([
+  {
+    id: 'ios-battery-guide',
+    content: 'iOS battery optimization techniques...',
+    metadata: { platform: 'ios', category: 'battery' },
+    type: 'text'
+  }
+]);
+
+// Get RAG-enhanced insights
+const insights = await Enhanced.getDeviceInsights({
+  useRAG: true,
+  useLangChain: true,
+  preferredProviders: ['langchain']
+});
+
+// Ask conversational questions
+const response = await Enhanced.processConversationalQuery(
+  "My battery drains quickly, what should I do?",
+  { useRAG: true }
+);
+
+// Search knowledge base
+const results = await Enhanced.searchDocuments('battery optimization', {
+  k: 5,
+  filter: { platform: 'ios' }
+});
+```
+
+📖 **Complete example**: [examples/rag-langchain-demo.js](./examples/rag-langchain-demo.js)
+
 ## 🔌 MCP (Model Context Protocol) Integration
 
 The module now supports **MCP** for standardized connections to multiple AI providers and enhanced device data sources.
