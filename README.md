@@ -144,6 +144,149 @@ cp .env.example .env
 
 📖 **Complete guide**: [CREDENTIALS_GUIDE.md](./CREDENTIALS_GUIDE.md)
 
+## 🚀 New: RAG (Retrieval-Augmented Generation) & LangChain Support
+
+The module now supports **RAG data ingestion** and **LangChain/LangGraph** integration for advanced AI-powered device analysis with knowledge base augmentation.
+
+### RAG Features
+- 📚 **Document Ingestion**: Import device guides, troubleshooting docs, and knowledge bases
+- 🔍 **Semantic Search**: Find relevant information using similarity matching
+- 📊 **Multiple Content Types**: Support for text, markdown, JSON, and device data
+- 🎯 **Context Augmentation**: Enhance AI responses with retrieved knowledge
+- 📁 **Flexible Data Sources**: Load from files, APIs, databases, or direct input
+
+### LangChain Features  
+- 🔗 **Advanced Chains**: Pre-built chains for device analysis, battery optimization, and performance tuning
+- 💬 **Conversational AI**: Natural language device queries with memory
+- 🛠️ **Custom Chains**: Create specialized analysis workflows
+- 🔄 **RAG Integration**: Combine retrieval with generation for enhanced responses
+
+### Quick RAG & LangChain Setup
+
+```javascript
+import { Enhanced } from 'react-native-device-ai';
+
+// Initialize with RAG and LangChain
+await Enhanced.initializeMCP({
+  enableRAG: true,
+  enableLangChain: true,
+  ragConfig: {
+    apiKey: process.env.OPENAI_API_KEY,
+    chunkSize: 1000,
+    maxDocuments: 500
+  },
+  langChainConfig: {
+    apiKey: process.env.OPENAI_API_KEY,
+    model: 'gpt-3.5-turbo',
+    temperature: 0.7
+  }
+});
+
+// Ingest device knowledge
+await Enhanced.ingestDocuments([
+  {
+    id: 'ios-battery-guide',
+    content: 'iOS battery optimization techniques...',
+    metadata: { platform: 'ios', category: 'battery' },
+    type: 'text'
+  }
+]);
+
+// Get RAG-enhanced insights
+const insights = await Enhanced.getDeviceInsights({
+  useRAG: true,
+  useLangChain: true,
+  preferredProviders: ['langchain']
+});
+
+// Ask conversational questions
+const response = await Enhanced.processConversationalQuery(
+  "My battery drains quickly, what should I do?",
+  { useRAG: true }
+);
+
+// Search knowledge base
+const results = await Enhanced.searchDocuments('battery optimization', {
+  k: 5,
+  filter: { platform: 'ios' }
+});
+```
+
+### Adding Data for RAG Ingestion
+
+RAG supports multiple ways to add data and files for knowledge base augmentation:
+
+```javascript
+// Method 1: Direct document objects
+await Enhanced.ingestDocuments([
+  {
+    id: 'troubleshooting-guide',
+    content: 'Device troubleshooting steps and solutions...',
+    metadata: { category: 'support', platform: 'general' },
+    type: 'text'
+  },
+  {
+    id: 'device-specs',
+    content: JSON.stringify({ iPhone: { battery: '3000mAh' }}),
+    metadata: { category: 'specifications' },
+    type: 'json'
+  }
+]);
+
+// Method 2: From file system (Node.js environments)
+const fs = require('fs');
+const documents = [];
+const files = fs.readdirSync('./knowledge-base');
+files.forEach(file => {
+  documents.push({
+    id: file.replace('.txt', ''),
+    content: fs.readFileSync(`./knowledge-base/${file}`, 'utf8'),
+    metadata: { source: 'filesystem', filename: file },
+    type: 'text'
+  });
+});
+await Enhanced.ingestDocuments(documents);
+
+// Method 3: From API endpoints
+const apiData = await fetch('https://api.example.com/device-guides');
+const guides = await apiData.json();
+const apiDocuments = guides.map(guide => ({
+  id: guide.id,
+  content: guide.content,
+  metadata: { source: 'api', category: guide.category },
+  type: 'text'
+}));
+await Enhanced.ingestDocuments(apiDocuments);
+
+// Method 4: Device telemetry data
+await Enhanced.ingestDocuments([{
+  id: 'device-data-123',
+  content: JSON.stringify({
+    platform: 'ios',
+    battery: { level: 45, health: 89 },
+    performance: { cpu: 65, memory: 78 }
+  }),
+  metadata: { 
+    deviceId: '123', 
+    dataType: 'telemetry',
+    collectedAt: new Date().toISOString()
+  },
+  type: 'device-data'
+}]);
+
+// Method 5: Batch processing from multiple sources
+const batchSources = [
+  { type: 'predefined', data: deviceGuides },
+  { type: 'files', directory: './docs', prefix: 'doc' },
+  { type: 'api', endpoint: 'https://api.example.com/guides' }
+];
+// See examples/rag-data-ingestion-guide.js for complete implementation
+```
+
+📖 **Complete data ingestion guide**: [examples/rag-data-ingestion-guide.js](./examples/rag-data-ingestion-guide.js)
+
+📖 **Complete example**: [examples/rag-langchain-demo.js](./examples/rag-langchain-demo.js)
+
 ## 🔌 MCP (Model Context Protocol) Integration
 
 The module now supports **MCP** for standardized connections to multiple AI providers and enhanced device data sources.

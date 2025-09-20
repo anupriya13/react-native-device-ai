@@ -1,12 +1,16 @@
 /**
  * MCPClient - Model Context Protocol integration for react-native-device-ai
  * Provides standardized connections to multiple AI providers and device data sources
+ * Now includes RAG (Retrieval-Augmented Generation) and LangChain/LangGraph support
  */
 
 import { Platform } from 'react-native';
 const WindowsMCPServer = require('./WindowsMCPServer');
 const AndroidMCPServer = require('./AndroidMCPServer');
 const iOSMCPServer = require('./iOSMCPServer');
+const RAGDataStore = require('./RAGDataStore');
+const LangChainProvider = require('./LangChainProvider');
+const RealLangChainProvider = require('./RealLangChainProvider');
 
 /**
  * MCP Client for managing connections to MCP servers and AI providers
@@ -22,6 +26,13 @@ class MCPClient {
       retryAttempts: 3,
       enableFallback: true
     };
+    
+    // Initialize RAG and LangChain components
+    this.ragDataStore = new RAGDataStore();
+    this.langChainProvider = null; // Will be initialized based on config
+    this.ragEnabled = false;
+    this.langChainEnabled = false;
+    this.useRealLangChain = false;
   }
 
   /**
@@ -30,6 +41,10 @@ class MCPClient {
    * @param {number} config.timeout - Request timeout in milliseconds
    * @param {number} config.retryAttempts - Number of retry attempts
    * @param {boolean} config.enableFallback - Enable fallback to non-MCP providers
+   * @param {boolean} config.enableRAG - Enable RAG functionality
+   * @param {boolean} config.enableLangChain - Enable LangChain functionality
+   * @param {Object} config.ragConfig - RAG configuration
+   * @param {Object} config.langChainConfig - LangChain configuration
    */
   async initialize(config = {}) {
     try {
@@ -40,6 +55,41 @@ class MCPClient {
       
       // Initialize device data sources
       await this._initializeDeviceDataSources();
+
+      // Initialize RAG if enabled
+      if (config.enableRAG) {
+        const ragResult = await this.ragDataStore.initialize(config.ragConfig || {});
+        this.ragEnabled = ragResult.success;
+        if (this.ragEnabled) {
+          console.log('RAG Data Store initialized successfully');
+        } else {
+          console.warn('RAG initialization failed:', ragResult.error);
+        }
+      }
+
+      // Initialize LangChain if enabled
+      if (config.enableLangChain) {
+        // Determine whether to use real LangChain or simplified version
+        this.useRealLangChain = config.useRealLangChain !== false; // Default to real LangChain
+        
+        // Initialize the appropriate LangChain provider
+        this.langChainProvider = this.useRealLangChain 
+          ? new RealLangChainProvider()
+          : new LangChainProvider();
+        
+        const langChainResult = await this.langChainProvider.initialize(
+          config.langChainConfig || {}, 
+          this.ragEnabled ? this.ragDataStore : null
+        );
+        this.langChainEnabled = langChainResult.success;
+        if (this.langChainEnabled) {
+          console.log(`${this.useRealLangChain ? 'Real ' : 'Simplified '}LangChain Provider initialized successfully`);
+          // Register LangChain as an AI provider
+          this.aiProviders.set('langchain', this.langChainProvider);
+        } else {
+          console.warn('LangChain initialization failed:', langChainResult.error);
+        }
+      }
       
       this.isInitialized = true;
       console.log('MCP Client initialized successfully');
@@ -47,7 +97,9 @@ class MCPClient {
       return {
         success: true,
         providers: Array.from(this.aiProviders.keys()),
-        dataSources: Array.from(this.deviceDataSources.keys())
+        dataSources: Array.from(this.deviceDataSources.keys()),
+        ragEnabled: this.ragEnabled,
+        langChainEnabled: this.langChainEnabled
       };
     } catch (error) {
       console.error('Failed to initialize MCP client:', error);
@@ -105,15 +157,46 @@ class MCPClient {
    * @param {Object} deviceData - Device information
    * @param {string} type - Type of insights ('general', 'battery', 'performance')
    * @param {Array} preferredProviders - Ordered list of preferred providers
+   * @param {Object} options - Additional options
+   * @param {boolean} options.useRAG - Use RAG for context augmentation
+   * @param {boolean} options.useLangChain - Use LangChain for advanced processing
    */
-  async generateInsights(deviceData, type = 'general', preferredProviders = []) {
+  async generateInsights(deviceData, type = 'general', preferredProviders = [], options = {}) {
     if (!this.isInitialized) {
       throw new Error('MCP client not initialized. Call initialize() first.');
     }
 
+    const { useRAG = false, useLangChain = false } = options;
+
+    // If LangChain is requested and available, use it for advanced processing
+    if (useLangChain && this.langChainEnabled) {
+      try {
+        console.log('Using LangChain for device analysis');
+        const result = await this.langChainProvider.analyzeDeviceWithRAG(deviceData, type, {
+          useRAG: useRAG && this.ragEnabled,
+          ...options
+        });
+        
+        if (result.success) {
+          return {
+            success: true,
+            insights: result.result,
+            provider: 'langchain',
+            processingMode: 'advanced',
+            ragUsed: result.ragUsed,
+            executionTime: result.executionTime,
+            timestamp: new Date().toISOString()
+          };
+        }
+      } catch (error) {
+        console.log('LangChain processing failed, falling back to standard providers:', error.message);
+      }
+    }
+
+    // Fallback to standard MCP provider processing
     const providers = preferredProviders.length > 0 
       ? preferredProviders 
-      : Array.from(this.aiProviders.keys());
+      : Array.from(this.aiProviders.keys()).filter(p => p !== 'langchain');
 
     let lastError;
     
@@ -126,12 +209,38 @@ class MCPClient {
         }
 
         console.log(`Attempting to generate insights using provider: ${providerName}`);
-        const result = await provider.generateInsights(deviceData, type);
+        
+        // Augment with RAG if enabled and requested
+        let enhancedDeviceData = deviceData;
+        let ragContext = null;
+        
+        if (useRAG && this.ragEnabled) {
+          try {
+            const ragResult = await this.ragDataStore.getAugmentedContext(
+              JSON.stringify(deviceData), 
+              { k: 3, filter: { type: 'device-data' } }
+            );
+            if (ragResult.success) {
+              ragContext = ragResult.augmentedContext;
+              enhancedDeviceData = {
+                ...deviceData,
+                ragContext: ragContext,
+                ragSources: ragResult.sources
+              };
+            }
+          } catch (ragError) {
+            console.log('RAG augmentation failed:', ragError.message);
+          }
+        }
+        
+        const result = await provider.generateInsights(enhancedDeviceData, type);
         
         return {
           success: true,
           insights: result,
           provider: providerName,
+          processingMode: 'standard',
+          ragUsed: !!ragContext,
           timestamp: new Date().toISOString()
         };
       } catch (error) {
@@ -187,14 +296,134 @@ class MCPClient {
     const status = {};
     
     for (const [name, provider] of this.aiProviders) {
-      status[name] = {
-        connected: provider.isConnected(),
-        type: provider.getType(),
-        capabilities: provider.getCapabilities(),
-        lastUsed: provider.getLastUsed()
-      };
+      if (name === 'langchain') {
+        status[name] = {
+          connected: provider.isInitialized,
+          type: 'langchain',
+          capabilities: ['advanced-chains', 'conversation', 'rag-integration'],
+          lastUsed: null,
+          ragEnabled: this.ragEnabled
+        };
+      } else {
+        status[name] = {
+          connected: provider.isConnected(),
+          type: provider.getType(),
+          capabilities: provider.getCapabilities(),
+          lastUsed: provider.getLastUsed()
+        };
+      }
     }
     
+    return status;
+  }
+
+  /**
+   * Ingest documents into the RAG data store
+   * @param {Array|Object} documents - Document(s) to ingest
+   */
+  async ingestDocuments(documents) {
+    if (!this.ragEnabled) {
+      throw new Error('RAG not enabled. Initialize with enableRAG: true');
+    }
+
+    try {
+      const docsArray = Array.isArray(documents) ? documents : [documents];
+      const results = [];
+
+      for (const doc of docsArray) {
+        const result = await this.ragDataStore.ingestDocument(doc);
+        results.push(result);
+      }
+
+      const successful = results.filter(r => r.success).length;
+      const failed = results.filter(r => !r.success).length;
+
+      return {
+        success: failed === 0,
+        totalDocuments: docsArray.length,
+        successful,
+        failed,
+        results
+      };
+    } catch (error) {
+      console.error('Failed to ingest documents:', error);
+      return { success: false, error: error.message };
+    }
+  }
+
+  /**
+   * Search documents in the RAG data store
+   * @param {string} query - Search query
+   * @param {Object} options - Search options
+   */
+  async searchDocuments(query, options = {}) {
+    if (!this.ragEnabled) {
+      throw new Error('RAG not enabled. Initialize with enableRAG: true');
+    }
+
+    return await this.ragDataStore.searchDocuments(query, options);
+  }
+
+  /**
+   * Execute a LangChain chain
+   * @param {string} chainName - Name of the chain to execute
+   * @param {Object} input - Input data for the chain
+   * @param {Object} options - Execution options
+   */
+  async executeLangChain(chainName, input, options = {}) {
+    if (!this.langChainEnabled) {
+      throw new Error('LangChain not enabled. Initialize with enableLangChain: true');
+    }
+
+    return await this.langChainProvider.executeChain(chainName, input, options);
+  }
+
+  /**
+   * Create a custom LangChain chain
+   * @param {string} name - Chain name
+   * @param {Object} chainConfig - Chain configuration
+   */
+  async createCustomChain(name, chainConfig) {
+    if (!this.langChainEnabled) {
+      throw new Error('LangChain not enabled. Initialize with enableLangChain: true');
+    }
+
+    return await this.langChainProvider.createCustomChain(name, chainConfig);
+  }
+
+  /**
+   * Process a conversational query with device context
+   * @param {string} query - User query
+   * @param {Object} deviceData - Device context
+   * @param {Object} options - Query options
+   */
+  async processConversationalQuery(query, deviceData, options = {}) {
+    if (!this.langChainEnabled) {
+      throw new Error('LangChain not enabled. Initialize with enableLangChain: true');
+    }
+
+    return await this.langChainProvider.queryDeviceConversational(query, deviceData, options);
+  }
+
+  /**
+   * Get RAG and LangChain statistics
+   */
+  getAdvancedStatus() {
+    const status = {
+      ragEnabled: this.ragEnabled,
+      langChainEnabled: this.langChainEnabled,
+      rag: null,
+      langChain: null
+    };
+
+    if (this.ragEnabled) {
+      status.rag = this.ragDataStore.getStatistics();
+    }
+
+    if (this.langChainEnabled) {
+      status.langChain = this.langChainProvider.getAvailableChains();
+    }
+
     return status;
   }
 

@@ -1,0 +1,41 @@
+Device Troubleshooting Guide
+
+# Common Issues and Solutions
+
+## Battery Drain Problems
+- Close unnecessary background apps
+- Reduce screen brightness to optimal level
+- Disable location services for unused apps
+- Enable power saving mode when battery is low
+- Check for apps with excessive battery usage
+- Consider battery replacement if health is below 80%
+
+## Performance Issues  
+- Restart your device regularly (weekly recommended)
+- Clear app caches and temporary files
+- Free up storage space (keep at least 10% free)
+- Update to latest OS version
+- Close apps not currently in use
+- Disable unnecessary visual effects and animations
+
+## Connectivity Problems
+- Toggle Wi-Fi/Cellular off and on
+- Forget and reconnect to Wi-Fi networks
+- Reset network settings if issues persist
+- Check for carrier settings updates
+- Ensure signal strength is adequate
+- Contact carrier if persistent cellular issues
+
+## Storage Management
+- Delete old photos/videos or move to cloud storage
+- Remove downloaded content from streaming apps
+- Clear downloads folder
+- Uninstall apps you no longer use
+- Use built-in storage optimization tools
+
+## App-Related Issues
+- Force close and restart problematic apps
+- Update apps to latest versions
+- Clear app cache and data if needed
+- Reinstall apps if they continue to malfunction
+- Check app permissions for proper functionality

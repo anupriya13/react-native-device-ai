@@ -1,8 +1,5 @@
 module.exports = {
   presets: [
-    ['@react-native/babel-preset', {
-      unstable_transformProfile: 'hermes-stable'
-    }],
-    '@babel/preset-typescript'
-  ]
+    ['@babel/preset-env', { targets: { node: 'current' } }]
+  ],
 };
