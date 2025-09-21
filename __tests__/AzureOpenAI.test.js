@@ -44,6 +44,101 @@ describe('AzureOpenAI Service', () => {
         AzureOpenAI.setConfig(invalidConfig);
       }).toThrow();
     });
+
+    it('should set deployment parameter correctly', () => {
+      const config = {
+        apiKey: 'test-key-12345',
+        endpoint: 'https://test.openai.azure.com',
+        apiVersion: '2024-02-15-preview',
+        deployment: 'gpt-4'
+      };
+
+      AzureOpenAI.setConfig(config);
+
+      expect(AzureOpenAI.isConfigured()).toBe(true);
+      expect(AzureOpenAI.deployment).toBe('gpt-4');
+      expect(AzureOpenAI.apiVersion).toBe('2024-02-15-preview');
+    });
+
+    it('should use default deployment when not provided', () => {
+      const config = {
+        apiKey: 'test-key-12345',
+        endpoint: 'https://test.openai.azure.com'
+      };
+
+      AzureOpenAI.setConfig(config);
+
+      expect(AzureOpenAI.deployment).toBe('gpt-35-turbo');
+      expect(AzureOpenAI.apiVersion).toBe('2023-05-15');
+    });
+
+    it('should reset deployment to default when config is null', () => {
+      // First set a custom deployment
+      const config = {
+        apiKey: 'test-key-12345',
+        endpoint: 'https://test.openai.azure.com',
+        deployment: 'gpt-4'
+      };
+      AzureOpenAI.setConfig(config);
+      expect(AzureOpenAI.deployment).toBe('gpt-4');
+
+      // Then reset with null
+      AzureOpenAI.setConfig(null);
+      expect(AzureOpenAI.deployment).toBe('gpt-35-turbo');
+      expect(AzureOpenAI.isConfigured()).toBe(false);
+    });
+  });
+
+  describe('Environment Configuration', () => {
+    beforeEach(() => {
+      // Clear environment variables
+      delete process.env.AZURE_OPENAI_API_KEY;
+      delete process.env.AZURE_OPENAI_ENDPOINT;
+      delete process.env.AZURE_OPENAI_API_VERSION;
+      delete process.env.AZURE_OPENAI_DEPLOYMENT;
+    });
+
+    it('should load configuration from environment variables including deployment', () => {
+      process.env.AZURE_OPENAI_API_KEY = 'env-test-key';
+      process.env.AZURE_OPENAI_ENDPOINT = 'https://env.openai.azure.com';
+      process.env.AZURE_OPENAI_API_VERSION = '2024-02-15-preview';
+      process.env.AZURE_OPENAI_DEPLOYMENT = 'gpt-4-turbo';
+
+      const envConfig = AzureOpenAI.AzureOpenAI.loadFromEnvironment();
+
+      expect(envConfig).toEqual({
+        apiKey: 'env-test-key',
+        endpoint: 'https://env.openai.azure.com',
+        apiVersion: '2024-02-15-preview',
+        deployment: 'gpt-4-turbo'
+      });
+    });
+
+    it('should load configuration without deployment from environment', () => {
+      process.env.AZURE_OPENAI_API_KEY = 'env-test-key';
+      process.env.AZURE_OPENAI_ENDPOINT = 'https://env.openai.azure.com';
+      process.env.AZURE_OPENAI_API_VERSION = '2024-02-15-preview';
+      // No AZURE_OPENAI_DEPLOYMENT set
+
+      const envConfig = AzureOpenAI.AzureOpenAI.loadFromEnvironment();
+
+      expect(envConfig).toEqual({
+        apiKey: 'env-test-key',
+        endpoint: 'https://env.openai.azure.com',
+        apiVersion: '2024-02-15-preview',
+        deployment: undefined
+      });
+    });
+
+    it('should return null when required env vars are missing', () => {
+      process.env.AZURE_OPENAI_DEPLOYMENT = 'gpt-4';
+      // Missing API key and endpoint
+
+      const envConfig = AzureOpenAI.AzureOpenAI.loadFromEnvironment();
+
+      expect(envConfig).toBeNull();
+    });
+    });
   });
 
   describe('Insights Generation', () => {
@@ -154,6 +249,74 @@ describe('AzureOpenAI Service', () => {
 
       await expect(AzureOpenAI.generateInsights(deviceData, 'general'))
         .rejects.toThrow('Failed to generate AI insights');
+    });
+
+    it('should use custom deployment in API URL', async () => {
+      // Configure with custom deployment
+      const config = {
+        apiKey: 'test-key',
+        endpoint: 'https://test.openai.azure.com',
+        apiVersion: '2024-02-15-preview',
+        deployment: 'gpt-4'
+      };
+      AzureOpenAI.setConfig(config);
+
+      const mockResponse = {
+        data: {
+          choices: [{
+            message: {
+              content: 'Custom deployment response'
+            }
+          }]
+        }
+      };
+
+      mockedAxios.post.mockResolvedValue(mockResponse);
+
+      const deviceData = { platform: 'ios' };
+      await AzureOpenAI.generateInsights(deviceData, 'general');
+
+      expect(mockedAxios.post).toHaveBeenCalledWith(
+        'https://test.openai.azure.com/openai/deployments/gpt-4/chat/completions?api-version=2024-02-15-preview',
+        expect.any(Object),
+        expect.any(Object)
+      );
+    });
+  });
+
+  describe('Deployment Parameter Tests', () => {
+    beforeEach(() => {
+      AzureOpenAI.setConfig(null);
+    });
+
+    it('should use default deployment for API calls when not specified', async () => {
+      const config = {
+        apiKey: 'test-key',
+        endpoint: 'https://test.openai.azure.com'
+      };
+      AzureOpenAI.setConfig(config);
+
+      const mockResponse = {
+        data: {
+          choices: [{
+            message: {
+              content: 'Default deployment response'
+            }
+          }]
+        }
+      };
+
+      mockedAxios.post.mockResolvedValue(mockResponse);
+
+      const deviceData = { platform: 'ios' };
+      await AzureOpenAI.generateInsights(deviceData, 'general');
+
+      expect(mockedAxios.post).toHaveBeenCalledWith(
+        'https://test.openai.azure.com/openai/deployments/gpt-35-turbo/chat/completions?api-version=2023-05-15',
+        expect.any(Object),
+        expect.any(Object)
+      );
+    });
     });
 
     it.skip('should handle invalid response format', async () => {
