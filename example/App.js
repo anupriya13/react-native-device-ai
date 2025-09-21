@@ -16,16 +16,6 @@ import {
 
 import DeviceAI from 'react-native-device-ai';
 
-// Mock loadFromSecureStorage for demonstration purposes
-// In production, use proper secure storage like react-native-keychain
-const loadFromSecureStorage = async () => {
-  // This is a placeholder - in real apps, load from secure storage
-  return {
-    apiKey: process.env.AZURE_OPENAI_API_KEY || 'your-api-key-here',
-    endpoint: process.env.AZURE_OPENAI_ENDPOINT || 'https://your-resource.openai.azure.com'
-  };
-};
-
 const WindowsDemo = () => {
   const [windowsSystemInfo, setWindowsSystemInfo] = useState(null);
   const [deviceInfo, setDeviceInfo] = useState(null);
@@ -34,14 +24,9 @@ const WindowsDemo = () => {
   const [batteryInfo, setBatteryInfo] = useState(null);
   const [loading, setLoading] = useState(false);
   const [isNativeAvailable, setIsNativeAvailable] = useState(false);
-  // Azure OpenAI related state
-  const [azureConfigured, setAzureConfigured] = useState(false);
-  const [aiInsights, setAiInsights] = useState(null);
-  const [batteryAdvice, setBatteryAdvice] = useState(null);
 
   useEffect(() => {
     checkNativeAvailability();
-    configureAzureOpenAI();
   }, []);
 
   const checkNativeAvailability = () => {
@@ -54,26 +39,6 @@ const WindowsDemo = () => {
         'Windows TurboModule is not available. This demo requires the native Windows implementation.',
         [{ text: 'OK' }]
       );
-    }
-  };
-
-  const configureAzureOpenAI = async () => {
-    try {
-      // Method 1: Environment variables (recommended for development)
-      DeviceAI.configure({
-        apiKey: process.env.AZURE_OPENAI_API_KEY,
-        endpoint: process.env.AZURE_OPENAI_ENDPOINT
-      });
-
-      // Method 2: From secure storage (recommended for production)
-      const credentials = await loadFromSecureStorage();
-      DeviceAI.configure(credentials);
-
-      setAzureConfigured(true);
-      console.log('Azure OpenAI configured successfully');
-    } catch (error) {
-      console.log('Azure OpenAI configuration failed:', error.message);
-      setAzureConfigured(false);
     }
   };
 
@@ -175,50 +140,6 @@ const WindowsDemo = () => {
     }
   };
 
-  const getAIDeviceInsights = async () => {
-    if (!azureConfigured) {
-      Alert.alert('Configuration Required', 'Please configure Azure OpenAI credentials first.');
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const result = await DeviceAI.getDeviceInsights();
-      if (result.success) {
-        setAiInsights(result);
-        Alert.alert('Success', 'AI-powered device insights retrieved!');
-      } else {
-        Alert.alert('Error', result.error || 'Failed to get AI insights');
-      }
-    } catch (error) {
-      Alert.alert('Error', error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const getAIBatteryAdvice = async () => {
-    if (!azureConfigured) {
-      Alert.alert('Configuration Required', 'Please configure Azure OpenAI credentials first.');
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const result = await DeviceAI.getBatteryAdvice();
-      if (result.success) {
-        setBatteryAdvice(result);
-        Alert.alert('Success', 'AI battery optimization advice retrieved!');
-      } else {
-        Alert.alert('Error', result.error || 'Failed to get battery advice');
-      }
-    } catch (error) {
-      Alert.alert('Error', error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const formatBytes = (bytes) => {
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
@@ -230,9 +151,9 @@ const WindowsDemo = () => {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <Text style={styles.title}>🪟 Windows TurboModule Demo with Azure OpenAI</Text>
+        <Text style={styles.title}>🪟 Windows TurboModule Demo</Text>
         <Text style={styles.subtitle}>
-          Native Windows System Integration with AI-Powered Insights
+          Native Windows System Integration with AI Insights
         </Text>
 
         {/* Status Card */}
@@ -248,22 +169,6 @@ const WindowsDemo = () => {
           </Text>
           <Text style={styles.statusText}>
             Features: {DeviceAI.getSupportedFeatures().join(', ')}
-          </Text>
-        </View>
-
-        {/* Azure OpenAI Configuration Status */}
-        <View style={[styles.statusCard, azureConfigured ? styles.statusSuccess : styles.statusError]}>
-          <Text style={styles.statusTitle}>
-            {azureConfigured ? '🤖 Azure OpenAI Status' : '⚠️ Azure OpenAI Status'}
-          </Text>
-          <Text style={styles.statusText}>
-            Configuration: {azureConfigured ? 'Configured' : 'Not Configured'}
-          </Text>
-          <Text style={styles.statusText}>
-            AI Features: {azureConfigured ? 'Available' : 'Requires Setup'}
-          </Text>
-          <Text style={styles.statusText}>
-            Environment Variables: {process.env.AZURE_OPENAI_API_KEY ? 'Set' : 'Not Set'}
           </Text>
         </View>
 
@@ -307,23 +212,6 @@ const WindowsDemo = () => {
             disabled={loading || !isNativeAvailable}
           >
             <Text style={styles.buttonText}>🔍 WMI Queries</Text>
-          </TouchableOpacity>
-
-          {/* AI-Powered Features */}
-          <TouchableOpacity
-            style={[styles.button, styles.aiButton]}
-            onPress={getAIDeviceInsights}
-            disabled={loading || !azureConfigured}
-          >
-            <Text style={styles.buttonText}>🤖 AI Device Insights</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.button, styles.aiAdviceButton]}
-            onPress={getAIBatteryAdvice}
-            disabled={loading || !azureConfigured}
-          >
-            <Text style={styles.buttonText}>🧠 AI Battery Advice</Text>
           </TouchableOpacity>
         </View>
 
@@ -466,68 +354,6 @@ const WindowsDemo = () => {
           </View>
         )}
 
-        {/* AI Device Insights Display */}
-        {aiInsights && (
-          <View style={styles.resultContainer}>
-            <Text style={styles.resultTitle}>🤖 AI-Powered Device Insights</Text>
-            {aiInsights.insights && (
-              <View style={styles.infoCard}>
-                <Text style={styles.infoCardTitle}>AI Analysis</Text>
-                <Text style={styles.infoCardText}>{aiInsights.insights}</Text>
-              </View>
-            )}
-            {aiInsights.recommendations && (
-              <View style={styles.infoCard}>
-                <Text style={styles.infoCardTitle}>AI Recommendations</Text>
-                <Text style={styles.infoCardText}>{aiInsights.recommendations}</Text>
-              </View>
-            )}
-            {aiInsights.deviceInfo && (
-              <View style={styles.infoGrid}>
-                <View style={styles.infoCard}>
-                  <Text style={styles.infoCardTitle}>Device Summary</Text>
-                  <Text style={styles.infoCardText}>
-                    Platform: {aiInsights.deviceInfo.platform}
-                    {'\n'}OS: {aiInsights.deviceInfo.osVersion}
-                    {'\n'}Model: {aiInsights.deviceInfo.deviceModel}
-                  </Text>
-                </View>
-              </View>
-            )}
-          </View>
-        )}
-
-        {/* AI Battery Advice Display */}
-        {batteryAdvice && (
-          <View style={styles.resultContainer}>
-            <Text style={styles.resultTitle}>🧠 AI Battery Optimization Advice</Text>
-            {batteryAdvice.advice && (
-              <View style={styles.infoCard}>
-                <Text style={styles.infoCardTitle}>Optimization Tips</Text>
-                <Text style={styles.infoCardText}>{batteryAdvice.advice}</Text>
-              </View>
-            )}
-            {batteryAdvice.recommendations && (
-              <View style={styles.infoCard}>
-                <Text style={styles.infoCardTitle}>Recommended Actions</Text>
-                <Text style={styles.infoCardText}>{batteryAdvice.recommendations}</Text>
-              </View>
-            )}
-            {batteryAdvice.batteryInfo && (
-              <View style={styles.infoGrid}>
-                <View style={styles.infoCard}>
-                  <Text style={styles.infoCardTitle}>Current Battery Status</Text>
-                  <Text style={styles.infoCardText}>
-                    Level: {batteryAdvice.batteryInfo.level}%
-                    {'\n'}State: {batteryAdvice.batteryInfo.state}
-                    {'\n'}Charging: {batteryAdvice.batteryInfo.isCharging ? 'Yes' : 'No'}
-                  </Text>
-                </View>
-              </View>
-            )}
-          </View>
-        )}
-
         {/* Device Info Display */}
         {deviceInfo && (
           <View style={styles.resultContainer}>
@@ -575,17 +401,11 @@ const WindowsDemo = () => {
           <Text style={styles.instructionsTitle}>📖 How to Use</Text>
           <Text style={styles.instructionsText}>
             1. Ensure you're running on Windows with the TurboModule enabled
-            {'\n'}2. Configure Azure OpenAI credentials via environment variables or secure storage
-            {'\n'}3. Click "Get Windows System Info" to test native Windows APIs
-            {'\n'}4. Use "Enhanced Battery Info" to see cross-platform battery data with Windows enhancements
-            {'\n'}5. Try "Performance Counters" to see real-time system metrics
-            {'\n'}6. Use "WMI Queries" for detailed hardware information from Windows WMI
-            {'\n'}7. "Get Device Info" works on all platforms with basic device data
-            {'\n'}8. "AI Device Insights" provides comprehensive AI-powered analysis (requires Azure OpenAI)
-            {'\n'}9. "AI Battery Advice" gives personalized battery optimization tips (requires Azure OpenAI)
-            {'\n\n'}Azure OpenAI Configuration:
-            {'\n'}• Set AZURE_OPENAI_API_KEY and AZURE_OPENAI_ENDPOINT environment variables
-            {'\n'}• Or implement loadFromSecureStorage() for production apps
+            {'\n'}2. Click "Get Windows System Info" to test native Windows APIs
+            {'\n'}3. Use "Enhanced Battery Info" to see cross-platform battery data with Windows enhancements
+            {'\n'}4. Try "Performance Counters" to see real-time system metrics
+            {'\n'}5. Use "WMI Queries" for detailed hardware information from Windows WMI
+            {'\n'}6. "Get Device Info" works on all platforms with AI insights
             {'\n\n'}Note: Each button now retrieves different, specific data types to demonstrate proper data separation.
           </Text>
         </View>
@@ -671,12 +491,6 @@ const styles = StyleSheet.create({
   },
   batteryButton: {
     backgroundColor: '#e67e22',
-  },
-  aiButton: {
-    backgroundColor: '#8e44ad',
-  },
-  aiAdviceButton: {
-    backgroundColor: '#16a085',
   },
   buttonText: {
     color: 'white',
