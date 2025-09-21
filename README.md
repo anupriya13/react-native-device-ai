@@ -5,7 +5,7 @@
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![React Native](https://img.shields.io/badge/React%20Native-0.70%2B-green.svg)
 ![Platform](https://img.shields.io/badge/platform-Windows-blue.svg)
-![Version](https://img.shields.io/badge/version-3.2.0-brightgreen.svg)
+![Version](https://img.shields.io/badge/version-3.3.0-brightgreen.svg)
 
 ## Demo
 
@@ -26,6 +26,13 @@
 - 🚀 **TurboModule Support**: Modern React Native architecture with enhanced performance
 - 🎯 **TypeScript Ready**: Complete TypeScript definitions included
 - 🔌 **MCP Integration**: Model Context Protocol support for Windows-specific AI and data collection
+
+## What's New in v3.3.0
+
+### 📦 Package Updates
+- **Version Bump**: Updated package version to 3.3.0
+- **Stability Improvements**: General stability and performance enhancements
+- **Maintenance Release**: Updated dependencies and improved codebase consistency
 
 ## What's New in v3.2.0
 
