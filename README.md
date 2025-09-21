@@ -244,12 +244,15 @@ Configure Azure OpenAI for AI-powered insights.
   - `apiKey` (string): Your Azure OpenAI API key
   - `endpoint` (string): Your Azure OpenAI endpoint URL
   - `apiVersion` (string): Optional API version (defaults to 2023-05-15)
+  - `deployment` (string): Optional deployment name (defaults to gpt-35-turbo)
 
 ```javascript
 // ✅ Secure: Environment variables
 DeviceAI.configure({
   apiKey: process.env.AZURE_OPENAI_API_KEY,
-  endpoint: process.env.AZURE_OPENAI_ENDPOINT
+  endpoint: process.env.AZURE_OPENAI_ENDPOINT,
+  apiVersion: process.env.AZURE_OPENAI_API_VERSION,
+  deployment: process.env.AZURE_OPENAI_DEPLOYMENT
 });
 
 // ✅ Secure: From secure storage (React Native)
@@ -538,7 +541,9 @@ npm run windows  # Windows only
    ```javascript
    DeviceAI.configure({
      apiKey: process.env.AZURE_OPENAI_API_KEY,
-     endpoint: process.env.AZURE_OPENAI_ENDPOINT
+     endpoint: process.env.AZURE_OPENAI_ENDPOINT,
+     apiVersion: process.env.AZURE_OPENAI_API_VERSION, // Optional, defaults to 2023-05-15
+     deployment: process.env.AZURE_OPENAI_DEPLOYMENT   // Optional, defaults to gpt-35-turbo
    });
    ```
 
@@ -549,6 +554,12 @@ For security, store credentials in environment variables:
 # .env file
 AZURE_OPENAI_API_KEY=your_api_key_here
 AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com
+
+# Optional: API Version (defaults to 2023-05-15)
+AZURE_OPENAI_API_VERSION=2024-02-15-preview
+
+# Optional: Deployment Name (defaults to gpt-35-turbo)
+AZURE_OPENAI_DEPLOYMENT=gpt-4
 ```
 
 ## Error Handling

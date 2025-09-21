@@ -28,6 +28,20 @@ describe('AzureOpenAI Service', () => {
       expect(AzureOpenAI.isConfigured()).toBe(true);
     });
 
+    it('should set configuration with custom apiVersion and deployment', () => {
+      const config = {
+        apiKey: 'test-key',
+        endpoint: 'https://test.openai.azure.com',
+        apiVersion: '2024-02-15-preview',
+        deployment: 'gpt-4'
+      };
+
+      AzureOpenAI.setConfig(config);
+
+      expect(AzureOpenAI.isConfigured()).toBe(true);
+      // We can't directly access private properties, but we can test through API calls
+    });
+
     it('should handle null configuration', () => {
       AzureOpenAI.setConfig(null);
 
@@ -43,6 +57,47 @@ describe('AzureOpenAI Service', () => {
       expect(() => {
         AzureOpenAI.setConfig(invalidConfig);
       }).toThrow();
+    });
+
+    it('should load configuration from environment variables', () => {
+      // Mock environment variables
+      const originalEnv = process.env;
+      process.env = {
+        ...originalEnv,
+        AZURE_OPENAI_API_KEY: 'env-test-key',
+        AZURE_OPENAI_ENDPOINT: 'https://env-test.openai.azure.com',
+        AZURE_OPENAI_API_VERSION: '2024-02-15-preview',
+        AZURE_OPENAI_DEPLOYMENT: 'gpt-4-turbo'
+      };
+
+      const config = AzureOpenAI.AzureOpenAI.loadFromEnvironment();
+
+      expect(config).toEqual({
+        apiKey: 'env-test-key',
+        endpoint: 'https://env-test.openai.azure.com',
+        apiVersion: '2024-02-15-preview',
+        deployment: 'gpt-4-turbo'
+      });
+
+      // Restore environment
+      process.env = originalEnv;
+    });
+
+    it('should return null when environment variables are missing', () => {
+      // Mock environment without required variables
+      const originalEnv = process.env;
+      process.env = {
+        ...originalEnv
+      };
+      delete process.env.AZURE_OPENAI_API_KEY;
+      delete process.env.AZURE_OPENAI_ENDPOINT;
+
+      const config = AzureOpenAI.AzureOpenAI.loadFromEnvironment();
+
+      expect(config).toBeNull();
+
+      // Restore environment
+      process.env = originalEnv;
     });
   });
 
@@ -97,6 +152,44 @@ describe('AzureOpenAI Service', () => {
           }),
           timeout: 30000
         })
+      );
+    });
+
+    it('should use custom deployment in API URL', async () => {
+      // Reconfigure with custom deployment
+      const customConfig = {
+        apiKey: 'test-key',
+        endpoint: 'https://test.openai.azure.com',
+        apiVersion: '2024-02-15-preview',
+        deployment: 'gpt-4'
+      };
+      AzureOpenAI.setConfig(customConfig);
+
+      const mockResponse = {
+        data: {
+          choices: [{
+            message: {
+              content: 'Custom deployment response.'
+            }
+          }]
+        }
+      };
+
+      mockedAxios.post.mockResolvedValue(mockResponse);
+
+      const deviceData = {
+        platform: 'ios',
+        memory: { usedPercentage: 60 },
+        battery: { level: 80 }
+      };
+
+      const result = await AzureOpenAI.generateInsights(deviceData, 'general');
+
+      expect(result).toBe('Custom deployment response.');
+      expect(mockedAxios.post).toHaveBeenCalledWith(
+        'https://test.openai.azure.com/openai/deployments/gpt-4/chat/completions?api-version=2024-02-15-preview',
+        expect.any(Object),
+        expect.any(Object)
       );
     });
 
