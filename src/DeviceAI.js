@@ -45,6 +45,8 @@ class DeviceAI {
    * @param {Object} config - Azure OpenAI configuration
    * @param {string} config.apiKey - Azure OpenAI API key
    * @param {string} config.endpoint - Azure OpenAI endpoint URL
+   * @param {string} config.apiVersion - Optional API version (defaults to 2023-05-15)
+   * @param {string} config.deployment - Optional deployment name (defaults to gpt-35-turbo)
    */
   configure(config) {
     AzureOpenAI.setConfig(config);

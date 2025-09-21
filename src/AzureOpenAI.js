@@ -8,6 +8,7 @@ class AzureOpenAI {
     this.apiKey = null;
     this.endpoint = null;
     this.apiVersion = '2023-05-15';
+    this.deployment = 'gpt-35-turbo';
   }
 
   /**
@@ -16,16 +17,18 @@ class AzureOpenAI {
    * @param {string} config.apiKey - Azure OpenAI API key
    * @param {string} config.endpoint - Azure OpenAI endpoint URL
    * @param {string} config.apiVersion - Optional API version (defaults to 2023-05-15)
+   * @param {string} config.deployment - Optional deployment name (defaults to gpt-35-turbo)
    */
   setConfig(config) {
     if (!config) {
       this.apiKey = null;
       this.endpoint = null;
       this.apiVersion = '2023-05-15';
+      this.deployment = 'gpt-35-turbo';
       return;
     }
     
-    const { apiKey, endpoint, apiVersion } = config;
+    const { apiKey, endpoint, apiVersion, deployment } = config;
     
     // Validate required fields
     if (!apiKey || !endpoint) {
@@ -46,13 +49,15 @@ class AzureOpenAI {
     this.apiKey = apiKey;
     this.endpoint = endpoint.replace(/\/$/, ''); // Remove trailing slash
     this.apiVersion = apiVersion || '2023-05-15';
+    this.deployment = deployment || 'gpt-35-turbo';
     
     // Log successful configuration (without exposing credentials, unless in test mode)
     if (process.env.NODE_ENV !== 'test') {
       console.log('Azure OpenAI configured successfully:', {
         endpoint: this._maskEndpoint(endpoint),
         apiKeyLength: apiKey.length,
-        apiVersion: this.apiVersion
+        apiVersion: this.apiVersion,
+        deployment: this.deployment
       });
     }
   }
@@ -147,7 +152,7 @@ Instructions: Answer the user's question in ONE SHORT SENTENCE (maximum 20 words
    * @private
    */
   async _makeAPIRequest(prompt, options = {}) {
-    const url = `${this.endpoint}/openai/deployments/gpt-35-turbo/chat/completions?api-version=${this.apiVersion}`;
+    const url = `${this.endpoint}/openai/deployments/${this.deployment}/chat/completions?api-version=${this.apiVersion}`;
     
     const headers = {
       'Content-Type': 'application/json',
@@ -248,12 +253,14 @@ Instructions: Answer the user's question in ONE SHORT SENTENCE (maximum 20 words
       const apiKey = process.env.AZURE_OPENAI_API_KEY;
       const endpoint = process.env.AZURE_OPENAI_ENDPOINT;
       const apiVersion = process.env.AZURE_OPENAI_API_VERSION;
+      const deployment = process.env.AZURE_OPENAI_DEPLOYMENT;
       
       if (apiKey && endpoint) {
         return {
           apiKey,
           endpoint,
-          apiVersion
+          apiVersion,
+          deployment
         };
       }
     }
