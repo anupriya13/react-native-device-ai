@@ -21,6 +21,7 @@ const WindowsDemo = () => {
   const [deviceInfo, setDeviceInfo] = useState(null);
   const [performanceCounters, setPerformanceCounters] = useState(null);
   const [wmiData, setWmiData] = useState(null);
+  const [batteryInfo, setBatteryInfo] = useState(null);
   const [loading, setLoading] = useState(false);
   const [isNativeAvailable, setIsNativeAvailable] = useState(false);
 
@@ -84,13 +85,30 @@ const WindowsDemo = () => {
 
     setLoading(true);
     try {
-      // Get Windows system info which includes performance counters
-      const result = await DeviceAI.getWindowsSystemInfo();
-      if (result && result.performanceCounters) {
-        setPerformanceCounters(result.performanceCounters);
+      // Use the dedicated performance counters method
+      const result = await DeviceAI.getWindowsPerformanceCounters();
+      if (result) {
+        setPerformanceCounters(result);
         Alert.alert('Success', 'Performance counters retrieved!');
       } else {
         Alert.alert('Info', 'No performance counter data available');
+      }
+    } catch (error) {
+      Alert.alert('Error', error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getEnhancedBatteryInfo = async () => {
+    setLoading(true);
+    try {
+      const result = await DeviceAI.getEnhancedBatteryInfo();
+      if (result) {
+        setBatteryInfo(result);
+        Alert.alert('Success', 'Enhanced battery information retrieved!');
+      } else {
+        Alert.alert('Info', 'No battery data available');
       }
     } catch (error) {
       Alert.alert('Error', error.message);
@@ -107,10 +125,10 @@ const WindowsDemo = () => {
 
     setLoading(true);
     try {
-      // Get Windows system info which includes WMI data
-      const result = await DeviceAI.getWindowsSystemInfo();
-      if (result && result.wmiData) {
-        setWmiData(result.wmiData);
+      // Use the dedicated WMI data method
+      const result = await DeviceAI.getWindowsWmiData();
+      if (result) {
+        setWmiData(result);
         Alert.alert('Success', 'WMI data retrieved!');
       } else {
         Alert.alert('Info', 'No WMI data available');
@@ -170,6 +188,14 @@ const WindowsDemo = () => {
             disabled={loading}
           >
             <Text style={styles.buttonText}>📱 Get Device Info</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.button, styles.batteryButton]}
+            onPress={getEnhancedBatteryInfo}
+            disabled={loading}
+          >
+            <Text style={styles.buttonText}>🔋 Enhanced Battery Info</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -269,6 +295,65 @@ const WindowsDemo = () => {
           </View>
         )}
 
+        {/* Enhanced Battery Info Display */}
+        {batteryInfo && (
+          <View style={styles.resultContainer}>
+            <Text style={styles.resultTitle}>🔋 Enhanced Battery Information</Text>
+            <View style={styles.infoGrid}>
+              <View style={styles.infoCard}>
+                <Text style={styles.infoCardTitle}>Battery Level</Text>
+                <Text style={styles.infoCardText}>{batteryInfo.level}%</Text>
+              </View>
+              
+              <View style={styles.infoCard}>
+                <Text style={styles.infoCardTitle}>Battery State</Text>
+                <Text style={styles.infoCardText}>{batteryInfo.state}</Text>
+              </View>
+              
+              <View style={styles.infoCard}>
+                <Text style={styles.infoCardTitle}>Charging Status</Text>
+                <Text style={styles.infoCardText}>{batteryInfo.isCharging ? 'Yes' : 'No'}</Text>
+              </View>
+              
+              {batteryInfo.windowsSpecific && (
+                <View style={styles.infoCard}>
+                  <Text style={styles.infoCardTitle}>Windows Specific</Text>
+                  <Text style={styles.infoCardText}>
+                    OS: {batteryInfo.windowsSpecific.osVersion}
+                    {'\n'}Power Profile: {batteryInfo.windowsSpecific.powerProfile}
+                  </Text>
+                </View>
+              )}
+            </View>
+            <Text style={styles.infoCardText}>
+              Retrieved: {new Date(batteryInfo.timestamp).toLocaleTimeString()}
+            </Text>
+          </View>
+        )}
+
+        {/* WMI Data Display */}
+        {wmiData && (
+          <View style={styles.resultContainer}>
+            <Text style={styles.resultTitle}>🔍 WMI System Data</Text>
+            <View style={styles.infoGrid}>
+              <View style={styles.infoCard}>
+                <Text style={styles.infoCardTitle}>Computer System</Text>
+                <Text style={styles.infoCardText}>{wmiData.computerSystem}</Text>
+              </View>
+              
+              <View style={styles.infoCard}>
+                <Text style={styles.infoCardTitle}>Operating System</Text>
+                <Text style={styles.infoCardText}>{wmiData.operatingSystem}</Text>
+              </View>
+              
+              <View style={styles.infoCard}>
+                <Text style={styles.infoCardTitle}>Processor Info</Text>
+                <Text style={styles.infoCardText}>{wmiData.processor}</Text>
+              </View>
+            </View>
+          </View>
+        )}
+
         {/* Device Info Display */}
         {deviceInfo && (
           <View style={styles.resultContainer}>
@@ -317,9 +402,11 @@ const WindowsDemo = () => {
           <Text style={styles.instructionsText}>
             1. Ensure you're running on Windows with the TurboModule enabled
             {'\n'}2. Click "Get Windows System Info" to test native Windows APIs
-            {'\n'}3. Use "Performance Counters" to see real-time system metrics
-            {'\n'}4. Try "WMI Queries" for detailed hardware information
-            {'\n'}5. "Get Device Info" works on all platforms with AI insights
+            {'\n'}3. Use "Enhanced Battery Info" to see cross-platform battery data with Windows enhancements
+            {'\n'}4. Try "Performance Counters" to see real-time system metrics
+            {'\n'}5. Use "WMI Queries" for detailed hardware information from Windows WMI
+            {'\n'}6. "Get Device Info" works on all platforms with AI insights
+            {'\n\n'}Note: Each button now retrieves different, specific data types to demonstrate proper data separation.
           </Text>
         </View>
       </ScrollView>
@@ -401,6 +488,9 @@ const styles = StyleSheet.create({
   },
   quaternaryButton: {
     backgroundColor: '#9b59b6',
+  },
+  batteryButton: {
+    backgroundColor: '#e67e22',
   },
   buttonText: {
     color: 'white',

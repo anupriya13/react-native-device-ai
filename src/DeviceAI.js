@@ -644,6 +644,87 @@ class DeviceAI {
       throw error;
     }
   }
+
+  /**
+   * Get Windows performance counters (Windows only)
+   * Requires native module to be available
+   * @returns {Promise<Object>} Windows performance counter data
+   */
+  async getWindowsPerformanceCounters() {
+    if (Platform.OS !== 'windows') {
+      throw new Error('Windows performance counters are only available on Windows platform');
+    }
+
+    if (!this.isNativeModuleAvailable()) {
+      throw new Error('Native module required for Windows performance counters');
+    }
+
+    try {
+      const systemInfo = await NativeDeviceAI.getWindowsSystemInfo();
+      return systemInfo.performanceCounters;
+    } catch (error) {
+      console.error('Error getting Windows performance counters:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get Windows WMI data (Windows only)
+   * Requires native module to be available
+   * @returns {Promise<Object>} Windows WMI data
+   */
+  async getWindowsWmiData() {
+    if (Platform.OS !== 'windows') {
+      throw new Error('Windows WMI data is only available on Windows platform');
+    }
+
+    if (!this.isNativeModuleAvailable()) {
+      throw new Error('Native module required for Windows WMI data');
+    }
+
+    try {
+      const systemInfo = await NativeDeviceAI.getWindowsSystemInfo();
+      return systemInfo.wmiData;
+    } catch (error) {
+      console.error('Error getting Windows WMI data:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get enhanced battery information (cross-platform with Windows-specific enhancements)
+   * @returns {Promise<Object>} Enhanced battery information
+   */
+  async getEnhancedBatteryInfo() {
+    try {
+      const deviceInfo = await this.collectDeviceInfo();
+      const batteryInfo = {
+        level: deviceInfo.battery.level,
+        state: deviceInfo.battery.state,
+        isCharging: deviceInfo.battery.state === 'charging',
+        timestamp: new Date().toISOString()
+      };
+
+      // Add Windows-specific battery data if available
+      if (Platform.OS === 'windows' && this.isNativeModuleAvailable()) {
+        try {
+          const windowsInfo = await NativeDeviceAI.getWindowsSystemInfo();
+          batteryInfo.windowsSpecific = {
+            osVersion: windowsInfo.osVersion,
+            powerProfile: 'balanced', // Could be extracted from WMI
+            estimatedTimeRemaining: 'unknown' // Could be calculated
+          };
+        } catch (error) {
+          console.warn('Could not get Windows-specific battery info:', error.message);
+        }
+      }
+
+      return batteryInfo;
+    } catch (error) {
+      console.error('Error getting enhanced battery info:', error);
+      throw error;
+    }
+  }
 }
 
 // Export as singleton instance and class
