@@ -5,9 +5,6 @@
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
-    "android": "react-native run-android",
-    "ios": "react-native run-ios",
-    "macos": "react-native run-macos --scheme WebviewExample --project-path example/macos",
     "start": "react-native start",
     "windows": "install-windows-test-app --project-directory example/windows && react-native run-windows --root example --arch x64",
     "validate-windows": "node validate-windows-build.js",
@@ -86,7 +83,7 @@
       "./jest.setup.js"
     ],
     "transformIgnorePatterns": [
-      "node_modules/(?!(axios)/)"
+      "node_modules/(?!(axios|@modelcontextprotocol|mcp-sdk-client-ssejs|sse\\.js)/)"
     ],
     "moduleNameMapper": {
       "^react-native$": "<rootDir>/jest.setup.js"
@@ -97,32 +94,17 @@
     "url": "git+https://github.com/anupriya13/react-native-device-ai.git"
   },
   "files": [
-    "android/src",
-    "android/build.gradle",
-    "android/gradle.properties",
-    "apple",
-    "ios",
-    "macos",
     "windows",
     "lib",
     "src",
     "index.js",
     "index.d.ts",
-    "react-native-webview.podspec",
     "react-native.config.js"
   ],
   "codegenConfig": {
     "name": "ReactNativeDeviceAI",
     "type": "all",
     "jsSrcsDir": "./src",
-    "android": {
-      "javaPackageName": "com.reactnativecommunity.deviceai"
-    },
-    "ios": {
-      "modulesProvider": {
-        "ReactNativeDeviceAI": "ReactNativeDeviceAI"
-      }
-    },
     "windows": {
       "namespace": "ReactNativeDeviceAiCodegen",
       "outputDirectory": "windows/ReactNativeDeviceAi/codegen",

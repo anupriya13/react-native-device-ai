@@ -8,14 +8,14 @@ const { Platform } = require('react-native');
 const originalPlatformOS = Platform.OS;
 
 describe('OS-Specific MCP Servers', () => {
-  let Enhanced;
+  let enhanced;
   
   beforeEach(() => {
     jest.clearAllMocks();
     
     // Fresh import to reset state
     delete require.cache[require.resolve('../src/EnhancedDeviceAI.js')];
-    Enhanced = require('../src/EnhancedDeviceAI.js');
+    enhanced = require('../src/EnhancedDeviceAI.js');
   });
 
   afterEach(() => {
@@ -33,39 +33,41 @@ describe('OS-Specific MCP Servers', () => {
       writable: true
     });
 
-    const enhanced = new Enhanced();
+    const enhanced = require('../src/EnhancedDeviceAI.js');
     const result = await enhanced.initializeMCP();
 
     expect(result.success).toBe(true);
     expect(result.dataSources).toContain('windows-device-server');
   });
 
-  test('Android MCP server should be initialized on Android platform', async () => {
+  test('Non-Windows platforms should not initialize MCP server', async () => {
     // Mock Android platform
     Object.defineProperty(Platform, 'OS', {
       value: 'android',
       writable: true
     });
 
-    const enhanced = new Enhanced();
+    const enhanced = require('../src/EnhancedDeviceAI.js');
     const result = await enhanced.initializeMCP();
 
     expect(result.success).toBe(true);
-    expect(result.dataSources).toContain('android-device-server');
+    // Should not contain any OS-specific servers since only Windows is supported
+    expect(result.dataSources).not.toContain('android-device-server');
   });
 
-  test('iOS MCP server should be initialized on iOS platform', async () => {
+  test('iOS platform should not initialize MCP server', async () => {
     // Mock iOS platform
     Object.defineProperty(Platform, 'OS', {
       value: 'ios',
       writable: true
     });
 
-    const enhanced = new Enhanced();
+    const enhanced = require('../src/EnhancedDeviceAI.js');
     const result = await enhanced.initializeMCP();
 
     expect(result.success).toBe(true);
-    expect(result.dataSources).toContain('ios-device-server');
+    // Should not contain any OS-specific servers since only Windows is supported
+    expect(result.dataSources).not.toContain('ios-device-server');
   });
 
   test('Should collect OS-specific data when includeOSSpecific is true', async () => {
@@ -75,7 +77,7 @@ describe('OS-Specific MCP Servers', () => {
       writable: true
     });
 
-    const enhanced = new Enhanced();
+    const enhanced = require('../src/EnhancedDeviceAI.js');
     await enhanced.initializeMCP();
 
     const insights = await enhanced.getDeviceInsights({
@@ -90,7 +92,7 @@ describe('OS-Specific MCP Servers', () => {
   });
 
   test('Should not collect OS-specific data when includeOSSpecific is false', async () => {
-    const enhanced = new Enhanced();
+    const enhanced = require('../src/EnhancedDeviceAI.js');
     await enhanced.initializeMCP();
 
     const insights = await enhanced.getDeviceInsights({
@@ -110,42 +112,40 @@ describe('OS-Specific MCP Servers', () => {
       writable: true
     });
 
-    const WindowsMCPServer = require('../src/WindowsMCPServer.js').default;
+    const WindowsMCPServer = require('../src/WindowsMCPServer.js');
     const server = new WindowsMCPServer();
 
     expect(server.isAvailable()).toBe(true);
     expect(server.getCapabilities()).toContain('windows-system-info');
     expect(server.getCapabilities()).toContain('wmi-data-collection');
+    expect(server.getMCPServer()).toBeDefined();
+    expect(server.getMCPServer().name).toBe('react-native-device-ai-windows');
   });
 
-  test('Android MCP server should collect Android-specific data', async () => {
+  test('Non-Windows platforms should not have MCP servers available', async () => {
     // Mock Android platform
     Object.defineProperty(Platform, 'OS', {
-      value: 'android',
+      value: 'android', 
       writable: true
     });
 
-    const AndroidMCPServer = require('../src/AndroidMCPServer.js').default;
-    const server = new AndroidMCPServer();
+    const WindowsMCPServer = require('../src/WindowsMCPServer.js');
+    const server = new WindowsMCPServer();
 
-    expect(server.isAvailable()).toBe(true);
-    expect(server.getCapabilities()).toContain('android-system-info');
-    expect(server.getCapabilities()).toContain('sensor-data-collection');
+    expect(server.isAvailable()).toBe(false);
   });
 
-  test('iOS MCP server should collect iOS-specific data', async () => {
+  test('iOS platform should not have Windows MCP server available', async () => {
     // Mock iOS platform
     Object.defineProperty(Platform, 'OS', {
       value: 'ios',
       writable: true
     });
 
-    const iOSMCPServer = require('../src/iOSMCPServer.js').default;
-    const server = new iOSMCPServer();
+    const WindowsMCPServer = require('../src/WindowsMCPServer.js');
+    const server = new WindowsMCPServer();
 
-    expect(server.isAvailable()).toBe(true);
-    expect(server.getCapabilities()).toContain('ios-system-info');
-    expect(server.getCapabilities()).toContain('core-motion-data');
+    expect(server.isAvailable()).toBe(false);
   });
 
   test('Should gracefully handle unavailable OS-specific servers', async () => {
@@ -155,7 +155,7 @@ describe('OS-Specific MCP Servers', () => {
       writable: true
     });
 
-    const enhanced = new Enhanced();
+    const enhanced = require('../src/EnhancedDeviceAI.js');
     await enhanced.initializeMCP();
 
     const insights = await enhanced.getDeviceInsights({
@@ -174,7 +174,7 @@ describe('OS-Specific MCP Servers', () => {
       writable: true
     });
 
-    const enhanced = new Enhanced();
+    const enhanced = require('../src/EnhancedDeviceAI.js');
     await enhanced.initializeMCP();
 
     const response = await enhanced.queryDeviceInfo(
@@ -213,7 +213,7 @@ describe('OS-Specific MCP Servers', () => {
   });
 
   test('Enhanced device insights should include MCP status and OS-specific data', async () => {
-    const enhanced = new Enhanced();
+    const enhanced = require('../src/EnhancedDeviceAI.js');
     await enhanced.initializeMCP();
 
     const insights = await enhanced.getDeviceInsights();

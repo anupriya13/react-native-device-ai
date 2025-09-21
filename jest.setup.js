@@ -35,6 +35,34 @@ jest.mock('react-native', () => mockReactNative);
 // Mock axios for Azure OpenAI tests
 jest.mock('axios');
 
+// Mock MCP SDK modules
+jest.mock('@modelcontextprotocol/sdk/client/index.js', () => ({
+  Client: jest.fn().mockImplementation(() => ({
+    connect: jest.fn().mockResolvedValue({}),
+    disconnect: jest.fn().mockResolvedValue({}),
+    listResources: jest.fn().mockResolvedValue({ resources: [] }),
+    listTools: jest.fn().mockResolvedValue({ tools: [] }),
+    callTool: jest.fn().mockResolvedValue({ result: {} })
+  }))
+}));
+
+jest.mock('@modelcontextprotocol/sdk/server/index.js', () => ({
+  Server: jest.fn().mockImplementation(() => ({
+    registerTool: jest.fn(),
+    registerResource: jest.fn(),
+    connect: jest.fn().mockResolvedValue({}),
+    name: 'test-server'
+  }))
+}));
+
+jest.mock('@modelcontextprotocol/sdk/server/stdio.js', () => ({
+  StdioServerTransport: jest.fn().mockImplementation(() => ({}))
+}));
+
+jest.mock('mcp-sdk-client-ssejs', () => ({
+  SSEClientTransport: jest.fn().mockImplementation(() => ({}))
+}));
+
 // Global test timeout
 jest.setTimeout(10000);
 
