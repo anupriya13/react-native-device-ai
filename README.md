@@ -1,30 +1,51 @@
 # react-native-device-ai
 
-> Cross-platform React Native module that generates AI-powered insights and recommendations about the user's device.
+> **Windows-focused** React Native module that generates AI-powered insights and recommendations about the user's device using the Model Context Protocol (MCP).
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![React Native](https://img.shields.io/badge/React%20Native-0.70%2B-green.svg)
-![Platform](https://img.shields.io/badge/platform-iOS%20%7C%20Android%20%7C%20Windows-lightgrey.svg)
+![Platform](https://img.shields.io/badge/platform-Windows-blue.svg)
+![Version](https://img.shields.io/badge/version-3.2.0-brightgreen.svg)
 
 ## Demo
 
 ![Demo Screenshot](https://github.com/user-attachments/assets/466fbee5-355b-42d5-b658-caabafa5bb90)
 
-*The demo shows the React Native Device AI module running on Windows with TurboModule architecture, displaying Windows-specific system information, device insights, and AI-powered recommendations.*
+*The demo shows the React Native Device AI module running on Windows with TurboModule architecture, displaying Windows-specific system information, device insights, performance counters, WMI data, and AI-powered recommendations.*
 
 ## Features
 
 - 🤖 **AI-Powered Insights**: Get intelligent device analysis using Azure OpenAI
-- 🔋 **Battery Optimization**: Receive personalized battery saving recommendations
-- ⚡ **Performance Tips**: Get actionable advice to improve device performance
-- 🏗️ **Windows Architecture**: Native Windows fabric for deep system diagnostics
-- 🌐 **Cross-Platform**: Works on iOS, Android, and Windows
-- 📊 **Real-time Data**: Collect comprehensive device information and system stats
+- 🔋 **Enhanced Battery Analysis**: Comprehensive battery information with Windows-specific enhancements
+- ⚡ **Performance Monitoring**: Real-time performance counters and system metrics
+- 🔍 **WMI Integration**: Direct access to Windows Management Instrumentation data
+- 🪟 **Windows-Focused Architecture**: Native Windows TurboModule for deep system diagnostics
+- 📊 **Separated Data Types**: Dedicated methods for different data categories (performance, WMI, battery)
 - 🛡️ **Error Handling**: Robust validation and graceful error handling
 - 🔄 **Fallback Mode**: Works without AI configuration using built-in insights
 - 🚀 **TurboModule Support**: Modern React Native architecture with enhanced performance
 - 🎯 **TypeScript Ready**: Complete TypeScript definitions included
-- 🔌 **MCP Integration**: Model Context Protocol support for multi-provider AI and enhanced data collection
+- 🔌 **MCP Integration**: Model Context Protocol support for Windows-specific AI and data collection
+
+## What's New in v3.2.0
+
+### 🎯 Windows-Focused Architecture
+- **Platform Consolidation**: Removed Android/iOS support to focus exclusively on Windows
+- **Enhanced Windows Features**: Deeper Windows system integration and optimization
+
+### 🔧 New Dedicated Methods
+- **`getWindowsPerformanceCounters()`**: Get only performance data (CPU, memory, disk usage)
+- **`getWindowsWmiData()`**: Get only WMI system information
+- **`getEnhancedBatteryInfo()`**: Cross-platform battery data with Windows enhancements
+
+### 📊 Improved Data Separation
+- **Clear Data Types**: Each method returns specific, separated data instead of combined responses
+- **Better UX**: Example app now shows distinct data for each button press
+- **Optimized Communication**: Enhanced Windows TurboModule to JS data flow
+
+### 🔌 Windows-Focused MCP
+- **Specialized Integration**: MCP implementation optimized for Windows-specific AI and data
+- **Streamlined Architecture**: Removed cross-platform complexity for better Windows performance
 
 ## Architecture
 
@@ -64,14 +85,14 @@ react-native link react-native-device-ai
 
 ### Platform Support
 
-| Platform | Support | Native Module | TurboModule |
-|----------|---------|---------------|-------------|
-| iOS      | ✅      | ✅           | ✅          |
-| Android  | ✅      | ✅           | ✅          |
-| Windows  | ✅      | ✅           | ✅          |
-| Web      | ⚠️*     | ❌           | ❌          |
+| Platform | Support | Native Module | TurboModule | Notes |
+|----------|---------|---------------|-------------|--------|
+| Windows  | ✅      | ✅           | ✅          | Full support with MCP |
+| iOS      | ❌      | ❌           | ❌          | Removed in v3.2.0 |
+| Android  | ❌      | ❌           | ❌          | Removed in v3.2.0 |
+| Web      | ❌      | ❌           | ❌          | Not supported |
 
-*Web support through JavaScript fallback mode only
+**Note**: Starting with v3.2.0, this module focuses exclusively on Windows platform to provide the best possible Windows-specific features and performance.
 
 ## Quick Start
 
@@ -104,23 +125,48 @@ console.log(insights.recommendations); // Actionable tips
 ```javascript
 import { Enhanced } from 'react-native-device-ai';
 
-// Initialize MCP for multi-provider AI support
+// Initialize MCP for Windows-specific AI support
 await Enhanced.initializeMCP();
 
-// Get device insights with multiple AI providers
+// Get device insights with Windows TurboModule integration
 const insights = await Enhanced.getDeviceInsights({
-  preferredProviders: ['azure-openai', 'openai', 'anthropic'], // Failover support
-  dataSources: ['system-monitor', 'battery-monitor'] // Enhanced data collection
+  preferredProviders: ['azure-openai', 'openai'], // Failover support
+  dataSources: ['windows-device-server'], // Windows-specific data collection
+  includeOSSpecific: true
 });
 
 console.log('AI Provider Used:', insights.providers);
-console.log('Enhanced Device Data:', insights.deviceInfo.mcpData);
+console.log('Windows Device Data:', insights.deviceInfo.windowsSpecific);
 
-// Natural language queries with provider preferences
+// Natural language queries with Windows context
 const response = await Enhanced.queryDeviceInfo(
-  "How is my battery performing?",
-  { preferredProviders: ['anthropic'] }
+  "How is my Windows system performing?",
+  { includeOSSpecific: true }
 );
+```
+
+### New Dedicated Windows Methods (v3.2.0)
+
+```javascript
+import DeviceAI from 'react-native-device-ai';
+
+// Get only performance counter data
+const perfData = await DeviceAI.getWindowsPerformanceCounters();
+console.log('CPU Usage:', perfData.cpuUsage);
+console.log('Memory Usage:', perfData.memoryUsage);
+console.log('Disk Usage:', perfData.diskUsage);
+
+// Get only WMI system information
+const wmiData = await DeviceAI.getWindowsWmiData();
+console.log('Computer System:', wmiData.computerSystem);
+console.log('Operating System:', wmiData.operatingSystem);
+console.log('Processor:', wmiData.processor);
+
+// Get enhanced battery information with Windows enhancements
+const batteryInfo = await DeviceAI.getEnhancedBatteryInfo();
+console.log('Battery Level:', batteryInfo.level);
+console.log('Charging:', batteryInfo.isCharging);
+console.log('Windows Specific:', batteryInfo.windowsSpecific);
 ```
 
 ## 🔐 Credential Configuration
@@ -146,39 +192,40 @@ cp .env.example .env
 
 ## 🔌 MCP (Model Context Protocol) Integration
 
-The module now supports **MCP** for standardized connections to multiple AI providers and enhanced device data sources.
+The module now supports **MCP** for standardized Windows-specific AI integration and enhanced device data collection.
 
 ### MCP Benefits
 
-- **🔄 Multi-Provider AI**: Connect to Azure OpenAI, OpenAI, Anthropic, and local models
-- **📊 Enhanced Data Collection**: Real-time system monitoring via MCP data sources
-- **⚡ Automatic Failover**: Seamless switching between AI providers
-- **💰 Cost Optimization**: Route requests to the most cost-effective provider
-- **🏢 Enterprise Integration**: Connect to MDM and compliance systems
+- **🔄 Windows-Focused AI**: Optimized connections to AI providers for Windows-specific insights
+- **📊 Enhanced Windows Data**: Real-time Windows system monitoring via MCP integration
+- **⚡ Performance Separation**: Dedicated methods for performance, WMI, and battery data
+- **💰 Cost Optimization**: Efficient Windows-specific data collection
+- **🏢 Enterprise Integration**: Windows-specific compliance and monitoring systems
 
 ### Quick MCP Setup
 
 ```javascript
 import { Enhanced } from 'react-native-device-ai';
 
-// Initialize MCP with default providers
+// Initialize MCP with Windows focus
 await Enhanced.initializeMCP();
 
-// Add custom AI provider
+// Add custom AI provider for Windows analysis
 await Enhanced.addMCPServer({
-  name: 'claude-ai',
+  name: 'windows-ai-analyzer',
   type: 'ai-provider',
-  endpoint: 'https://api.anthropic.com',
+  endpoint: 'https://api.example.com',
   auth: {
-    apiKey: process.env.ANTHROPIC_API_KEY,
-    type: 'x-api-key'
+    apiKey: process.env.CUSTOM_API_KEY,
+    type: 'bearer'
   }
 });
 
-// Get insights with provider preferences
+// Get Windows-specific insights
 const insights = await Enhanced.getDeviceInsights({
-  preferredProviders: ['claude-ai', 'azure-openai', 'openai'],
-  dataSources: ['system-monitor', 'enterprise-mdm']
+  preferredProviders: ['windows-ai-analyzer', 'azure-openai'],
+  dataSources: ['windows-device-server'],
+  includeOSSpecific: true
 });
 ```
 
@@ -346,18 +393,82 @@ if (Platform.OS === 'windows' && DeviceAI.isNativeModuleAvailable()) {
   
   // Example response:
   {
-    wmiData: {
-      osVersion: 'Windows 11',
-      buildNumber: '22000'
-    },
+    osVersion: 'Windows 11',
+    buildNumber: '22000',
+    processor: 'Intel Core i7',
+    architecture: 'x64',
     performanceCounters: {
       cpuUsage: 25.5,
-      memoryUsage: 65.2
+      memoryUsage: 65.2,
+      diskUsage: 12.1
     },
-    systemMetrics: {
-      totalMemory: 17179869184,
-      availableMemory: 6442450944
+    wmiData: {
+      computerSystem: 'Win32_ComputerSystem',
+      operatingSystem: 'Microsoft Windows 11',
+      processor: 'Intel(R) Core(TM) i7'
     }
+  }
+}
+```
+
+### DeviceAI.getWindowsPerformanceCounters() (Windows only)
+
+Get only Windows performance counter data (CPU, memory, disk usage).
+
+**Returns:** `Promise<Object>`
+**Platform:** Windows only
+**Requires:** Native TurboModule
+
+```javascript
+const perfData = await DeviceAI.getWindowsPerformanceCounters();
+
+// Example response:
+{
+  cpuUsage: 25.3,
+  memoryUsage: 64.8,
+  diskUsage: 12.1
+}
+```
+
+### DeviceAI.getWindowsWmiData() (Windows only)
+
+Get only Windows WMI (Windows Management Instrumentation) data.
+
+**Returns:** `Promise<Object>`
+**Platform:** Windows only
+**Requires:** Native TurboModule
+
+```javascript
+const wmiData = await DeviceAI.getWindowsWmiData();
+
+// Example response:
+{
+  computerSystem: 'Win32_ComputerSystem',
+  operatingSystem: 'Microsoft Windows 11',
+  processor: 'Intel(R) Core(TM) i7'
+}
+```
+
+### DeviceAI.getEnhancedBatteryInfo()
+
+Get enhanced battery information with Windows-specific enhancements when available.
+
+**Returns:** `Promise<Object>`
+**Platform:** Cross-platform (with Windows enhancements)
+
+```javascript
+const batteryInfo = await DeviceAI.getEnhancedBatteryInfo();
+
+// Example response:
+{
+  level: 85,
+  state: 'discharging',
+  isCharging: false,
+  timestamp: '2023-12-07T10:30:00.000Z',
+  windowsSpecific: {  // Only on Windows
+    osVersion: 'Windows 11',
+    powerProfile: 'balanced',
+    estimatedTimeRemaining: 'unknown'
   }
 }
 ```
@@ -400,14 +511,15 @@ The `/example` directory contains a complete React Native app demonstrating all 
 ```bash
 cd example
 npm install
-npm run android  # or ios, windows
+npm run windows  # Windows only
 ```
 
 ### Example App Features
-- Interactive dashboard for testing all API methods
-- Visual display of device information and AI insights
-- Battery and performance monitoring
-- Real-time device statistics
+- Interactive dashboard for testing all Windows-specific API methods
+- Visual display of separated data types (performance, WMI, battery)
+- Enhanced battery information with Windows-specific data
+- Real-time Windows performance monitoring
+- WMI system information display
 
 ## Azure OpenAI Configuration
 
@@ -462,9 +574,10 @@ if (result.success) {
 ## Requirements
 
 - **React Native**: 0.70.0 or higher
-- **Platform Support**: iOS 11+, Android API 21+, Windows 10+
+- **Platform Support**: Windows 10+ (Windows-focused as of v3.2.0)
 - **Dependencies**: axios for API requests
 - **Optional**: Azure OpenAI account for AI-powered insights
+- **Windows**: Visual Studio 2019+ with C++ workload for native compilation
 
 ## Development
 
@@ -487,8 +600,23 @@ npm test
 Requires Visual Studio 2019+ with C++ workload:
 
 ```bash
-cd windows/DeviceAIFabric
-msbuild DeviceAIFabric.vcxproj
+cd windows/ReactNativeDeviceAi
+msbuild ReactNativeDeviceAi.vcxproj
+```
+
+### Windows-Specific Development
+
+```bash
+# Build Windows TurboModule
+cd windows/ReactNativeDeviceAi
+msbuild ReactNativeDeviceAi.sln
+
+# Test Windows-specific features
+npm run demo:windows
+
+# Run Windows example app
+cd example
+npm run windows
 ```
 
 ## Contributing
@@ -501,18 +629,19 @@ msbuild DeviceAIFabric.vcxproj
 
 ## Roadmap
 
-- [x] **MCP Integration**: Model Context Protocol support for multi-provider AI ✅
-- [x] **Multi-Provider AI**: Support for Azure OpenAI, OpenAI, Anthropic, local models ✅
-- [x] **Enhanced Data Collection**: Real-time monitoring via MCP data sources ✅
-- [ ] **Real-time Streaming**: Live device monitoring with streaming updates
-- [ ] **Multi-language Support**: AI responses in multiple languages
-- [ ] **Detailed Explanations**: Granular recommendations with explanations
+- [x] **MCP Integration**: Model Context Protocol support for Windows-focused AI ✅
+- [x] **Windows TurboModule**: Complete Windows-specific implementation ✅
+- [x] **Separated Data Types**: Dedicated methods for performance, WMI, and battery data ✅
+- [x] **Enhanced Windows APIs**: WMI integration and performance counters ✅
+- [ ] **Real-time Streaming**: Live Windows system monitoring with streaming updates
+- [ ] **Advanced Windows Features**: Registry monitoring, Windows Services integration
+- [ ] **Windows-Specific AI Models**: Specialized AI models for Windows optimization
 - [ ] **Offline Caching**: Cache last AI insights for offline access
-- [ ] **Push Notifications**: Proactive alerts for device optimization
-- [ ] **iOS/Android Native Modules**: Enhanced platform-specific data collection
-- [ ] **Machine Learning Models**: On-device ML for privacy-focused insights
-- [ ] **IoT Integration**: Connect to IoT sensors and smart home devices
-- [ ] **Edge Computing**: Distributed AI processing for better performance
+- [ ] **Push Notifications**: Proactive alerts for Windows system optimization
+- [ ] **Windows Admin Features**: Administrative tools and system management
+- [ ] **Machine Learning Models**: On-device ML for Windows-specific insights
+- [ ] **Enterprise Integration**: Enhanced enterprise and domain features
+- [ ] **Edge Computing**: Distributed AI processing for Windows environments
 
 ## License
 
@@ -557,10 +686,13 @@ To test the module functionality quickly:
 # Run standalone demo (Node.js)
 node standalone-demo.js
 
-# Run example React Native app
+# Run Windows-specific demo
+node windows-demo-standalone.js
+
+# Run example React Native app (Windows only)
 cd example
 npm install
-npm run android  # or ios, windows
+npm run windows
 ```
 
 ## Troubleshooting

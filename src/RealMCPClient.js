@@ -7,8 +7,6 @@ const { Client } = require('@modelcontextprotocol/sdk/client/index.js');
 const { SSEClientTransport } = require('mcp-sdk-client-ssejs');
 const { Platform } = require('react-native');
 const WindowsMCPServer = require('./WindowsMCPServer');
-const AndroidMCPServer = require('./AndroidMCPServer');
-const iOSMCPServer = require('./iOSMCPServer');
 
 /**
  * Real MCP Client using actual Model Context Protocol
@@ -390,30 +388,20 @@ class RealMCPClient {
    */
   async _initializeLocalServers() {
     try {
-      let osServer;
-      
-      switch (Platform.OS) {
-        case 'windows':
-          osServer = new WindowsMCPServer();
-          break;
-        case 'android':
-          osServer = new AndroidMCPServer();
-          break;
-        case 'ios':
-          osServer = new iOSMCPServer();
-          break;
-        default:
-          console.log(`No OS-specific MCP server available for platform: ${Platform.OS}`);
-          return;
+      if (Platform.OS !== 'windows') {
+        console.log(`MCP server only supported on Windows platform, current platform: ${Platform.OS}`);
+        return;
       }
 
+      const osServer = new WindowsMCPServer();
+      
       if (osServer && osServer.isAvailable()) {
         await osServer.connect();
         this.servers.set(osServer.name, osServer);
-        console.log(`✅ Local ${Platform.OS} MCP server initialized`);
+        console.log(`✅ Local Windows MCP server initialized`);
       }
     } catch (error) {
-      console.error('Failed to initialize local MCP servers:', error);
+      console.error('Failed to initialize Windows MCP server:', error);
       // Don't throw - continue with external connections
     }
   }
@@ -468,9 +456,10 @@ class RealMCPClient {
         return { 'Authorization': `Bearer ${auth.token}` };
       case 'api-key':
         return { 'X-API-Key': auth.apiKey };
-      case 'basic':
+      case 'basic': {
         const encoded = btoa(`${auth.username}:${auth.password}`);
         return { 'Authorization': `Basic ${encoded}` };
+      }
       default:
         return {};
     }

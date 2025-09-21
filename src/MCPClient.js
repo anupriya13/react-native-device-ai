@@ -5,8 +5,6 @@
 
 import { Platform } from 'react-native';
 const WindowsMCPServer = require('./WindowsMCPServer');
-const AndroidMCPServer = require('./AndroidMCPServer');
-const iOSMCPServer = require('./iOSMCPServer');
 
 /**
  * MCP Client for managing connections to MCP servers and AI providers
@@ -68,7 +66,7 @@ class MCPClient {
    */
   async connectServer(serverConfig) {
     try {
-      const { name, type, endpoint, auth } = serverConfig;
+      const { name, type, endpoint } = serverConfig;
       
       if (!name || !type || !endpoint) {
         throw new Error('Server configuration must include name, type, and endpoint');
@@ -324,39 +322,19 @@ class MCPClient {
    */
   async _initializeOSSpecificServers() {
     try {
-      switch (Platform.OS) {
-        case 'windows':
-          const windowsServer = new WindowsMCPServer();
-          if (windowsServer.isAvailable()) {
-            await windowsServer.connect();
-            this.deviceDataSources.set(windowsServer.name, windowsServer);
-            console.log('Windows-specific MCP server initialized');
-          }
-          break;
+      if (Platform.OS !== 'windows') {
+        console.log(`MCP server only supported on Windows platform, current platform: ${Platform.OS}`);
+        return;
+      }
 
-        case 'android':
-          const androidServer = new AndroidMCPServer();
-          if (androidServer.isAvailable()) {
-            await androidServer.connect();
-            this.deviceDataSources.set(androidServer.name, androidServer);
-            console.log('Android-specific MCP server initialized');
-          }
-          break;
-
-        case 'ios':
-          const iosServer = new iOSMCPServer();
-          if (iosServer.isAvailable()) {
-            await iosServer.connect();
-            this.deviceDataSources.set(iosServer.name, iosServer);
-            console.log('iOS-specific MCP server initialized');
-          }
-          break;
-
-        default:
-          console.log(`No OS-specific MCP server available for platform: ${Platform.OS}`);
+      const windowsServer = new WindowsMCPServer();
+      if (windowsServer.isAvailable()) {
+        await windowsServer.connect();
+        this.deviceDataSources.set(windowsServer.name, windowsServer);
+        console.log('Windows-specific MCP server initialized');
       }
     } catch (error) {
-      console.error('Failed to initialize OS-specific MCP servers:', error);
+      console.error('Failed to initialize Windows MCP server:', error);
       // Don't throw error - fallback to generic servers
     }
   }

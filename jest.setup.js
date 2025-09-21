@@ -8,6 +8,21 @@ const mockReactNative = {
     OS: 'ios',
     Version: '16.0',
   },
+  NativeModules: {
+    ReactNativeDeviceAi: {
+      getDeviceInfo: jest.fn().mockResolvedValue({
+        platform: 'windows',
+        osVersion: '11',
+        deviceModel: 'Test Windows Device'
+      }),
+      getWindowsSystemInfo: jest.fn().mockResolvedValue({
+        systemInfo: 'Windows system data'
+      }),
+      getWMISystemInfo: jest.fn().mockResolvedValue({
+        wmiData: 'WMI system data'
+      })
+    }
+  },
   Dimensions: {
     get: jest.fn((type) => {
       if (type === 'screen') {
@@ -34,6 +49,34 @@ jest.mock('react-native', () => mockReactNative);
 
 // Mock axios for Azure OpenAI tests
 jest.mock('axios');
+
+// Mock MCP SDK modules
+jest.mock('@modelcontextprotocol/sdk/client/index.js', () => ({
+  Client: jest.fn().mockImplementation(() => ({
+    connect: jest.fn().mockResolvedValue({}),
+    disconnect: jest.fn().mockResolvedValue({}),
+    listResources: jest.fn().mockResolvedValue({ resources: [] }),
+    listTools: jest.fn().mockResolvedValue({ tools: [] }),
+    callTool: jest.fn().mockResolvedValue({ result: {} })
+  }))
+}));
+
+jest.mock('@modelcontextprotocol/sdk/server/index.js', () => ({
+  Server: jest.fn().mockImplementation((config) => ({
+    registerTool: jest.fn(),
+    registerResource: jest.fn(),
+    connect: jest.fn().mockResolvedValue({}),
+    name: config.name || 'test-server'
+  }))
+}));
+
+jest.mock('@modelcontextprotocol/sdk/server/stdio.js', () => ({
+  StdioServerTransport: jest.fn().mockImplementation(() => ({}))
+}));
+
+jest.mock('mcp-sdk-client-ssejs', () => ({
+  SSEClientTransport: jest.fn().mockImplementation(() => ({}))
+}));
 
 // Global test timeout
 jest.setTimeout(10000);
