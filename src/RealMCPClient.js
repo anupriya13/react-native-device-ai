@@ -189,9 +189,9 @@ class RealMCPClient {
    * Call a tool on a specific MCP server
    * @param {string} serverName - Server name
    * @param {string} toolName - Tool name
-   * @param {Object} arguments - Tool arguments
+   * @param {Object} toolArguments - Tool arguments
    */
-  async callTool(serverName, toolName, arguments = {}) {
+  async callTool(serverName, toolName, toolArguments = {}) {
     if (!this.isInitialized) {
       throw new Error('MCP client not initialized. Call initialize() first.');
     }
@@ -206,7 +206,7 @@ class RealMCPClient {
       
       const result = await clientInfo.client.callTool({
         name: toolName,
-        arguments
+        arguments: toolArguments
       });
 
       return {
