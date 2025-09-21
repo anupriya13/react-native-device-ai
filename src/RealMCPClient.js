@@ -456,9 +456,10 @@ class RealMCPClient {
         return { 'Authorization': `Bearer ${auth.token}` };
       case 'api-key':
         return { 'X-API-Key': auth.apiKey };
-      case 'basic':
+      case 'basic': {
         const encoded = btoa(`${auth.username}:${auth.password}`);
         return { 'Authorization': `Basic ${encoded}` };
+      }
       default:
         return {};
     }

@@ -6,7 +6,8 @@
 
 const { NativeModules, Platform } = require('react-native');
 const { Server } = require('@modelcontextprotocol/sdk/server/index.js');
-const { StdioServerTransport } = require('@modelcontextprotocol/sdk/server/stdio.js');
+// StdioServerTransport not supported in React Native environment
+// const { StdioServerTransport } = require('@modelcontextprotocol/sdk/server/stdio.js');
 
 const { ReactNativeDeviceAi } = NativeModules || {};
 
@@ -145,7 +146,7 @@ class WindowsMCPServer {
    * Check if this server is available on current platform
    */
   isAvailable() {
-    return Platform.OS === 'windows' && ReactNativeDeviceAi;
+    return Platform.OS === 'windows' && ReactNativeDeviceAi && typeof ReactNativeDeviceAi.getDeviceInfo === 'function';
   }
 
   /**

@@ -8,6 +8,21 @@ const mockReactNative = {
     OS: 'ios',
     Version: '16.0',
   },
+  NativeModules: {
+    ReactNativeDeviceAi: {
+      getDeviceInfo: jest.fn().mockResolvedValue({
+        platform: 'windows',
+        osVersion: '11',
+        deviceModel: 'Test Windows Device'
+      }),
+      getWindowsSystemInfo: jest.fn().mockResolvedValue({
+        systemInfo: 'Windows system data'
+      }),
+      getWMISystemInfo: jest.fn().mockResolvedValue({
+        wmiData: 'WMI system data'
+      })
+    }
+  },
   Dimensions: {
     get: jest.fn((type) => {
       if (type === 'screen') {
@@ -47,11 +62,11 @@ jest.mock('@modelcontextprotocol/sdk/client/index.js', () => ({
 }));
 
 jest.mock('@modelcontextprotocol/sdk/server/index.js', () => ({
-  Server: jest.fn().mockImplementation(() => ({
+  Server: jest.fn().mockImplementation((config) => ({
     registerTool: jest.fn(),
     registerResource: jest.fn(),
     connect: jest.fn().mockResolvedValue({}),
-    name: 'test-server'
+    name: config.name || 'test-server'
   }))
 }));
 

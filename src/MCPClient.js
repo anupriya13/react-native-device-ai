@@ -66,7 +66,7 @@ class MCPClient {
    */
   async connectServer(serverConfig) {
     try {
-      const { name, type, endpoint, auth } = serverConfig;
+      const { name, type, endpoint } = serverConfig;
       
       if (!name || !type || !endpoint) {
         throw new Error('Server configuration must include name, type, and endpoint');
